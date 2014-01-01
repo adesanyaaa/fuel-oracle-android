@@ -20,7 +20,7 @@ import org.biu.ufo.obd.commands.BaseObdProtocolCommand;
  */
 public class TimeoutObdCommand extends BaseObdProtocolCommand {
 	private int timeout;
-	
+
 	/**
 	 * @param timeout
 	 *          value between 0 and 255 that multiplied by 4 results in the

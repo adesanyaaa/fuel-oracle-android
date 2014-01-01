@@ -13,9 +13,9 @@ import com.openxc.sources.BaseVehicleDataSource;
  *
  */
 public class ObdDataSource extends BaseVehicleDataSource {
-	
+
 	public void notifyMeasurement(RawMeasurement measurement) {
 		handleMessage(measurement);
 	}
-	
+
 }

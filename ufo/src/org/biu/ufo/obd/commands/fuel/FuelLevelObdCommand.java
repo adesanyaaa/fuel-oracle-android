@@ -1,15 +1,15 @@
 package org.biu.ufo.obd.commands.fuel;
 
-import android.annotation.SuppressLint;
-
 import org.biu.ufo.obd.commands.BaseObdQueryCommand;
 import org.biu.ufo.obd.enums.AvailableCommandNames;
+
+import android.annotation.SuppressLint;
 
 public class FuelLevelObdCommand extends BaseObdQueryCommand {
 	public static String CMD = "01 2F";
 
 	private float fuelLevel = 0f;
-	
+
 	@Override
 	public String getCommand() {
 		return CMD;

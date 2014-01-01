@@ -7,11 +7,11 @@ import com.google.common.primitives.Bytes;
 public abstract class BaseObdQueryCommand implements IObdCommand {
 	protected byte[] data;
 	protected String result;
-	
+
 	@Override
 	public boolean handleResult(String result) {
 		this.result = result;
-		
+
 		try {
 			ArrayList<Byte> raw = new ArrayList<Byte>();
 			for(String singleByte : result.split(" ")) {
@@ -21,11 +21,11 @@ public abstract class BaseObdQueryCommand implements IObdCommand {
 			performCalculations();
 			return true;
 		} catch(NumberFormatException e) {
-			
+
 		}
 		return false;
 	}
-	
+
 	protected abstract void performCalculations();
 
 }

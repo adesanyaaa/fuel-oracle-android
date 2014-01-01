@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
-import com.openxc.VehicleManager;
 import com.openxc.measurements.FuelLevel;
 
 /**
@@ -38,28 +37,28 @@ import com.openxc.measurements.FuelLevel;
  */
 public class CarGatewayService extends BoundedWorkerService {
 	private final static String TAG = "CarGatewayService";
-	
+
 	private final IBinder binder = new CarGatewayServiceBinder();
 
 	private ObdDataSource dataSource; // TODO: initialize! (use inject)
 	private Connection connection; // TODO: initialize! (use inject)
 	private BlockingQueue<IObdCommand> jobsQueue = new LinkedBlockingQueue<IObdCommand>();
 
-    public CarGatewayService() {
+	public CarGatewayService() {
 		super(TAG);
 	}
-    
-    @Override
-    public void onCreate() {
-    	// TODO Create data source and add it to singleton VehicleManager
-    	super.onCreate();
-    }
+
+	@Override
+	public void onCreate() {
+		// TODO Create data source and add it to singleton VehicleManager
+		super.onCreate();
+	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
 		return binder;
 	}
-	
+
 	public void startConnection() {
 		jobsQueue.clear();
 		jobsQueue.add(new ObdResetCommand());
@@ -72,10 +71,10 @@ public class CarGatewayService extends BoundedWorkerService {
 		// Just for getting some data
 		addQuery(new FuelLevelObdCommand());
 	}
-	
+
 	public void addQuery(BaseObdQueryCommand cmd) {
 		jobsQueue.add(cmd);
-		
+
 		if(jobsQueue.size() == 1) {
 			executeOnBackground();			
 		}
@@ -83,7 +82,7 @@ public class CarGatewayService extends BoundedWorkerService {
 
 	private void executeOnBackground() {
 		runOnBackground(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				try {
@@ -136,14 +135,14 @@ public class CarGatewayService extends BoundedWorkerService {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	public class CarGatewayServiceBinder extends Binder {
 		public CarGatewayService getService() {
 			return CarGatewayService.this;
 		}
 	}
-	
+
 }
