@@ -1,5 +1,6 @@
 package org.biu.ufo.services;
 
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EService;
 import org.androidannotations.annotations.UiThread;
 import org.biu.ufo.BusProvider;
@@ -42,9 +43,14 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 	private final static String TAG = "UfoMainService";
 	private final static int SERVICE_NOTIFICATION_ID = 1541;
 
-	private VehicleManagerConnector mVMmConnector;
-	private CarGatewayServiceBinder mCarGateway;
+	@Bean
+	BusProvider busProvider;
+	
+	@Bean
+	VehicleManagerConnector mVMmConnector;
 
+	private CarGatewayServiceBinder mCarGateway;
+	
 	private ServiceConnection mCarGatewayConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			onCGConnected((CarGatewayServiceBinder)service);
@@ -60,7 +66,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		public void receive(Measurement measurement) {
 			final FuelLevel fuelLevel = (FuelLevel) measurement;
 			if(fuelLevel.getValue().doubleValue() < 10) {
-				BusProvider.getInstance().post(new LowFuelLevel());			        	
+				busProvider.getEventBus().post(new LowFuelLevel());			        	
 			}
 		}
 	};
@@ -71,8 +77,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		moveToForeground();
 
 		// Bind to VM
-		mVMmConnector = new VehicleManagerConnector(this, this);
-		mVMmConnector.bindToVehicleManager();
+		mVMmConnector.bindToVehicleManager(this);
 
 		// Bind to CarGateway
 		bindService(new Intent(this, VehicleManager.class),
@@ -89,8 +94,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		super.onDestroy();
 
 		// Unbind from VM
-		mVMmConnector.unbindToVehicleManager();
-		mVMmConnector.cleanup();
+		mVMmConnector.unbindFromVehicleManager();
 
 		// Unbind from CarGateway
 		unbindService(mCarGatewayConnection);    	

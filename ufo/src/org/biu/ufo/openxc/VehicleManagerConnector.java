@@ -1,5 +1,7 @@
 package org.biu.ufo.openxc;
 
+import org.androidannotations.annotations.EBean;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +11,7 @@ import android.util.Log;
 
 import com.openxc.VehicleManager;
 
+@EBean
 public class VehicleManagerConnector {
 	public static final String TAG = "VehicleManagerConnector";
 
@@ -21,27 +24,23 @@ public class VehicleManagerConnector {
 	private Context context;
 	private VehicleManager mVehicleManager;
 
-	public VehicleManagerConnector(Context context, VehicleManagerConnectorCallback callback) {
+	public VehicleManagerConnector(Context context) {
 		this.context = context;
-		this.callback = callback;
 	}
 
 	public VehicleManager getVehicleManager() {
 		return mVehicleManager;
 	}
 
-	public void bindToVehicleManager() {
+	public void bindToVehicleManager(VehicleManagerConnectorCallback callback) {
+		this.callback = callback;
+		
 		context.bindService(new Intent(context, VehicleManager.class),
 				mConnection, Context.BIND_AUTO_CREATE);    	
 	}
 
-	public void unbindToVehicleManager() {
+	public void unbindFromVehicleManager() {
 		context.unbindService(mConnection);    	
-	}
-
-	public void cleanup() {
-		context = null;
-		callback = null;
 		mVehicleManager = null;
 	}
 

@@ -50,7 +50,10 @@ public class CarGatewayService extends BoundedWorkerService implements VehicleMa
 
 	@Bean
 	ObdDataSource vmCustomDataSource;
-	private VehicleManagerConnector vmConnector;
+	
+	@Bean
+	VehicleManagerConnector vmConnector;
+	
 	private Connection connection;	// TODO: initialize
 
 
@@ -61,15 +64,14 @@ public class CarGatewayService extends BoundedWorkerService implements VehicleMa
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		vmConnector = new VehicleManagerConnector(this, this);
-		vmConnector.bindToVehicleManager();
+		vmConnector.bindToVehicleManager(this);
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		vmConnector.unbindToVehicleManager();
-		vmConnector.cleanup();
+		
+		vmConnector.unbindFromVehicleManager();
 	}
 
 	@Override

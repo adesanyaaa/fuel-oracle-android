@@ -1,19 +1,26 @@
 package org.biu.ufo;
 
+import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.EBean.Scope;
+
 import com.squareup.otto.Bus;
 
 /**
- * Maintains a singleton instance for obtaining the bus. Ideally this would be replaced with a more efficient means
- * such as through injection directly into interested classes.
+ * Singleton that holds the app-wide eventbus
+ * @author Stephen Asherson.
  */
-public final class BusProvider {
-	private static final Bus BUS = new Bus();
+@EBean(scope = Scope.Singleton)
+public class BusProvider {
+	private Bus eventBus;
 
-	public static Bus getInstance() {
-		return BUS;
-	}
+	/**
+	 * Lazy load the event bus
+	 */
+	public synchronized Bus getEventBus() {
+		if (eventBus == null) {
+			eventBus = new Bus();
+		}
 
-	private BusProvider() {
-		// No instances.
+		return eventBus;
 	}
 }

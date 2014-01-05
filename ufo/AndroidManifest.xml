@@ -34,7 +34,7 @@
         </receiver>
 
         <service
-            android:name="org.biu.ufo.services.UfoMainService"
+            android:name="org.biu.ufo.services.UfoMainService_"
             android:enabled="true"
             android:exported="true" >
         </service>
