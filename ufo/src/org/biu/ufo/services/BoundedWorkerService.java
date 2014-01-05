@@ -19,7 +19,7 @@ public abstract class BoundedWorkerService extends Service {
 	private volatile Looper mServiceLooper;
 	private volatile Handler mServiceHandler;
 	private Handler mMainThreadHandler;
-	private WakeLockManager mWakeLocker;
+	protected WakeLockManager mWakeLocker;
 
 	private String mName;
 

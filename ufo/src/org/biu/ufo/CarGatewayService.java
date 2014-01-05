@@ -4,7 +4,13 @@ import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EService;
+import org.androidannotations.annotations.UiThread;
+import org.biu.ufo.VehicleManagerConnector.VehicleManagerConnectorCallback;
 import org.biu.ufo.connection.Connection;
+import org.biu.ufo.connection.ConnectionCallback;
 import org.biu.ufo.obd.commands.BaseObdQueryCommand;
 import org.biu.ufo.obd.commands.IObdCommand;
 import org.biu.ufo.obd.commands.fuel.FuelLevelObdCommand;
@@ -35,23 +41,62 @@ import com.openxc.measurements.FuelLevel;
  * @author Roee Shlomo
  *
  */
-public class CarGatewayService extends BoundedWorkerService {
+@EService
+public class CarGatewayService extends BoundedWorkerService implements VehicleManagerConnectorCallback, ConnectionCallback {
 	private final static String TAG = "CarGatewayService";
 
 	private final IBinder binder = new CarGatewayServiceBinder();
-
-	private ObdDataSource dataSource; // TODO: initialize! (use inject)
-	private Connection connection; // TODO: initialize! (use inject)
-	private BlockingQueue<IObdCommand> jobsQueue = new LinkedBlockingQueue<IObdCommand>();
-
+	private final BlockingQueue<IObdCommand> jobsQueue = new LinkedBlockingQueue<IObdCommand>();
+	
+	@Bean
+	ObdDataSource vmCustomDataSource;
+	private VehicleManagerConnector vmConnector;
+	private Connection connection;	// TODO: initialize
+	
+	
 	public CarGatewayService() {
 		super(TAG);
 	}
 
 	@Override
 	public void onCreate() {
-		// TODO Create data source and add it to singleton VehicleManager
 		super.onCreate();
+		vmConnector = new VehicleManagerConnector(this, this);
+		vmConnector.bindToVehicleManager();
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		vmConnector.unbindToVehicleManager();
+		vmConnector.cleanup();
+	}
+
+	@Override
+	@UiThread
+	public void onVMConnected() {
+		vmConnector.getVehicleManager().addSource(vmCustomDataSource);
+		startConnection();
+	}
+	
+	@Background
+	public void startConnection() {
+		connection.start();
+	}
+	
+	@Override
+	public void onVMDisconnected() {
+		connection.stop();
+	}
+
+	@Override
+	public void sourceConnected(Connection source) {
+		initializeDevice();
+	}
+
+	@Override
+	public void sourceDisconnected(Connection source) {
+		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -59,7 +104,7 @@ public class CarGatewayService extends BoundedWorkerService {
 		return binder;
 	}
 
-	public void startConnection() {
+	public void initializeDevice() {
 		jobsQueue.clear();
 		jobsQueue.add(new ObdResetCommand());
 		jobsQueue.add(new EchoOffObdCommand());	
@@ -111,7 +156,7 @@ public class CarGatewayService extends BoundedWorkerService {
 			@Override
 			public void run() {
 				if(job instanceof FuelLevelObdCommand) {
-					dataSource.notifyMeasurement(new FuelLevel(((FuelLevelObdCommand) job).getValue()).toRaw());
+					vmCustomDataSource.notifyMeasurement(new FuelLevel(((FuelLevelObdCommand) job).getValue()).toRaw());
 				}				
 			}
 		});
@@ -140,8 +185,8 @@ public class CarGatewayService extends BoundedWorkerService {
 	}
 
 	public class CarGatewayServiceBinder extends Binder {
-		public CarGatewayService getService() {
-			return CarGatewayService.this;
+		public void addQuery(BaseObdQueryCommand cmd) {
+			CarGatewayService.this.addQuery(cmd);
 		}
 	}
 

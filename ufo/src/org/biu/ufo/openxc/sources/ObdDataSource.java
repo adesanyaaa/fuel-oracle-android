@@ -1,5 +1,8 @@
 package org.biu.ufo.openxc.sources;
 
+import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.EBean.Scope;
+
 import com.openxc.VehicleManager;
 import com.openxc.remote.RawMeasurement;
 import com.openxc.sources.BaseVehicleDataSource;
@@ -12,6 +15,7 @@ import com.openxc.sources.BaseVehicleDataSource;
  * @author Roee Shlomo
  *
  */
+@EBean(scope=Scope.Singleton)
 public class ObdDataSource extends BaseVehicleDataSource {
 
 	public void notifyMeasurement(RawMeasurement measurement) {
