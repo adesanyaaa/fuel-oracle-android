@@ -1,4 +1,4 @@
-package org.biu.ufo.connection;
+package org.biu.ufo.obd.connection;
 
 import java.io.IOException;
 import java.net.URI;

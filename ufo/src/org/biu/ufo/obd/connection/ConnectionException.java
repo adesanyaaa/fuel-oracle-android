@@ -1,4 +1,4 @@
-package org.biu.ufo.connection;
+package org.biu.ufo.obd.connection;
 
 public class ConnectionException extends Exception {
 	private static final long serialVersionUID = -2458188558308428658L;

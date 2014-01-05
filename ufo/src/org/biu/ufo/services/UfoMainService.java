@@ -1,10 +1,13 @@
-package org.biu.ufo;
+package org.biu.ufo.services;
 
 import org.androidannotations.annotations.EService;
 import org.androidannotations.annotations.UiThread;
-import org.biu.ufo.CarGatewayService.CarGatewayServiceBinder;
-import org.biu.ufo.VehicleManagerConnector.VehicleManagerConnectorCallback;
+import org.biu.ufo.BusProvider;
+import org.biu.ufo.R;
 import org.biu.ufo.events.LowFuelLevel;
+import org.biu.ufo.openxc.VehicleManagerConnector;
+import org.biu.ufo.openxc.VehicleManagerConnector.VehicleManagerConnectorCallback;
+import org.biu.ufo.services.CarGatewayService.CarGatewayServiceBinder;
 
 import android.app.PendingIntent;
 import android.app.Service;
@@ -36,17 +39,17 @@ import com.openxc.remote.VehicleServiceException;
  */
 @EService
 public class UfoMainService extends Service implements VehicleManagerConnectorCallback {
-    private final static String TAG = "UfoMainService";
-    private final static int SERVICE_NOTIFICATION_ID = 1541;
-    
+	private final static String TAG = "UfoMainService";
+	private final static int SERVICE_NOTIFICATION_ID = 1541;
+
 	private VehicleManagerConnector mVMmConnector;
 	private CarGatewayServiceBinder mCarGateway;
-	
+
 	private ServiceConnection mCarGatewayConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			onCGConnected((CarGatewayServiceBinder)service);
 		}
-		
+
 		public void onServiceDisconnected(ComponentName className) {
 			onCGDisonnected();
 		}
@@ -56,21 +59,21 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		@Override
 		public void receive(Measurement measurement) {
 			final FuelLevel fuelLevel = (FuelLevel) measurement;
-	        if(fuelLevel.getValue().doubleValue() < 10) {
+			if(fuelLevel.getValue().doubleValue() < 10) {
 				BusProvider.getInstance().post(new LowFuelLevel());			        	
-	        }
+			}
 		}
 	};
-	
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		moveToForeground();
-		
+
 		// Bind to VM
 		mVMmConnector = new VehicleManagerConnector(this, this);
 		mVMmConnector.bindToVehicleManager();
-		
+
 		// Bind to CarGateway
 		bindService(new Intent(this, VehicleManager.class),
 				mCarGatewayConnection, Context.BIND_AUTO_CREATE);
@@ -84,48 +87,48 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		
+
 		// Unbind from VM
 		mVMmConnector.unbindToVehicleManager();
 		mVMmConnector.cleanup();
-		
+
 		// Unbind from CarGateway
 		unbindService(mCarGatewayConnection);    	
 
 		// Remove from foreground
 		removeFromForeground();
 	}
-	
-    private void moveToForeground() {
-        Log.i(TAG, "Moving service to foreground.");
 
-        try {
-        	// TODO change class name
-            Intent intent = new Intent(this,
-                    Class.forName("com.openxc.enabler.OpenXcEnablerActivity"));
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            PendingIntent pendingIntent = PendingIntent.getActivity(
-                    this, 0, intent, 0);
+	private void moveToForeground() {
+		Log.i(TAG, "Moving service to foreground.");
 
-            NotificationCompat.Builder notificationBuilder =
-                    new NotificationCompat.Builder(this);
-            notificationBuilder.setContentTitle(getString(R.string.app_name))
-                    .setContentInfo(getString(R.string.notification_content))
-                    .setSmallIcon(R.drawable.openxc_notification_icon_small_white)
-                    .setContentIntent(pendingIntent);
+		try {
+			// TODO change class name
+			Intent intent = new Intent(this,
+					Class.forName("com.openxc.enabler.OpenXcEnablerActivity"));
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+					Intent.FLAG_ACTIVITY_SINGLE_TOP);
+			PendingIntent pendingIntent = PendingIntent.getActivity(
+					this, 0, intent, 0);
 
-            startForeground(SERVICE_NOTIFICATION_ID,
-                    notificationBuilder.build());
-        } catch (ClassNotFoundException e) {
-            Log.e(TAG, "Could not find Main Activity class.", e);
-        }
-    }
+			NotificationCompat.Builder notificationBuilder =
+					new NotificationCompat.Builder(this);
+			notificationBuilder.setContentTitle(getString(R.string.app_name))
+			.setContentInfo(getString(R.string.notification_content))
+			.setSmallIcon(R.drawable.openxc_notification_icon_small_white)
+			.setContentIntent(pendingIntent);
 
-    private void removeFromForeground(){
-        Log.i(TAG, "Removing service from foreground.");
-        stopForeground(true);
-    }
+			startForeground(SERVICE_NOTIFICATION_ID,
+					notificationBuilder.build());
+		} catch (ClassNotFoundException e) {
+			Log.e(TAG, "Could not find Main Activity class.", e);
+		}
+	}
+
+	private void removeFromForeground(){
+		Log.i(TAG, "Removing service from foreground.");
+		stopForeground(true);
+	}
 
 	@Override
 	@UiThread
@@ -141,15 +144,15 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Override
 	public void onVMDisconnected() {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	protected void onCGConnected(CarGatewayServiceBinder service) {
 		Log.i(TAG, "Bound to CarGateway");
 		mCarGateway = service;
@@ -159,5 +162,5 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		Log.w(TAG, "CarGateway disconnected unexpectedly");
 		mCarGateway = null;
 	}
-		
+
 }

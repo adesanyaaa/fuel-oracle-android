@@ -1,4 +1,4 @@
-package org.biu.ufo;
+package org.biu.ufo.services;
 
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
@@ -8,9 +8,6 @@ import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EService;
 import org.androidannotations.annotations.UiThread;
-import org.biu.ufo.VehicleManagerConnector.VehicleManagerConnectorCallback;
-import org.biu.ufo.connection.Connection;
-import org.biu.ufo.connection.ConnectionCallback;
 import org.biu.ufo.obd.commands.BaseObdQueryCommand;
 import org.biu.ufo.obd.commands.IObdCommand;
 import org.biu.ufo.obd.commands.fuel.FuelLevelObdCommand;
@@ -19,9 +16,12 @@ import org.biu.ufo.obd.commands.protocol.LineFeedOffObdCommand;
 import org.biu.ufo.obd.commands.protocol.ObdResetCommand;
 import org.biu.ufo.obd.commands.protocol.SelectProtocolObdCommand;
 import org.biu.ufo.obd.commands.protocol.TimeoutObdCommand;
+import org.biu.ufo.obd.connection.Connection;
+import org.biu.ufo.obd.connection.ConnectionCallback;
 import org.biu.ufo.obd.enums.ObdProtocols;
+import org.biu.ufo.openxc.VehicleManagerConnector;
+import org.biu.ufo.openxc.VehicleManagerConnector.VehicleManagerConnectorCallback;
 import org.biu.ufo.openxc.sources.ObdDataSource;
-import org.biu.ufo.services.BoundedWorkerService;
 
 import android.content.Intent;
 import android.os.Binder;
@@ -47,13 +47,13 @@ public class CarGatewayService extends BoundedWorkerService implements VehicleMa
 
 	private final IBinder binder = new CarGatewayServiceBinder();
 	private final BlockingQueue<IObdCommand> jobsQueue = new LinkedBlockingQueue<IObdCommand>();
-	
+
 	@Bean
 	ObdDataSource vmCustomDataSource;
 	private VehicleManagerConnector vmConnector;
 	private Connection connection;	// TODO: initialize
-	
-	
+
+
 	public CarGatewayService() {
 		super(TAG);
 	}
@@ -64,7 +64,7 @@ public class CarGatewayService extends BoundedWorkerService implements VehicleMa
 		vmConnector = new VehicleManagerConnector(this, this);
 		vmConnector.bindToVehicleManager();
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -78,12 +78,12 @@ public class CarGatewayService extends BoundedWorkerService implements VehicleMa
 		vmConnector.getVehicleManager().addSource(vmCustomDataSource);
 		startConnection();
 	}
-	
+
 	@Background
 	public void startConnection() {
 		connection.start();
 	}
-	
+
 	@Override
 	public void onVMDisconnected() {
 		connection.stop();

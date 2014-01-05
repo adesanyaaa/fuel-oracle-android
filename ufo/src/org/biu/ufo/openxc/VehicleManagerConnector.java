@@ -1,4 +1,4 @@
-package org.biu.ufo;
+package org.biu.ufo.openxc;
 
 import android.content.ComponentName;
 import android.content.Context;

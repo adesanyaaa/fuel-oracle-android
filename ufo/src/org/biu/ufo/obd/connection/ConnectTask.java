@@ -1,4 +1,4 @@
-package org.biu.ufo.connection;
+package org.biu.ufo.obd.connection;
 
 import java.util.Timer;
 import java.util.TimerTask;

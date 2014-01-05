@@ -1,4 +1,4 @@
-package org.biu.ufo;
+package org.biu.ufo.receivers;
 
 import com.openxc.VehicleManager;
 
@@ -14,11 +14,11 @@ import android.util.Log;
  * management.
  */
 public class BootupReceiver extends BroadcastReceiver {
-    private final static String TAG = "BootupReceiver";
+	private final static String TAG = "BootupReceiver";
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-//        Log.i(TAG, "Starting vehicle service on boot");
-//        context.startService(new Intent(context, VehicleManager.class));
-    }
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		//        Log.i(TAG, "Starting vehicle service on boot");
+		//        context.startService(new Intent(context, VehicleManager.class));
+	}
 }
