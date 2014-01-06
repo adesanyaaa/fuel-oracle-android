@@ -21,12 +21,12 @@ public class MainActivity extends Activity {
 
 	@Click(R.id.start_ufo_service)
 	void startMainService() {
-		startService(new Intent(this, UfoMainService_.class));
+		UfoMainService_.intent(this).start();
 	}
 	
 	@Click(R.id.stop_ufo_service)
 	void stopMainService() {
-		stopService(new Intent(this, UfoMainService_.class));
+		UfoMainService_.intent(this).stop();
 	}
 
 }

@@ -3,7 +3,7 @@ package org.biu.ufo.services;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EService;
 import org.androidannotations.annotations.UiThread;
-import org.biu.ufo.BusProvider;
+import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
 import org.biu.ufo.configuration.PreferenceManagerService_;
 import org.biu.ufo.events.LowFuelLevel;
@@ -25,11 +25,11 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.google.common.eventbus.Subscribe;
 import com.openxc.measurements.FuelLevel;
 import com.openxc.measurements.Measurement;
 import com.openxc.measurements.UnrecognizedMeasurementTypeException;
 import com.openxc.remote.VehicleServiceException;
+import com.squareup.otto.Subscribe;
 
 /**
  * UfoMainService
@@ -51,6 +51,9 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 	@Bean
 	VehicleManagerConnector mVMmConnector;
 
+	@Bean
+	OttoBus bus;
+	
 	private CarGatewayServiceBinder mCarGateway;
 	
 	@Override
@@ -70,7 +73,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		bindService(new Intent(this, PreferenceManagerService_.class), mPreferencesManagerConnection, Context.BIND_AUTO_CREATE);
 
 		// Register on bus
-		BusProvider.getEventBus().register(this);
+		bus.register(this);
 
 		
 	}
@@ -85,7 +88,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		super.onDestroy();
 		
 		// Unregister from bus
-		BusProvider.getEventBus().unregister(this);
+		bus.unregister(this);
 
 		// Unbind from preferences manager
 		unbindService(mPreferencesManagerConnection);    
@@ -225,7 +228,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		public void receive(Measurement measurement) {
 			final FuelLevel fuelLevel = (FuelLevel) measurement;
 			if(fuelLevel.getValue().doubleValue() < 10) {
-				BusProvider.getEventBus().post(new LowFuelLevel());			        	
+				bus.post(new LowFuelLevel());			        	
 			}
 		}
 	};

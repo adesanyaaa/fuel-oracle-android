@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EService;
 import org.androidannotations.annotations.UiThread;
-import org.biu.ufo.BusProvider;
+import org.biu.ufo.OttoBus;
 import org.biu.ufo.events.ObdConnectionLost;
 import org.biu.ufo.obd.commands.BaseObdQueryCommand;
 import org.biu.ufo.obd.commands.IObdCommand;
@@ -55,6 +55,9 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 	@Bean
 	VehicleManagerConnector vmConnector;
   
+	@Bean
+	OttoBus bus;
+	
 	private final IBinder binder = new CarGatewayServiceBinder();
 	private Connection connection;
 	
@@ -155,7 +158,7 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 			Log.e(TAG, "Connection lost to " + source.toString());
 			if(shouldBeActive.get()) {
 				stop();
-				BusProvider.getEventBus().post(new ObdConnectionLost());
+				bus.post(new ObdConnectionLost());
 			}
 		}
 	}

@@ -2,9 +2,10 @@ package org.biu.ufo.configuration;
 
 import java.util.Set;
 
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.UiThread;
-import org.biu.ufo.BusProvider;
+import org.biu.ufo.OttoBus;
 import org.biu.ufo.events.ObdDeviceAddressChanged;
 
 import android.bluetooth.BluetoothAdapter;
@@ -23,6 +24,9 @@ public class BluetoothPreferenceManager extends VehiclePreferenceManager {
     private final static String TAG = "BluetoothPreferenceManager";
     public final static String AUTO_DEVICE_SELECTION_ENTRY = "Automatic";
    
+    @Bean
+    OttoBus bus;
+    
     public BluetoothPreferenceManager(Context context) {
         super(context);
     }
@@ -59,11 +63,11 @@ public class BluetoothPreferenceManager extends VehiclePreferenceManager {
                 getVehicleManager().removeVehicleInterface(BluetoothVehicleInterface.class);
                 
                 // But use OBD connection
-                BusProvider.getEventBus().post(new ObdDeviceAddressChanged(deviceAddress));                	
+                bus.post(new ObdDeviceAddressChanged(deviceAddress));                	
 
         	} else {
         		// Stop the OBD connection
-                BusProvider.getEventBus().post(new ObdDeviceAddressChanged(null));
+        		bus.post(new ObdDeviceAddressChanged(null));
 
                 // Connect to CX-VI device
             	if(deviceAddress == null || deviceAddress.equals(AUTO_DEVICE_SELECTION_ENTRY)) {
@@ -82,7 +86,7 @@ public class BluetoothPreferenceManager extends VehiclePreferenceManager {
         } else {
         	// No more connections please
         	getVehicleManager().removeVehicleInterface(BluetoothVehicleInterface.class);
-            BusProvider.getEventBus().post(new ObdDeviceAddressChanged(null));
+        	bus.post(new ObdDeviceAddressChanged(null));
         }
             	
     }
