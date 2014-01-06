@@ -5,18 +5,27 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="18" />
-
-    <application
+        android:minSdkVersion="11"
+        android:targetSdkVersion="19" />
+    
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+	
+	<application
         android:name="org.biu.ufo.MainApplication_"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        
+
+        <!-- OpenXC services -->
         <service android:name="com.openxc.VehicleManager" />
-        
         <service
             android:name="com.openxc.remote.VehicleService"
             android:process=":remote" >
@@ -24,21 +33,40 @@
                 <action android:name="com.openxc.remote.VehicleServiceInterface" />
             </intent-filter>
         </service>
-        
-        <service android:name="org.biu.ufo.CarGatewayService_" />
 
+
+        <!-- UFO services -->
+        <service android:name="org.biu.ufo.configuration.PreferenceManagerService_" />
+        <service android:name="org.biu.ufo.services.CarGatewayService_" />
+        <service android:name="org.biu.ufo.services.UfoMainService_" />
+
+        <!-- Receivers -->
         <receiver android:name="org.biu.ufo.receivers.BootupReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        <receiver android:name="org.biu.ufo.receivers.BluetoothReceiver" >
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
+            </intent-filter>
+        </receiver>
 
-        <service
-            android:name="org.biu.ufo.services.UfoMainService_"
-            android:enabled="true"
-            android:exported="true" >
-        </service>
+        <!-- Activities -->
+        <activity
+            android:name="org.biu.ufo.activities.SettingsActivity"
+            android:label="@string/settings" >
+        </activity>
+        
+        <activity
+            android:name="org.biu.ufo.activities.MainActivity_"
+            android:label="@string/title_activity_main" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

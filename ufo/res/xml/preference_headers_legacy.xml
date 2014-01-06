@@ -1,0 +1,19 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <Preference
+            android:title="@string/general_preferences">
+        <intent
+            android:targetPackage="org.biu.ufo"
+            android:targetClass="org.biu.ufo.SettingsActivity"
+            android:action="org.biu.ufo.preferences.GENERAL" />
+    </Preference>
+    
+    <Preference
+            android:title="@string/developers_preferences">
+        <intent
+            android:targetPackage="org.biu.ufo"
+            android:targetClass="org.biu.ufo.SettingsActivity"
+            android:action="org.biu.ufo.preferences.DEVELOPERS" />
+    </Preference>
+    
+</PreferenceScreen>

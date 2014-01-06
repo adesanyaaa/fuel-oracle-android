@@ -51,19 +51,28 @@ public abstract class BoundedWorkerService extends Service {
 		mWakeLocker = new WakeLockManager(this, TAG);
 
 	}
-
-	public void runOnForground(Runnable task) {
-		mMainThreadHandler.post(task);
-	}
-
-	public void runOnBackground(Runnable task) {
-		mServiceHandler.post(task);
-	}
-
+	
 	@Override
 	public void onDestroy() {
 		mServiceLooper.quit();
 	}
+
+	protected void runOnForground(Runnable task) {
+		mMainThreadHandler.post(task);
+	}
+
+	protected void runOnBackground(Runnable task) {
+		mServiceHandler.post(task);
+	}
+	
+	protected void runOnBackgroundDelayed(Runnable task, int delayMillis) {
+		mServiceHandler.postDelayed(task, delayMillis);
+	}
+	
+	protected Handler getServiceHandler() {
+		return mServiceHandler;
+	}
+
 
 }
 

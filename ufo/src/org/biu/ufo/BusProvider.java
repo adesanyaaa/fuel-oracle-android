@@ -1,26 +1,11 @@
 package org.biu.ufo;
 
-import org.androidannotations.annotations.EBean;
-import org.androidannotations.annotations.EBean.Scope;
-
 import com.squareup.otto.Bus;
 
-/**
- * Singleton that holds the app-wide eventbus
- * @author Stephen Asherson.
- */
-@EBean(scope = Scope.Singleton)
-public class BusProvider {
-	private Bus eventBus;
+public abstract class BusProvider {
+	private static Bus INSTANCE = new Bus();
 
-	/**
-	 * Lazy load the event bus
-	 */
-	public synchronized Bus getEventBus() {
-		if (eventBus == null) {
-			eventBus = new Bus();
-		}
-
-		return eventBus;
+	public static synchronized Bus getEventBus() {
+		return INSTANCE;
 	}
 }

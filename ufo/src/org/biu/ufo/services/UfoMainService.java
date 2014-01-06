@@ -5,7 +5,10 @@ import org.androidannotations.annotations.EService;
 import org.androidannotations.annotations.UiThread;
 import org.biu.ufo.BusProvider;
 import org.biu.ufo.R;
+import org.biu.ufo.configuration.PreferenceManagerService_;
 import org.biu.ufo.events.LowFuelLevel;
+import org.biu.ufo.events.ObdConnectionLost;
+import org.biu.ufo.events.ObdDeviceAddressChanged;
 import org.biu.ufo.openxc.VehicleManagerConnector;
 import org.biu.ufo.openxc.VehicleManagerConnector.VehicleManagerConnectorCallback;
 import org.biu.ufo.services.CarGatewayService.CarGatewayServiceBinder;
@@ -16,11 +19,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.openxc.VehicleManager;
+import com.google.common.eventbus.Subscribe;
 import com.openxc.measurements.FuelLevel;
 import com.openxc.measurements.Measurement;
 import com.openxc.measurements.UnrecognizedMeasurementTypeException;
@@ -42,46 +47,32 @@ import com.openxc.remote.VehicleServiceException;
 public class UfoMainService extends Service implements VehicleManagerConnectorCallback {
 	private final static String TAG = "UfoMainService";
 	private final static int SERVICE_NOTIFICATION_ID = 1541;
-
-	@Bean
-	BusProvider busProvider;
 	
 	@Bean
 	VehicleManagerConnector mVMmConnector;
 
 	private CarGatewayServiceBinder mCarGateway;
 	
-	private ServiceConnection mCarGatewayConnection = new ServiceConnection() {
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			onCGConnected((CarGatewayServiceBinder)service);
-		}
-
-		public void onServiceDisconnected(ComponentName className) {
-			onCGDisonnected();
-		}
-	};
-
-	private FuelLevel.Listener fuelLevelListener = new FuelLevel.Listener() {
-		@Override
-		public void receive(Measurement measurement) {
-			final FuelLevel fuelLevel = (FuelLevel) measurement;
-			if(fuelLevel.getValue().doubleValue() < 10) {
-				busProvider.getEventBus().post(new LowFuelLevel());			        	
-			}
-		}
-	};
-
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		
+		// Move to foreground
 		moveToForeground();
 
 		// Bind to VM
 		mVMmConnector.bindToVehicleManager(this);
 
 		// Bind to CarGateway
-		bindService(new Intent(this, VehicleManager.class),
-				mCarGatewayConnection, Context.BIND_AUTO_CREATE);
+		bindService(new Intent(this, CarGatewayService_.class), mCarGatewayConnection, Context.BIND_AUTO_CREATE);
+
+		// Bind to preferences manager
+		bindService(new Intent(this, PreferenceManagerService_.class), mPreferencesManagerConnection, Context.BIND_AUTO_CREATE);
+
+		// Register on bus
+		BusProvider.getEventBus().register(this);
+
+		
 	}
 
 	@Override
@@ -92,12 +83,18 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		
+		// Unregister from bus
+		BusProvider.getEventBus().unregister(this);
 
-		// Unbind from VM
-		mVMmConnector.unbindFromVehicleManager();
-
+		// Unbind from preferences manager
+		unbindService(mPreferencesManagerConnection);    
+		
 		// Unbind from CarGateway
 		unbindService(mCarGatewayConnection);    	
+		
+		// Unbind from VM
+		mVMmConnector.unbindFromVehicleManager();
 
 		// Remove from foreground
 		removeFromForeground();
@@ -107,9 +104,8 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		Log.i(TAG, "Moving service to foreground.");
 
 		try {
-			// TODO change class name
 			Intent intent = new Intent(this,
-					Class.forName("com.openxc.enabler.OpenXcEnablerActivity"));
+					Class.forName("org.biu.ufo.activities.MainActivity_"));
 			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
 					Intent.FLAG_ACTIVITY_SINGLE_TOP);
 			PendingIntent pendingIntent = PendingIntent.getActivity(
@@ -160,11 +156,78 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 	protected void onCGConnected(CarGatewayServiceBinder service) {
 		Log.i(TAG, "Bound to CarGateway");
 		mCarGateway = service;
+		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		boolean isEnabled = prefs.getBoolean(getString(R.string.bluetooth_checkbox_key), true);
+		boolean isObd = prefs.getBoolean(getString(R.string.bluetooth_is_obd_key), true);
+		String deviceAddress = prefs.getString(getString(R.string.bluetooth_mac_key), null);
+		if(isEnabled && isObd && deviceAddress != null) {
+			if(mCarGateway.start(deviceAddress)) {
+				Log.d(TAG, "Car Gateway started");
+			} else {
+				Log.d(TAG, "Car Gateway could not be started");
+			}
+		} else {
+			Log.d(TAG, "Car Gateway not needed to be started");
+		}
 	}
 
+	@Subscribe 
+	public void onObdDeviceAddressChanged(ObdDeviceAddressChanged event) {
+		Log.e(TAG, "OBD device changed");
+		if(mCarGateway != null) {
+			mCarGateway.stop();
+			
+			if(event.getAddress() != null) {
+				if(mCarGateway.start(event.getAddress())) {
+					Log.d(TAG, "Car Gateway started");
+				} else {
+					Log.d(TAG, "Car Gateway could not be started");
+				}				
+			} else {
+				Log.d(TAG, "Car Gateway stopped due to preferences change");
+			}			
+		}
+		
+	}
+
+	@Subscribe 
+	public void onObdConnectionLost(ObdConnectionLost event) {
+		Log.e(TAG, "OBD connection lost");
+	}
+	
 	protected void onCGDisonnected() {
 		Log.w(TAG, "CarGateway disconnected unexpectedly");
 		mCarGateway = null;
 	}
+	
+	private ServiceConnection mCarGatewayConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			onCGConnected((CarGatewayServiceBinder)service);
+		}
+
+		public void onServiceDisconnected(ComponentName className) {
+			onCGDisonnected();
+		}
+	};
+
+	private ServiceConnection mPreferencesManagerConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+		}
+
+		public void onServiceDisconnected(ComponentName className) {
+		}
+	};
+
+	private FuelLevel.Listener fuelLevelListener = new FuelLevel.Listener() {
+		@Override
+		@UiThread
+		public void receive(Measurement measurement) {
+			final FuelLevel fuelLevel = (FuelLevel) measurement;
+			if(fuelLevel.getValue().doubleValue() < 10) {
+				BusProvider.getEventBus().post(new LowFuelLevel());			        	
+			}
+		}
+	};
 
 }

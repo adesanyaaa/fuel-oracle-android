@@ -1,6 +1,6 @@
 package org.biu.ufo.receivers;
 
-import com.openxc.VehicleManager;
+import org.biu.ufo.configuration.PreferenceManagerService_;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,11 +14,14 @@ import android.util.Log;
  * management.
  */
 public class BootupReceiver extends BroadcastReceiver {
-	private final static String TAG = "BootupReceiver";
+    private final static String TAG = BootupReceiver.class.getSimpleName();
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		//        Log.i(TAG, "Starting vehicle service on boot");
-		//        context.startService(new Intent(context, VehicleManager.class));
-	}
+    // TODO what about when the device is already started? need an app to hit?
+    // or do we rely on it being started by the bind call? might get duplicate
+    // USB permission requests that way, but maybe it's OK.
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Log.i(TAG, "Loading configured vehicle services on bootup");
+        context.startService(new Intent(context, PreferenceManagerService_.class));
+    }
 }
