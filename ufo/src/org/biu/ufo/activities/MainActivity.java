@@ -5,7 +5,7 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.biu.ufo.R;
-import org.biu.ufo.services.UfoMainService_;
+import org.biu.ufo.services.*;
 
 import android.app.Activity;
 import android.content.Intent;

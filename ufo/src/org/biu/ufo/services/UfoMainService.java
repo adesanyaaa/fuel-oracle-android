@@ -176,7 +176,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 	}
 
 	@Subscribe 
-	public void onObdDeviceAddressChanged(ObdDeviceAddressChanged event) {
+	public void onObdDeviceAddressChanged(final ObdDeviceAddressChanged event) {
 		Log.e(TAG, "OBD device changed");
 		if(mCarGateway != null) {
 			mCarGateway.stop();
@@ -195,7 +195,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 	}
 
 	@Subscribe 
-	public void onObdConnectionLost(ObdConnectionLost event) {
+	public void onObdConnectionLost(final ObdConnectionLost event) {
 		Log.e(TAG, "OBD connection lost");
 	}
 	
