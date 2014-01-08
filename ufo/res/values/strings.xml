@@ -9,4 +9,30 @@
     <string name="title_activity_main">UFO</string>
     <string name="action_settings">Settings</string>
 
+    <!-- Demo activity -->
+	<string name="fuel_next_msg">FUEL NEXT</string>
+	<string name="fuel_level">fuel level left</string>
+	
+	<string name="speed_caption">SPEED</string>
+	<string name="speed">123.2</string>
+	<string name="speed_measurement">kph</string>
+	
+	<string name="fuel_consumed">0.25</string>
+	<string name="fuel_consumed_caption">FUEL CONSUMED</string>
+	<string name="fuel_consumption_measurement">L</string>
+	
+	
+	<string name="drive_cost">25</string>
+	<string name="drive_cost_caption">DRIVE COST</string>
+	<string name="drive_cost_measurement">$</string>
+	
+	<string name="latitude_caption">LAT.</string>
+	<string name="latitude">74.21</string>
+	<string name="longitude_caption">LONG.</string>
+	<string name="longitude">-64.023</string>
+	
+	<string name="engine_speed_caption">ENGINE SPEED</string>
+	<string name="engine_speed">10549</string>
+	<string name="engine_speed_measurement">RPM</string>
+
 </resources>
