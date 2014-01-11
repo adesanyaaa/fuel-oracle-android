@@ -132,7 +132,6 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 	}
 	
 	public void stop() {
-		isActive.set(false);
 		shouldBeActive.set(false);
 		
 		getServiceHandler().removeCallbacks(mQueueCommands);
@@ -141,11 +140,13 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 			connection.stop();
 			connection = null;
 		}
+		
+		isActive.set(false);
 	}
 
 	@Override
 	public void sourceConnected(Connection source) {
-		if(source == connection) {
+		if(source == connection && shouldBeActive.get()) {
 			initializeDevice();
 			runOnBackground(mQueueCommands);
 		}

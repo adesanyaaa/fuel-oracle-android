@@ -6,14 +6,14 @@ import org.androidannotations.annotations.UiThread;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
 import org.biu.ufo.configuration.*;
+import org.biu.ufo.events.EngineSpeedMessage;
+import org.biu.ufo.events.FuelConsumedMessage;
+import org.biu.ufo.events.FuelLevelMessage;
+import org.biu.ufo.events.LatitudeMessage;
+import org.biu.ufo.events.LongitudeMessage;
 import org.biu.ufo.events.ObdConnectionLost;
 import org.biu.ufo.events.ObdDeviceAddressChanged;
-import org.biu.ufo.messages.EngineSpeedMessage;
-import org.biu.ufo.messages.FuelConsumedMessage;
-import org.biu.ufo.messages.FuelLevelMessage;
-import org.biu.ufo.messages.LatitudeMessage;
-import org.biu.ufo.messages.LongitudeMessage;
-import org.biu.ufo.messages.VehicleSpeedMessage;
+import org.biu.ufo.events.VehicleSpeedMessage;
 import org.biu.ufo.openxc.VehicleManagerConnector;
 import org.biu.ufo.openxc.VehicleManagerConnector.VehicleManagerConnectorCallback;
 import org.biu.ufo.services.CarGatewayService.CarGatewayServiceBinder;
@@ -47,8 +47,6 @@ import com.squareup.otto.Subscribe;
  * A Foreground service with "running" notification.
  * Should run as long as we are connected to some data source (typically the car)
  * Should monitor source availability.
- *  
- *  TODO: bind to CarGatewayService, bind to VM, 
  *  
  * @author Roee Shlomo
  *
@@ -269,7 +267,6 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		}
 
 	};
-
 
 	private VehicleSpeed.Listener vehicleSpeedListener = new VehicleSpeed.Listener() {
 

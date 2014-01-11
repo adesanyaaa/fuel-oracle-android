@@ -35,4 +35,7 @@
 	<string name="engine_speed">10549</string>
 	<string name="engine_speed_measurement">RPM</string>
 
+	<string name="activate_obd_service">Please activate OBD service</string>
+	<string name="obd_service">OBD service Activated</string>
+	
 </resources>

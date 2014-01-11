@@ -1,4 +1,4 @@
-package org.biu.ufo.messages;
+package org.biu.ufo.events;
 
 import com.openxc.measurements.VehicleSpeed;
 

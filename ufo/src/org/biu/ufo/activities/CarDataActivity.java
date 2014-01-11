@@ -6,12 +6,12 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
-import org.biu.ufo.messages.EngineSpeedMessage;
-import org.biu.ufo.messages.FuelConsumedMessage;
-import org.biu.ufo.messages.FuelLevelMessage;
-import org.biu.ufo.messages.LatitudeMessage;
-import org.biu.ufo.messages.LongitudeMessage;
-import org.biu.ufo.messages.VehicleSpeedMessage;
+import org.biu.ufo.events.EngineSpeedMessage;
+import org.biu.ufo.events.FuelConsumedMessage;
+import org.biu.ufo.events.FuelLevelMessage;
+import org.biu.ufo.events.LatitudeMessage;
+import org.biu.ufo.events.LongitudeMessage;
+import org.biu.ufo.events.VehicleSpeedMessage;
 
 import android.app.Activity;
 import android.widget.LinearLayout;

@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CarDataActivity" >
+    tools:context=".ObdActivity" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,7 +45,6 @@
                             android:id="@+id/sub_msg1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="80%"
                             android:textColor="@android:color/white"
                             android:textSize="20dp" />
 
@@ -95,7 +94,7 @@
                         android:layout_height="match_parent"
                         android:layout_margin="3dp"
                         android:layout_weight="3"
-                        android:background="@color/tile2" >
+                        android:background="@color/navy_tile" >
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -126,7 +125,6 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:gravity="left"
-                                        android:text="@string/fuel_consumed"
                                         android:textColor="@android:color/white"
                                         android:textSize="60dp"
                                         android:textStyle="bold" />
@@ -147,7 +145,7 @@
                         android:layout_height="match_parent"
                         android:layout_margin="3dp"
                         android:layout_weight="3"
-                        android:background="@color/tile5" >
+                        android:background="@color/green_tile" >
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -169,7 +167,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:gravity="center|center_horizontal"
-                                android:text="@string/speed"
                                 android:textColor="@android:color/white"
                                 android:textSize="60dp"
                                 android:textStyle="bold" />
@@ -193,7 +190,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="3dp"
                             android:layout_weight="2"
-                            android:background="@color/tile4"
+                            android:background="@color/navy_tile"
                             android:orientation="vertical" >
 
                             <LinearLayout
@@ -221,7 +218,6 @@
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="bottom"
                                         android:gravity="left"
-                                        android:text="@string/drive_cost"
                                         android:textColor="@android:color/white"
                                         android:textSize="55dp"
                                         android:textStyle="bold" />
@@ -257,7 +253,7 @@
                         android:layout_height="match_parent"
                         android:layout_margin="3dp"
                         android:layout_weight="3"
-                        android:background="@color/tile1" >
+                        android:background="@color/navy_tile" >
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -283,7 +279,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:gravity="left"
-                                    android:text="@string/latitude"
                                     android:textColor="@android:color/white"
                                     android:textSize="20dp" />
                             </LinearLayout>
@@ -298,10 +293,10 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_margin="3dp"
                         android:layout_weight="3"
-                        android:background="@color/tile1" >
+                        android:background="@color/navy_tile" >
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -327,7 +322,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:gravity="left"
-                                    android:text="@string/longitude"
                                     android:textColor="@android:color/white"
                                     android:textSize="20dp" />
                             </LinearLayout>
@@ -338,14 +332,14 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="3"
+                    
                     android:orientation="vertical" >
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="3dp"
-                        android:background="@color/tile4"
+                        android:background="@color/green_tile"
                         android:orientation="vertical" >
 
                         <LinearLayout
@@ -368,7 +362,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="bottom"
                                 android:gravity="center"
-                                android:text="@string/engine_speed"
                                 android:textColor="@android:color/white"
                                 android:textSize="30dp"/>
 
@@ -381,7 +374,9 @@
                                 android:textColor="@android:color/white"
                                 android:textSize="15dp" />
                         </LinearLayout>
+                        
                     </LinearLayout>
+
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

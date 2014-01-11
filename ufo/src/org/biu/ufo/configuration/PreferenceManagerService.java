@@ -38,8 +38,8 @@ public class PreferenceManagerService extends Service {
     BluetoothPreferenceManager bluetoothPreferenceManager;
     @Bean
     FileRecordingPreferenceManager fileRecordingPreferenceManager;
-    @Bean
-    GpsOverwritePreferenceManager gpsOverwritePreferenceManager;
+//    @Bean
+//    GpsOverwritePreferenceManager gpsOverwritePreferenceManager;
     @Bean
     NativeGpsPreferenceManager nativeGpsPreferenceManager;
     @Bean
@@ -60,7 +60,7 @@ public class PreferenceManagerService extends Service {
         mPreferenceManagers = new ArrayList<VehiclePreferenceManager>();
         mPreferenceManagers.add(bluetoothPreferenceManager);
         mPreferenceManagers.add(fileRecordingPreferenceManager);
-        mPreferenceManagers.add(gpsOverwritePreferenceManager);
+//        mPreferenceManagers.add(gpsOverwritePreferenceManager);
         mPreferenceManagers.add(nativeGpsPreferenceManager);
         mPreferenceManagers.add(uploadingPreferenceManager);
         mPreferenceManagers.add(networkPreferenceManager);
