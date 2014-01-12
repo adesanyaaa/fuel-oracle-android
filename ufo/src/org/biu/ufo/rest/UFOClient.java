@@ -19,10 +19,12 @@ public class UFOClient implements Client {
 		for(org.biu.ufo.rest.internal.ufoserver.Station ufoStation : stations) {
 			Station station = new Station(ufoStation);
 			station.setAddress(ufoStation.address);
+			station.setDistance(String.format("%.2f", ufoStation.distance) + "km");
 			station.setLat(ufoStation.location.latitude);
 			station.setLng(ufoStation.location.longitude);
 			station.setCompany(ufoStation.company);
-			station.setPrice(ufoStation.cost);
+			station.setPrice(String.format("%.2f", ufoStation.cost));
+			station.setPriceCurrency("\u20AA");
 			result.add(station);
 		}
 		

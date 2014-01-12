@@ -6,7 +6,9 @@ public class Station {
 	private double lat;
 	private double lng;
 	private String company;
-	private float price;
+	private String price;
+	private String priceCurrency;
+	private String distance;
 
 	public Station(Object original) {
 		this.original = original;
@@ -40,11 +42,11 @@ public class Station {
 		this.lng = lng;
 	}
 
-	public float getPrice() {
+	public String getPrice() {
 		return price;
 	}
 
-	public void setPrice(float price) {
+	public void setPrice(String price) {
 		this.price = price;
 	}
 	
@@ -54,6 +56,22 @@ public class Station {
 
 	public void setCompany(String company) {
 		this.company = company;
+	}
+
+	public String getDistance() {
+		return distance;
+	}
+
+	public void setDistance(String distance) {
+		this.distance = distance;
+	}
+
+	public String getPriceCurrency() {
+		return priceCurrency;
+	}
+
+	public void setPriceCurrency(String priceCurrency) {
+		this.priceCurrency = priceCurrency;
 	}
 
 }

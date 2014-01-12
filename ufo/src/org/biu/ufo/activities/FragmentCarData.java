@@ -1,7 +1,7 @@
 package org.biu.ufo.activities;
 
 import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.OttoBus;
@@ -13,14 +13,14 @@ import org.biu.ufo.events.LatitudeMessage;
 import org.biu.ufo.events.LongitudeMessage;
 import org.biu.ufo.events.VehicleSpeedMessage;
 
-import android.app.Activity;
+import android.support.v4.app.Fragment;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
 
-@EActivity(R.layout.obd_details_screen)
-public class CarDataActivity extends Activity {
+@EFragment(R.layout.fragment_car_data)
+public class FragmentCarData extends Fragment {
 	@Bean
 	OttoBus bus;
 
@@ -55,17 +55,18 @@ public class CarDataActivity extends Activity {
 	TextView engineSpeedCaption;
 
 	@Override
-	protected void onPause() {
+	public void onResume() {
+		super.onResume();
+		bus.register(this);
+	}
+	
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
 		super.onPause();
 		bus.unregister(this);
 	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();		
-		bus.register(this);
-	}	
-
+	
 	@UiThread
 	@Subscribe
 	public void onFuelLevelUpdate(FuelLevelMessage message){

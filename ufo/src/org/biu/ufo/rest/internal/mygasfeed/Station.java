@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Station {
 	public String country;
-	public float price;
+	public String price;
 	public String address;
 	public int diesel; // 1=true
 	public long id;

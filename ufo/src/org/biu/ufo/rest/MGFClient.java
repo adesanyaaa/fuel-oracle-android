@@ -16,7 +16,7 @@ public class MGFClient implements Client {
 
 	@Override
 	public List<Station> getStations(String latitude, String longidute, float distance) {
-		float distanceInMiles = distance * 0.000621371f;
+		float distanceInMiles = distance * 0.621371f;
 		StationsResponse response = _client.getStations(latitude, longidute, distanceInMiles,
 				RequestFuelType.reg, RequestSortBy.price);
 				
@@ -24,9 +24,11 @@ public class MGFClient implements Client {
 		for(org.biu.ufo.rest.internal.mygasfeed.Station mgfStation : response.stations) {
 			Station station = new Station(mgfStation);
 			station.setAddress(mgfStation.address);
+			station.setDistance(mgfStation.distance);
 			station.setLat(mgfStation.lat);
 			station.setLng(mgfStation.lng);
 			station.setPrice(mgfStation.price);
+			station.setPriceCurrency("\u00A2");
 			station.setCompany(mgfStation.station);
 			result.add(station);
 		}
