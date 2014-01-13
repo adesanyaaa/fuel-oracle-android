@@ -124,7 +124,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 					new NotificationCompat.Builder(this);
 			notificationBuilder.setContentTitle(getString(R.string.app_name))
 			.setContentInfo(getString(R.string.notification_content))
-			.setSmallIcon(R.drawable.openxc_notification_icon_small_white)
+			.setSmallIcon(R.drawable.ufo_notification_icon_small_light)
 			.setContentIntent(pendingIntent);
 
 			startForeground(SERVICE_NOTIFICATION_ID,

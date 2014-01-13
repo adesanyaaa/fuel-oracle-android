@@ -28,7 +28,9 @@ public class FuelLevelObdCommand extends BaseObdQueryCommand {
 	@Override
 	protected void performCalculations() {
 		// ignore first two bytes [hh hh] of the response
-		fuelLevel = 100.0f * data[2] / 255.0f;
+		if(data.length >= 3) {
+			fuelLevel = 100.0f * data[2] / 255.0f;
+		}
 	}
 
 	@Override

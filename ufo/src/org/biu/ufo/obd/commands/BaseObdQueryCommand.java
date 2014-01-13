@@ -12,18 +12,16 @@ public abstract class BaseObdQueryCommand implements IObdCommand {
 	public boolean handleResult(String result) {
 		this.result = result;
 
-		try {
 			ArrayList<Byte> raw = new ArrayList<Byte>();
 			for(String singleByte : result.split(" ")) {
-				raw.add(Byte.decode("0x" + singleByte));
+				try {
+					raw.add(Byte.decode("0x" + singleByte));
+				} catch(NumberFormatException e) {
+				}
 			}
 			this.data = Bytes.toArray(raw);
 			performCalculations();
 			return true;
-		} catch(NumberFormatException e) {
-
-		}
-		return false;
 	}
 
 	protected abstract void performCalculations();
