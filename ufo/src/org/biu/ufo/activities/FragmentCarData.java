@@ -79,13 +79,13 @@ public class FragmentCarData extends Fragment {
 	@UiThread
 	@Subscribe
 	public void onLongitudeUpdate(LongitudeMessage message){
-		longtidueCaption.setText(message.longitude);
+		longtidueCaption.setText(message.longitudeMessage);
 	}
 
 	@UiThread
 	@Subscribe
 	public void onLatitudeUpdate(LatitudeMessage message){
-		latitudeCaption.setText(message.latitude);
+		latitudeCaption.setText(message.latitudeMessage);
 	}
 
 	@UiThread

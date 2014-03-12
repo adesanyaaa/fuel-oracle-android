@@ -6,9 +6,11 @@ import com.openxc.measurements.Latitude;
 
 public class LatitudeMessage {
 
-	public String latitude;
+	public String latitudeMessage;
+	public double latitude;
 	
 	public LatitudeMessage(Latitude latitude){
-		this.latitude = Formats.cordsformatter.format(latitude.getValue().doubleValue());
+		this.latitudeMessage = Formats.cordsformatter.format(latitude.getValue().doubleValue());
+		this.latitude = latitude.getValue().doubleValue();
 	}
 }

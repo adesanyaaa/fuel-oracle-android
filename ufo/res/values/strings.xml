@@ -34,4 +34,30 @@
     <string name="title_activity_stations_list">Stations List</string>
     <string name="action_toggle_view">Change view</string>
     
+    
+    <!-- Car Status Activity -->
+    <string name="status_drive_msg">DRIVING</string>
+    <string name="status_fuel_msg">FUELLING</string>
+    <string name="status_yes_msg">YES</string>
+    <string name="status_no_msg">NO</string>
+    
+    <string name="status_start_drive_time_msg">START DRIVE TIME</string>
+    <string name="status_end_drive_time_msg">END DRIVE TIME</string>
+    
+    <string name="status_start_fuel_time_msg">START Fuel TIME</string>
+    <string name="status_end_fuel_time_msg">END Fuel TIME</string>
+    
+    <string name="status_start_fuel_level_msg">START FUEL LEVEL</string>
+    <string name="status_end_fuel_level_msg">END FUEL LEVEL</string>
+    
+    <string name="status_start_lat_msg">START LAT</string>
+    <string name="status_start_long_msg">START LONG</string>
+    
+    <string name="status_end_lat_msg">END LAT</string>
+    <string name="status_end_long_msg">END LONG</string>
+    
+    <string name="status_duration_msg">DURATION</string>
+    
+    <string name="status_amount_msg">AMOUNT</string>
+    
 </resources>

@@ -9,10 +9,13 @@ import org.biu.ufo.configuration.*;
 import org.biu.ufo.events.EngineSpeedMessage;
 import org.biu.ufo.events.FuelConsumedMessage;
 import org.biu.ufo.events.FuelLevelMessage;
+import org.biu.ufo.events.IgnitionStatusMessage;
 import org.biu.ufo.events.LatitudeMessage;
+import org.biu.ufo.events.LocationMessage;
 import org.biu.ufo.events.LongitudeMessage;
 import org.biu.ufo.events.ObdConnectionLost;
 import org.biu.ufo.events.ObdDeviceAddressChanged;
+import org.biu.ufo.events.ParkingBrakeStatusMessage;
 import org.biu.ufo.events.VehicleSpeedMessage;
 import org.biu.ufo.openxc.VehicleManagerConnector;
 import org.biu.ufo.openxc.VehicleManagerConnector.VehicleManagerConnectorCallback;
@@ -33,9 +36,12 @@ import android.util.Log;
 import com.openxc.measurements.EngineSpeed;
 import com.openxc.measurements.FuelConsumed;
 import com.openxc.measurements.FuelLevel;
+import com.openxc.measurements.IgnitionStatus;
+import com.openxc.measurements.IgnitionStatus.IgnitionPosition;
 import com.openxc.measurements.Latitude;
 import com.openxc.measurements.Longitude;
 import com.openxc.measurements.Measurement;
+import com.openxc.measurements.ParkingBrakeStatus;
 import com.openxc.measurements.UnrecognizedMeasurementTypeException;
 import com.openxc.measurements.VehicleSpeed;
 import com.openxc.remote.VehicleServiceException;
@@ -63,6 +69,9 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 	OttoBus bus;
 
 	private CarGatewayServiceBinder mCarGateway;
+	
+	//for sending lat and long together
+	private LocationMessage locationMessage;
 
 	@Override
 	public void onCreate() {
@@ -82,6 +91,9 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 
 		// Register on bus
 		bus.register(this);
+		
+		
+		locationMessage = new LocationMessage();
 	}
 
 	@Override
@@ -124,7 +136,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 					new NotificationCompat.Builder(this);
 			notificationBuilder.setContentTitle(getString(R.string.app_name))
 			.setContentInfo(getString(R.string.notification_content))
-			.setSmallIcon(R.drawable.ufo_notification_icon_small_light)
+			.setSmallIcon(R.drawable.gasstation)
 			.setContentIntent(pendingIntent);
 
 			startForeground(SERVICE_NOTIFICATION_ID,
@@ -245,6 +257,12 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		public void receive(Measurement measurement) {
 			final Latitude latitude = (Latitude) measurement;
 			post(new LatitudeMessage(latitude));
+			
+			locationMessage.setLatitude(latitude.getValue().doubleValue());
+			if (locationMessage.properLocation()){
+				post(locationMessage);
+				locationMessage = new LocationMessage();
+			}
 		}
 	};
 	
@@ -254,6 +272,12 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		public void receive(Measurement measurement) {
 			final Longitude longitude = (Longitude) measurement;
 			post(new LongitudeMessage(longitude));
+			
+			locationMessage.setLongitude(longitude.getValue().doubleValue());
+			if (locationMessage.properLocation()){
+				post(locationMessage);
+				locationMessage = new LocationMessage();
+			}
 		}
 
 	};
@@ -294,4 +318,5 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		}
 	};
 
+	
 }

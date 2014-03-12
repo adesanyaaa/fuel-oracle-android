@@ -18,9 +18,10 @@ public class FuelLevelMessage {
 	public String mainMessage;
 	public String subMessage_1;
 	public String subMessage_2;
+	public double fuelLevelValue;
 
 	public FuelLevelMessage(FuelLevel fuelLevel){
-		double fuelLevelValue = fuelLevel.getValue().doubleValue();
+		fuelLevelValue = fuelLevel.getValue().doubleValue();
 
 		if(fuelLevelValue < LOW_TANK_LIMIT) {
 			this.background =R.color.danger;

@@ -190,7 +190,7 @@ public class MainActivity extends FragmentActivity {
 			fragment = new FragmentHome_();
 			break;
 		case 1:
-			fragment = new FragmentCarData_();
+			fragment = new FragmentStatusAnalyzer_();//FragmentCarData_();
 			break;
 		case 2:
 			fragment = new FragmentStationsMap_();
