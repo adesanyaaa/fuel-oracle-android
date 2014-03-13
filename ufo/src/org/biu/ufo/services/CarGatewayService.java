@@ -24,7 +24,7 @@ import org.biu.ufo.car.obd.enums.ObdProtocols;
 import org.biu.ufo.car.openxc.VehicleManagerConnector;
 import org.biu.ufo.car.openxc.VehicleManagerConnector.VehicleManagerConnectorCallback;
 import org.biu.ufo.car.openxc.sources.ObdDataSource;
-import org.biu.ufo.control.events.ObdConnectionLost;
+import org.biu.ufo.control.events.connection.ObdConnectionLost;
 
 import android.content.Intent;
 import android.os.Binder;

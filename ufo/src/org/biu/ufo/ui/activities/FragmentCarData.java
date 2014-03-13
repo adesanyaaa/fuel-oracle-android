@@ -6,12 +6,12 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
-import org.biu.ufo.control.events.EngineSpeedMessage;
-import org.biu.ufo.control.events.FuelConsumedMessage;
-import org.biu.ufo.control.events.FuelLevelMessage;
-import org.biu.ufo.control.events.LatitudeMessage;
-import org.biu.ufo.control.events.LongitudeMessage;
-import org.biu.ufo.control.events.VehicleSpeedMessage;
+import org.biu.ufo.control.events.raw.EngineSpeedMessage;
+import org.biu.ufo.control.events.raw.FuelConsumedMessage;
+import org.biu.ufo.control.events.raw.FuelLevelMessage;
+import org.biu.ufo.control.events.raw.LatitudeMessage;
+import org.biu.ufo.control.events.raw.LongitudeMessage;
+import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
 
 import android.support.v4.app.Fragment;
 import android.widget.LinearLayout;
@@ -70,10 +70,10 @@ public class FragmentCarData extends Fragment {
 	@UiThread
 	@Subscribe
 	public void onFuelLevelUpdate(FuelLevelMessage message){
-		fuelLevelLayout.setBackgroundResource(message.background);
-		fuelLevelMainMessage.setText(message.mainMessage);
-		fuelLevelsubMessage1.setText(message.subMessage_1);
-		fuelLevelsubMessage2.setText(message.subMessage_2);
+//		fuelLevelLayout.setBackgroundResource(message.background);
+		fuelLevelMainMessage.setText(String.valueOf(message.getFuelLevelValue()) + "%");
+//		fuelLevelsubMessage1.setText(message.subMessage_1);
+//		fuelLevelsubMessage2.setText(message.subMessage_2);
 	}
 
 	@UiThread

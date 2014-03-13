@@ -4,7 +4,7 @@
             android:title="@string/general_preferences">
         <intent
             android:targetPackage="org.biu.ufo"
-            android:targetClass="org.biu.ufo.SettingsActivity"
+            android:targetClass="org.biu.ufo.ui.activities.SettingsActivity"
             android:action="org.biu.ufo.preferences.GENERAL" />
     </Preference>
     
@@ -12,7 +12,7 @@
             android:title="@string/developers_preferences">
         <intent
             android:targetPackage="org.biu.ufo"
-            android:targetClass="org.biu.ufo.SettingsActivity"
+            android:targetClass="org.biu.ufo.ui.activities.SettingsActivity"
             android:action="org.biu.ufo.preferences.DEVELOPERS" />
     </Preference>
     

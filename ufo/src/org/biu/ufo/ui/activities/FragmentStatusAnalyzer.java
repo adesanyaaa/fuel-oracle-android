@@ -6,14 +6,14 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
-import org.biu.ufo.control.status_analyzer.StatusAnalyzer;
-import org.biu.ufo.control.status_analyzer.commands.EndOfRouteStatusMessage;
-import org.biu.ufo.control.status_analyzer.commands.FuelProcessDetailsMessage;
-import org.biu.ufo.control.status_analyzer.commands.FuellingProcessEndedStatusMessage;
-import org.biu.ufo.control.status_analyzer.commands.FuellingProcessStartedStatusMessage;
-import org.biu.ufo.control.status_analyzer.commands.FuellingProcessStatusMessage;
-import org.biu.ufo.control.status_analyzer.commands.RouteStatusMessage;
-import org.biu.ufo.control.status_analyzer.commands.StartOfRouteStatusMessage;
+import org.biu.ufo.control.Controller;
+import org.biu.ufo.control.events.analyzer.fueling.FuelProcessDetailsMessage;
+import org.biu.ufo.control.events.analyzer.fueling.FuellingProcessEndedStatusMessage;
+import org.biu.ufo.control.events.analyzer.fueling.FuellingProcessStartedStatusMessage;
+import org.biu.ufo.control.events.analyzer.fueling.FuellingProcessStatusMessage;
+import org.biu.ufo.control.events.analyzer.routemonitor.EndOfRouteStatusMessage;
+import org.biu.ufo.control.events.analyzer.routemonitor.RouteStatusMessage;
+import org.biu.ufo.control.events.analyzer.routemonitor.StartOfRouteStatusMessage;
 
 import android.support.v4.app.Fragment;
 import android.widget.TextView;
@@ -26,9 +26,9 @@ public class FragmentStatusAnalyzer extends Fragment {
 	@Bean
 	OttoBus bus;
 	
-	@Bean
-	StatusAnalyzer statusAnalyzer;
-	
+//	@Bean
+//	Controller statusAnalyzer;
+//	
 	
 	@ViewById(R.id.status_main_value)
 	TextView fuelingValue;
@@ -76,13 +76,13 @@ public class FragmentStatusAnalyzer extends Fragment {
 	@Override
 	public void onStart() {
 		super.onStart();
-		statusAnalyzer.init();
+//		statusAnalyzer.init();
 	}
 
 	@Override
 	public void onDestroy(){
 		super.onStop();
-		statusAnalyzer.close();
+//		statusAnalyzer.close();
 	}
 	
 	@UiThread
@@ -101,27 +101,27 @@ public class FragmentStatusAnalyzer extends Fragment {
 	@Subscribe
 	public void onStartRoute(StartOfRouteStatusMessage message){
 		drivingValue.setText(R.string.status_yes_msg);
-		startLatitude.setText(String.valueOf(message.location.latitude));
-		startLongitude.setText(String.valueOf(message.location.longitude));
+		startLatitude.setText(String.valueOf(message.getLocation().getLatitude()));
+		startLongitude.setText(String.valueOf(message.getLocation().getLongitude()));
 	}
 	
 	@UiThread
 	@Subscribe
 	public void onEndRoute(EndOfRouteStatusMessage message){
 		drivingValue.setText(R.string.status_no_msg);
-		endLatitude.setText(String.valueOf(message.location.latitude));
-		endLongitude.setText(String.valueOf(message.location.longitude));
+		endLatitude.setText(String.valueOf(message.location.getLatitude()));
+		endLongitude.setText(String.valueOf(message.location.getLongitude()));
 		
 	}
 	
 	@UiThread
 	@Subscribe
 	public void onRouteDetails(RouteStatusMessage message){
-		endLatitude.setText(String.valueOf(message.endLocation.latitude));
-		endLongitude.setText(String.valueOf(message.endLocation.longitude));
+		endLatitude.setText(String.valueOf(message.endLocation.getLatitude()));
+		endLongitude.setText(String.valueOf(message.endLocation.getLongitude()));
 		
-		startLatitude.setText(String.valueOf(message.startLocation.latitude));
-		startLongitude.setText(String.valueOf(message.startLocation.longitude));
+		startLatitude.setText(String.valueOf(message.startLocation.getLatitude()));
+		startLongitude.setText(String.valueOf(message.startLocation.getLongitude()));
 		
 		
 		duration.setText(String.valueOf(message.duration));

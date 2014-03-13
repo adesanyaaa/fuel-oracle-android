@@ -9,7 +9,7 @@ import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
 import org.biu.ufo.control.events.NearbyStationsChanged;
-import org.biu.ufo.control.rest.Station;
+import org.biu.ufo.rest.Station;
 
 import android.support.v4.app.Fragment;
 import android.widget.ArrayAdapter;

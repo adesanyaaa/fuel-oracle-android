@@ -7,6 +7,7 @@
 
     <!-- Main activity -->
     <string name="title_activity_main">UFO</string>
+    <string name="title_activity_main_old">UFO Legacy</string>
     <string name="action_settings">Settings</string>
 
     <!-- Destination chooser -->

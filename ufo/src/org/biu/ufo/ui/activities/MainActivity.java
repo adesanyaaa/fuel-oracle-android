@@ -112,7 +112,8 @@ public class MainActivity extends FragmentActivity {
 	private static final int HOME = 0;
 	private static final int MAIN = 1;
 	private static final int DEST = 2;
-	private static final int SETTINGS = 3;
+	private static final int STATUS_ANALYZER = 3;
+	private static final int SETTINGS = 4;
 	
 	private void selectItem(int position) {
 		boolean animate = false;
@@ -130,6 +131,9 @@ public class MainActivity extends FragmentActivity {
 		case DEST:
 			fragment = new FragmentDestination_();
 			break;	
+		case STATUS_ANALYZER:
+			fragment = new FragmentStatusAnalyzer_();
+			break;
 		case SETTINGS:
 			openSettings();
 			return;

@@ -9,14 +9,16 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
-import org.biu.ufo.control.events.EngineSpeedMessage;
-import org.biu.ufo.control.events.FuelLevelMessage;
-import org.biu.ufo.control.events.VehicleSpeedMessage;
+import org.biu.ufo.control.events.analyzer.recommendation.FuelNextRecommendation;
+import org.biu.ufo.control.events.raw.EngineSpeedMessage;
+import org.biu.ufo.control.events.raw.FuelLevelMessage;
+import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
 import org.biu.ufo.ui.cards.FuelSuggestionCard;
 import org.biu.ufo.ui.cards.RouteOverviewCard;
 import org.biu.ufo.ui.cards.SquareCarDataCard;
 
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.widget.ScrollView;
 
 import com.squareup.otto.Subscribe;
@@ -85,12 +87,25 @@ public class FragmentMain extends Fragment{
 //		vehicleSpeedCard.setTitle("Vehicle Speed");
 //		vehicleSpeedCard.setTileColor(getActivity().getResources().getColor(R.color.navy_tile));
 	}
+
+	@UiThread
+	@Subscribe
+	public void onFuelNextRecommendation(FuelNextRecommendation message) {
+		Log.d("FragmentMain", "onFuelNextRecommendation");
+		FuelSuggestionCard card = (FuelSuggestionCard)card_fuel_suggestion.getCard();
+		if(message.shouldFuel()) {
+			card.setTitle(message.getTopStation().getAddress());	
+		} else {
+			card.setTitle("all good");
+		}
+		card_fuel_suggestion.refreshCard(card);
+	}
 	
 	@UiThread
 	@Subscribe
 	public void onFuelLevelUpdate(FuelLevelMessage message){
 		SquareCarDataCard card = (SquareCarDataCard)card_fuel_level.getCard();
-		card.setLine1Text(message.mainMessage);
+		card.setLine1Text(String.valueOf(message.getFuelLevelValue()) + " %");
 		card.setLine2Text("");
 		
 //		card.setBackgroundResource(new ColorDrawable(Color.RED));

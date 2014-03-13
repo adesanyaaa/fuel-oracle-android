@@ -7,15 +7,16 @@ import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
 import org.biu.ufo.car.openxc.VehicleManagerConnector;
 import org.biu.ufo.car.openxc.VehicleManagerConnector.VehicleManagerConnectorCallback;
-import org.biu.ufo.control.events.EngineSpeedMessage;
-import org.biu.ufo.control.events.FuelConsumedMessage;
-import org.biu.ufo.control.events.FuelLevelMessage;
-import org.biu.ufo.control.events.LatitudeMessage;
-import org.biu.ufo.control.events.LocationMessage;
-import org.biu.ufo.control.events.LongitudeMessage;
-import org.biu.ufo.control.events.ObdConnectionLost;
-import org.biu.ufo.control.events.ObdDeviceAddressChanged;
-import org.biu.ufo.control.events.VehicleSpeedMessage;
+import org.biu.ufo.control.Controller;
+import org.biu.ufo.control.events.connection.ObdConnectionLost;
+import org.biu.ufo.control.events.connection.ObdDeviceAddressChanged;
+import org.biu.ufo.control.events.raw.EngineSpeedMessage;
+import org.biu.ufo.control.events.raw.FuelConsumedMessage;
+import org.biu.ufo.control.events.raw.FuelLevelMessage;
+import org.biu.ufo.control.events.raw.LatitudeMessage;
+import org.biu.ufo.control.events.raw.LocationMessage;
+import org.biu.ufo.control.events.raw.LongitudeMessage;
+import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
 import org.biu.ufo.services.CarGatewayService.CarGatewayServiceBinder;
 import org.biu.ufo.settings.PreferenceManagerService_;
 
@@ -63,10 +64,13 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 	@Bean
 	OttoBus bus;
 
+	@Bean
+	Controller controller;
+	
 	private CarGatewayServiceBinder mCarGateway;
 	
 	//for sending lat and long together
-	private LocationMessage locationMessage;
+	private LocationMessage locationMessage = new LocationMessage();
 
 	@Override
 	public void onCreate() {
@@ -86,9 +90,8 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 
 		// Register on bus
 		bus.register(this);
-		
-		
-		locationMessage = new LocationMessage();
+				
+		controller.init(); 
 	}
 
 	@Override
@@ -100,6 +103,8 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 	public void onDestroy() {
 		super.onDestroy();
 
+		controller.close();
+		
 		// Unregister from bus
 		bus.unregister(this);
 
@@ -121,7 +126,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 
 		try {
 			Intent intent = new Intent(this,
-					Class.forName("org.biu.ufo.activities.MainActivity_"));
+					Class.forName("org.biu.ufo.ui.activities.MainActivity_"));
 			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
 					Intent.FLAG_ACTIVITY_SINGLE_TOP);
 			PendingIntent pendingIntent = PendingIntent.getActivity(

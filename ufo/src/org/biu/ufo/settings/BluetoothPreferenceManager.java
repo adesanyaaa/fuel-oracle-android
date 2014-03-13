@@ -6,7 +6,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.UiThread;
 import org.biu.ufo.OttoBus;
-import org.biu.ufo.control.events.ObdDeviceAddressChanged;
+import org.biu.ufo.control.events.connection.ObdDeviceAddressChanged;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;

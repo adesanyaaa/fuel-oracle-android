@@ -14,10 +14,10 @@ import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
 import org.biu.ufo.control.events.NearbyStationsChanged;
-import org.biu.ufo.control.rest.Client;
-import org.biu.ufo.control.rest.MGFClient;
-import org.biu.ufo.control.rest.Station;
-import org.biu.ufo.control.rest.UFOClient;
+import org.biu.ufo.rest.Client;
+import org.biu.ufo.rest.MGFClient;
+import org.biu.ufo.rest.Station;
+import org.biu.ufo.rest.UFOClient;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

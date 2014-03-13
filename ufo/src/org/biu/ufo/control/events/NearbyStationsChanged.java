@@ -2,7 +2,7 @@ package org.biu.ufo.control.events;
 
 import java.util.Collection;
 
-import org.biu.ufo.control.rest.Station;
+import org.biu.ufo.rest.Station;
 
 public class NearbyStationsChanged {
 	private Collection<Station> stations;

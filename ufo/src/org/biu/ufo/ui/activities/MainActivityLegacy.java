@@ -14,7 +14,7 @@ import org.androidannotations.annotations.res.StringRes;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
 import org.biu.ufo.control.events.NearbyStationsChanged;
-import org.biu.ufo.control.rest.Station;
+import org.biu.ufo.rest.Station;
 
 import android.content.Intent;
 import android.content.res.Configuration;

@@ -4,20 +4,14 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
-import org.biu.ufo.control.events.DestinationSelected;
 import org.biu.ufo.control.events.SpeechStartCommand;
+import org.biu.ufo.control.events.route.DestinationSelected;
 import org.biu.ufo.model.Place;
-import org.biu.ufo.services.AlwaysListeningSpeechRecognizerService_;
 import org.biu.ufo.storage.PlacesDataStore;
 
 import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.Messenger;
 import android.speech.RecognizerIntent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -28,7 +22,6 @@ import android.widget.Toast;
 import com.squareup.otto.Subscribe;
 
 @EFragment(R.layout.fragment_destination)
-// TODO http://stackoverflow.com/questions/18039429/android-speech-recognition-continuous-service
 public class FragmentDestination extends Fragment {
 	static final int RECOGNIZER_REQ_CODE = 1234;
 	
@@ -38,20 +31,6 @@ public class FragmentDestination extends Fragment {
 	@Bean
 	PlacesDataStore placesDataStore;
 	
-	private int mBindFlag;
-	private Messenger mServiceMessenger;
-
-    /** Defines callbacks for service binding, passed to bindService() */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
 
 	OnClickListener voiceActionListener = new OnClickListener() {		
 		@Override
@@ -77,14 +56,12 @@ public class FragmentDestination extends Fragment {
 	public void onResume() {
 		super.onResume();
 		bus.register(this);
-		getActivity().bindService(new Intent(getActivity(), AlwaysListeningSpeechRecognizerService_.class), mConnection, Context.BIND_AUTO_CREATE);
 	}
 	
 	@Override
 	public void onPause() {
 		super.onPause();
 		bus.unregister(this);
-		getActivity().unbindService(mConnection);
 	}
 	
 	@Override
