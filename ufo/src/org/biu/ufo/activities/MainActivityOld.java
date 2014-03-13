@@ -23,7 +23,6 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
@@ -38,7 +37,7 @@ import com.squareup.otto.Subscribe;
 
 @EActivity(R.layout.activity_main)
 @OptionsMenu(R.menu.main)
-public class MainActivity extends FragmentActivity {
+public class MainActivityOld extends FragmentActivity {
 	public static final String TAG = "MainActivity";
 
 	@ViewById(R.id.drawer_layout)
@@ -59,15 +58,46 @@ public class MainActivity extends FragmentActivity {
 	@Bean
 	OttoBus bus;
 	
+	private List<Station> _stations;
+	private ActionBarDrawerToggle mDrawerToggle;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		// enable ActionBar app icon to behave as action to toggle nav drawer
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setHomeButtonEnabled(true);
+	}
+
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
-		
-		if (savedInstanceState == null) {
-			// on first time display view for first nav item
-			selectItem(0);
+		// Sync the toggle state after onRestoreInstanceState has occurred.
+		mDrawerToggle.syncState();
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		// Pass any configuration change to the drawer toggles
+		mDrawerToggle.onConfigurationChanged(newConfig);
+	}
+
+	@Subscribe
+	public void onStationsData(NearbyStationsChanged event) {
+		if(event.getStations() != null) {
+			_stations = new ArrayList<Station>(event.getStations());
+		} else {
+			_stations = null;
 		}
 	}
+
+	@Produce
+	public NearbyStationsChanged produceStationsData() {
+		return new NearbyStationsChanged(_stations);
+	}
+
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -86,13 +116,60 @@ public class MainActivity extends FragmentActivity {
 		mDrawerList.setAdapter(new ArrayAdapter<String>(this,
 				R.layout.drawer_list_item, mDrawerElemetsTitles));
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+		mDrawerToggle = new ActionBarDrawerToggle(
+				this,                  /* host Activity */
+				mDrawerLayout,         /* DrawerLayout object */
+				R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
+				R.string.drawer_open,  /* "open drawer" description for accessibility */
+				R.string.drawer_close  /* "close drawer" description for accessibility */
+				) {
+			public void onDrawerClosed(View view) {
+				getActionBar().setTitle(mTitle);
+				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+			}
+
+			public void onDrawerOpened(View drawerView) {
+				getActionBar().setTitle(mDrawerTitle);
+				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+			}
+		};
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+		selectItem(0);
+	}
+
+	/* Called whenever we call invalidateOptionsMenu() */
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		// If the nav drawer is open, hide action items related to the content view
+		boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+		
+		MenuItem toggleView = menu.findItem(R.id.action_toggle_view);
+		if(toggleView != null) {
+			toggleView.setVisible(!drawerOpen);
+		}
+		menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
+		return super.onPrepareOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// The action bar home/up action should open or close the drawer.
+		// ActionBarDrawerToggle will take care of this.
+		if (mDrawerToggle.onOptionsItemSelected(item)) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
 	public void setTitle(CharSequence title) {
 		mTitle = title.toString();
+		getActionBar().setTitle(mTitle);
 	}
 
+	@OptionsItem(R.id.action_settings)
 	void openSettings() {
 		startActivity(new Intent(this, SettingsActivity.class));
 	}
@@ -105,47 +182,19 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	@Override
-	public void onBackPressed() {
-	    // if there is a fragment and the back stack of this fragment is not empty,
-	    // then emulate 'onBackPressed' behaviour, because in default, it is not working
-	    FragmentManager fm = getSupportFragmentManager();
-	    for (Fragment frag : fm.getFragments()) {
-	        if (frag != null && frag.isVisible()) {
-	            FragmentManager childFm = frag.getChildFragmentManager();
-	            if (childFm.getBackStackEntryCount() > 0) {
-	                childFm.popBackStack();
-	                return;
-	            }
-	        }
-	    }
-	    super.onBackPressed();
-	}
-
-	private static final int HOME = 0;
-	private static final int MAIN = 1;
-	private static final int DEST = 2;
-	private static final int SETTINGS = 3;
-	
 	private void selectItem(int position) {
-		boolean animate = false;
-		
 		// update the main content by replacing fragments
 		Fragment fragment;
 		switch (position) {
-		case HOME:
+		case 0:
 			fragment = new FragmentHome_();
 			break;
-		case MAIN:
-			fragment = new FragmentMainPane_();
-			animate = true;
+		case 1:
+			fragment = new FragmentStatusAnalyzer_();//FragmentCarData_();
 			break;
-		case DEST:
-			fragment = new FragmentDestination_();
+		case 2:
+			fragment = new FragmentStationsMap_();
 			break;	
-		case SETTINGS:
-			openSettings();
-			return;
 		default:
 			fragment = null;
 			break;
@@ -153,17 +202,11 @@ public class MainActivity extends FragmentActivity {
 
 		if(fragment != null) {
 			FragmentManager fragmentManager = getSupportFragmentManager();
-			fragment.setRetainInstance(true);
-			FragmentTransaction transaction = fragmentManager.beginTransaction();
-			if(animate) {
-				transaction.setCustomAnimations(R.anim.push_left_in, R.anim.push_left_out);
-			}
-			transaction.replace(R.id.content_frame, fragment).commit();			
+			fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();        	
 		}
 
 		// update selected item and title, then close the drawer
 		mDrawerList.setItemChecked(position, true);
-		mDrawerList.setSelection(position);
 		if(position == 0) {
 			setTitle(mDrawerTitle);
 		} else {

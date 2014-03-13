@@ -2,8 +2,9 @@
 <resources>
     <string-array name="drawer_elements">
         <item>Home</item>
-        <item>Car monitor</item>
-        <item>Stations</item>
+        <item>Main</item>
+        <item>Destination</item>
+        <item>Settings</item>
     </string-array>    
     
     <string name="drawer_open">Open navigation drawer</string>

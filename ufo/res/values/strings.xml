@@ -9,6 +9,18 @@
     <string name="title_activity_main">UFO</string>
     <string name="action_settings">Settings</string>
 
+    <!-- Destination chooser -->
+    <string name="enteryourdestination">Where are you going?</string>
+    <string name="accessibility_voice_button">Voice Search</string>
+    <string name="itemdeleted">Item deleted</string>
+    <string name="taptoundo">Tap to undo</string>
+        <plurals name="countdown_seconds">
+        <item quantity="one">Dismissing in 1...</item>
+        <item quantity="other">Dismissing in %d...</item>
+    </plurals>
+    
+    <string name="countdown_dismissing">Dismissing</string>
+    
     <!-- Demo activity -->
     <string name="fuel_next_msg">FUEL NEXT</string>
     <string name="fuel_level">fuel level left</string>
@@ -34,7 +46,6 @@
     <string name="title_activity_stations_list">Stations List</string>
     <string name="action_toggle_view">Change view</string>
     
-    
     <!-- Car Status Activity -->
     <string name="status_drive_msg">DRIVING</string>
     <string name="status_fuel_msg">FUELLING</string>
@@ -59,5 +70,4 @@
     <string name="status_duration_msg">DURATION</string>
     
     <string name="status_amount_msg">AMOUNT</string>
-    
 </resources>
