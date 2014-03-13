@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EService;
 import org.biu.ufo.OttoBus;
-import org.biu.ufo.events.SpeechStartCommand;
+import org.biu.ufo.control.events.SpeechStartCommand;
 
 import android.app.Service;
 import android.content.Context;

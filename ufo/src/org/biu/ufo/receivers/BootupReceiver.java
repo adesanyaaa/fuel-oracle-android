@@ -1,6 +1,6 @@
 package org.biu.ufo.receivers;
 
-import org.biu.ufo.configuration.*;
+import org.biu.ufo.settings.PreferenceManagerService_;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

@@ -42,7 +42,7 @@
         </service>
 
         <!-- UFO services -->
-        <service android:name="org.biu.ufo.configuration.PreferenceManagerService_" />
+        <service android:name="org.biu.ufo.settings.PreferenceManagerService_" />
         <service android:name="org.biu.ufo.services.CarGatewayService_" />
         <service android:name="org.biu.ufo.services.UfoMainService_" />
 
@@ -60,12 +60,12 @@
 
         <!-- Activities -->
         <activity
-            android:name="org.biu.ufo.activities.SettingsActivity"
+            android:name="org.biu.ufo.ui.activities.SettingsActivity"
             android:label="@string/settings" >
         </activity>
         
         <activity
-            android:name="org.biu.ufo.activities.MainActivity_"
+            android:name="org.biu.ufo.ui.activities.MainActivity_"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
