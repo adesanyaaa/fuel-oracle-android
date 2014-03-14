@@ -1,6 +1,15 @@
 package org.biu.ufo.control;
 
 public class Calculator {
+	
+	public static float estimateLitersPer100Km(float metric_speed, float litersPerHour) {
+	    return (100 / metric_speed) * litersPerHour;
+	}
+	
+	public static float estimateMilesPerUSGallon(float metric_speed, float litersPerHour) {
+	    return 235.2f / estimateLitersPer100Km(metric_speed, litersPerHour);
+	}
+
 	public static double distance(double lat1, double lon1, double lat2, double lon2) {
 		double theta = lon1 - lon2;
 		double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));

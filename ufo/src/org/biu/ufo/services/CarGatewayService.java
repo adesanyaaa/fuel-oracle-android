@@ -11,6 +11,8 @@ import org.androidannotations.annotations.UiThread;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.car.obd.commands.BaseObdQueryCommand;
 import org.biu.ufo.car.obd.commands.IObdCommand;
+import org.biu.ufo.car.obd.commands.SpeedObdCommand;
+import org.biu.ufo.car.obd.commands.engine.EngineRPMObdCommand;
 import org.biu.ufo.car.obd.commands.fuel.FuelLevelObdCommand;
 import org.biu.ufo.car.obd.commands.protocol.EchoOffObdCommand;
 import org.biu.ufo.car.obd.commands.protocol.LineFeedOffObdCommand;
@@ -31,7 +33,9 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.openxc.measurements.EngineSpeed;
 import com.openxc.measurements.FuelLevel;
+import com.openxc.measurements.VehicleSpeed;
 
 /**
  * CarGatewayService handles all communication with the Car
@@ -215,6 +219,10 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 	void handleMeasurement(final IObdCommand job) {
 		if(job instanceof FuelLevelObdCommand) {
 			vmCustomDataSource.notifyMeasurement(new FuelLevel(((FuelLevelObdCommand) job).getValue()).toRaw());
+		} else if(job instanceof EngineRPMObdCommand) {
+			vmCustomDataSource.notifyMeasurement(new EngineSpeed(((EngineRPMObdCommand) job).getRPM()).toRaw());
+		} else if(job instanceof SpeedObdCommand) {
+			vmCustomDataSource.notifyMeasurement(new VehicleSpeed(((SpeedObdCommand) job).getMetricSpeed()).toRaw());
 		}				
 	}
 
@@ -246,6 +254,9 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 				if (isActive.get()) {
 					// query
 					addQuery(new FuelLevelObdCommand());
+					addQuery(new EngineRPMObdCommand());
+					addQuery(new SpeedObdCommand(false));
+
 					// run again in 5s
 					runOnBackgroundDelayed(mQueueCommands, 5000);				
 				} else {
