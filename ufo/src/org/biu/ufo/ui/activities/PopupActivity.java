@@ -1,6 +1,7 @@
 package org.biu.ufo.ui.activities;
 
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.UiThread;
 import org.biu.ufo.R;
 
 import android.app.Activity;
@@ -14,13 +15,13 @@ import android.view.WindowManager;
 
 @EActivity(R.layout.card_layout)
 public class PopupActivity extends Activity {
-	    
+	    	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		WindowManager.LayoutParams params = getWindow().getAttributes();
 //		params.x = bounds.left;
-		params.y = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 35, getResources().getDisplayMetrics());;
+		params.y = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, getResources().getDisplayMetrics());;
 
 //		params.height = bounds.bottom - bounds.top;				
 //		params.width = bounds.right - bounds.left;
@@ -29,6 +30,8 @@ public class PopupActivity extends Activity {
 		params.flags = params.flags | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH;	
 		params.flags = params.flags & ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
 		getWindow().setAttributes(params);
+		
+		automaticClosing();
 	}
 	
 	@Override
@@ -58,4 +61,10 @@ public class PopupActivity extends Activity {
     	return super.onKeyDown(keyCode, event);
     };
 
+    @UiThread(delay=5000)
+    public void automaticClosing() {
+    	if(!isFinishing() && !isDestroyed()) {
+    		finish();
+    	}
+    }
 }

@@ -7,74 +7,56 @@ import org.biu.ufo.model.Location;
 
 public class RouteStatusMessage extends StatusMessage{
 	
-	public ArrayList<Location> route;
-	public Location startLocation;
-	public Location endLocation;
-	public long startTime;
-	public long endTime;
-	public long duration;
+	private ArrayList<Location> route;
+	private long startTime;
+	private long endTime;
 	
 	public RouteStatusMessage(){
 		this.route = new ArrayList<Location>();
-		this.time = System.currentTimeMillis();
-		this.message = "ROUTE Details";
+		this.message = "Route details";
 	}
-	
 		
 	public ArrayList<Location> getRoute(){
 		return route;
 	}
 
-
 	public Location getStartLocation() {
-		return startLocation;
+		return route.get(0);
 	}
-
-
-	public void setStartLocation(Location startLocation) {
-		this.startLocation = startLocation;
-	}
-
 
 	public Location getEndLocation() {
-		return endLocation;
+		return getRoute().get(getRoute().size() - 1);
 	}
-
-
-	public void setEndLocation(Location endLocation) {
-		this.endLocation = endLocation;
-	}
-
 
 	public long getStartTime() {
 		return startTime;
 	}
 
-
 	public void setStartTime(long startTime) {
 		this.startTime = startTime;
 	}
-
 
 	public long getEndTime() {
 		return endTime;
 	}
 
-
 	public void setEndTime(long endTime) {
 		this.endTime = endTime;
-		this.time = endTime;
-		this.duration = this.endTime - this.endTime;
 	}
-
 
 	public long getDuration() {
-		return duration;
+		return this.endTime - this.startTime;
+	}
+	
+	public boolean isEnded() {
+		return getEndTime() != 0;
 	}
 
-
-
-	public void setRoute(ArrayList<Location> route) {
-		this.route = route;
+	@Override
+	public long getTime() {
+		if(endTime != 0) {
+			return endTime;
+		}
+		return startTime;
 	}
 }

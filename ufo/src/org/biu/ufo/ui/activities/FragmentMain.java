@@ -11,6 +11,7 @@ import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelNextRecommendation;
 import org.biu.ufo.control.events.analyzer.routemonitor.EstimatedDestination;
+import org.biu.ufo.control.events.analyzer.routemonitor.StartOfRouteStatusMessage;
 import org.biu.ufo.control.events.raw.EngineSpeedMessage;
 import org.biu.ufo.control.events.raw.FuelLevelMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
@@ -64,6 +65,7 @@ public class FragmentMain extends Fragment{
 	@AfterViews
 	void initialize() {
 		RouteOverviewCard routeOverviewCard = new RouteOverviewCard(getActivity());
+		routeOverviewCard.initialize();
 		card_route_overview.setCard(routeOverviewCard);
 		
 		FuelSuggestionCard fuelSuggestionCard = new FuelSuggestionCard(getActivity());
@@ -87,6 +89,18 @@ public class FragmentMain extends Fragment{
 //
 //		vehicleSpeedCard.setTitle("Vehicle Speed");
 //		vehicleSpeedCard.setTileColor(getActivity().getResources().getColor(R.color.navy_tile));
+	}
+	
+	@Subscribe
+	public void onStartOfRouteMessage(StartOfRouteStatusMessage message) {
+		RouteOverviewCard oldCard = (RouteOverviewCard)card_route_overview.getCard();
+		
+		RouteOverviewCard card = new RouteOverviewCard(oldCard.getContext());
+		card.setDestination(oldCard.getDestination());
+		card.setDrivingState(true);
+		card.initialize();
+		
+		card_route_overview.replaceCard(card);
 	}
 
 	@Subscribe

@@ -10,6 +10,7 @@ import org.androidannotations.annotations.res.StringRes;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
 import org.biu.ufo.control.events.route.DestinationSelected;
+import org.biu.ufo.control.events.route.PeekNewDestination;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,6 +31,13 @@ import com.squareup.otto.Subscribe;
 @OptionsMenu(R.menu.main)
 public class MainActivity extends FragmentActivity {
 	public static final String TAG = "MainActivity";
+	
+	private static final int HOME = 0;
+	private static final int MAIN = 1;
+	private static final int DEST = 2;
+	private static final int STATUS_ANALYZER = 3;
+	private static final int SETTINGS = 4;
+	
 
 	@ViewById(R.id.drawer_layout)
 	DrawerLayout mDrawerLayout;
@@ -48,6 +56,10 @@ public class MainActivity extends FragmentActivity {
 
 	@Bean
 	OttoBus bus;
+	
+	public OttoBus getBus() {
+		return bus;
+	}
 	
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
@@ -112,6 +124,15 @@ public class MainActivity extends FragmentActivity {
 	    super.onBackPressed();
 	}
 	
+	
+	@Subscribe
+	public void onPeekNewDestination(PeekNewDestination message) {
+		// TODO: only if current fragment isn't destination!
+		if(!(getCurrentFragment() instanceof FragmentDestination)) {			
+			selectItem(DEST, true);
+		}
+	}
+	
 	@Subscribe
 	public void onDestinationSelected(DestinationSelected message) {
 		// TODO: only if current fragment isn't main!
@@ -124,13 +145,11 @@ public class MainActivity extends FragmentActivity {
 		return getSupportFragmentManager().findFragmentByTag("CURRENT_FRAGMENT");
 	}
 	
-	private static final int HOME = 0;
-	private static final int MAIN = 1;
-	private static final int DEST = 2;
-	private static final int STATUS_ANALYZER = 3;
-	private static final int SETTINGS = 4;
-	
 	private void selectItem(int position) {
+		selectItem(position, false);
+	}
+	
+	private void selectItem(int position, boolean addToBackStack) {
 		boolean animate = false;
 		
 		// update the main content by replacing fragments
@@ -163,6 +182,11 @@ public class MainActivity extends FragmentActivity {
 			FragmentTransaction transaction = fragmentManager.beginTransaction();
 			if(animate) {
 				transaction.setCustomAnimations(R.anim.push_left_in, R.anim.push_left_out);
+			}
+			if(addToBackStack) {
+				transaction.addToBackStack(null);
+			} else {
+				fragmentManager.popBackStack();
 			}
 			transaction.replace(R.id.content_frame, fragment, "CURRENT_FRAGMENT").commit();			
 		}

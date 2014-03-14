@@ -5,7 +5,9 @@ import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardHeader.OnClickCardHeaderOtherButtonListener;
 
 import org.biu.ufo.R;
+import org.biu.ufo.control.events.route.PeekNewDestination;
 import org.biu.ufo.model.Place;
+import org.biu.ufo.ui.activities.MainActivity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,40 +17,58 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class RouteOverviewCard extends Card {
 
     protected TextView mText;
     protected ImageButton mButtonOpenGPS ;
-    protected Place destination;
     
-
+    protected Place destination;
+    protected boolean isDriving;
+    
     public RouteOverviewCard(Context context) {
         super(context, R.layout.card_content_destination_overview);
-        init();
-    }
-        
+        destination = null;
+        isDriving = false;
+    }    
+
+    public Place getDestination() {
+		return destination;
+	}
+    
+    public boolean isDriving() {
+		return isDriving;
+	}
+
     public void setDestination(Place dest) {
         this.destination = dest;
     }
     
-    private void init() {
-        CardHeader header = new CardHeader(getContext());
-        if(destination != null && !TextUtils.isEmpty(destination.getLabel())) {
-            header.setTitle("Driving " +  destination.getLabel());
-        } else {
-            header.setTitle("Driving");        	
+    public void setDrivingState(boolean drivingState) {
+        this.isDriving = drivingState;
+    }
+    
+    private String getHeaderTitle() {
+        String title = "Ready";
+        if(isDriving) {
+        	title = "Driving";
         }
-                
+        if(destination != null && !TextUtils.isEmpty(destination.getLabel())) {
+        	title += " "  + destination.getLabel();
+        } 
+        
+        return title;
+    }
+    
+    public void initialize() {
+        CardHeader header = new CardHeader(getContext());
+        header.setTitle(getHeaderTitle());        	
         header.setOtherButtonDrawable(R.drawable.card_menu_button_rounded_overflow);
         header.setOtherButtonVisible(true);
         header.setOtherButtonClickListener(new OnClickCardHeaderOtherButtonListener() {
-			
 			@Override
-			public void onButtonItemClick(Card arg0, View arg1) {
-				// TODO Auto-generated method stub
-				
+			public void onButtonItemClick(Card card, View view) {
+				((MainActivity)getContext()).getBus().post(new PeekNewDestination());
 			}
 		});
         addCardHeader(header);

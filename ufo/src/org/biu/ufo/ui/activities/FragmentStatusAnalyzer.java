@@ -6,7 +6,6 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
-import org.biu.ufo.control.Controller;
 import org.biu.ufo.control.events.analyzer.fueling.FuelProcessDetailsMessage;
 import org.biu.ufo.control.events.analyzer.fueling.FuellingProcessEndedStatusMessage;
 import org.biu.ufo.control.events.analyzer.fueling.FuellingProcessStartedStatusMessage;
@@ -117,14 +116,14 @@ public class FragmentStatusAnalyzer extends Fragment {
 	@UiThread
 	@Subscribe
 	public void onRouteDetails(RouteStatusMessage message){
-		endLatitude.setText(String.valueOf(message.endLocation.getLatitude()));
-		endLongitude.setText(String.valueOf(message.endLocation.getLongitude()));
+		endLatitude.setText(String.valueOf(message.getEndLocation().getLatitude()));
+		endLongitude.setText(String.valueOf(message.getEndLocation().getLongitude()));
 		
-		startLatitude.setText(String.valueOf(message.startLocation.getLatitude()));
-		startLongitude.setText(String.valueOf(message.startLocation.getLongitude()));
+		startLatitude.setText(String.valueOf(message.getStartLocation().getLatitude()));
+		startLongitude.setText(String.valueOf(message.getStartLocation().getLongitude()));
 		
 		
-		duration.setText(String.valueOf(message.duration));
+		duration.setText(String.valueOf(message.getDuration()));
 	}
 	
 	

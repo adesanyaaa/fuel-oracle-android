@@ -15,6 +15,7 @@ import org.biu.ufo.model.Location;
 import android.os.Handler;
 import android.os.Message;
 
+import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
 
 /**
@@ -38,7 +39,8 @@ public class RouteAnalyzer {
 	@Bean
 	OttoBus bus;
 
-	double refLong, refLat, currentLong, currentLat;
+	Location refLocation;
+	Location currentLocation;
 	double vehicleSpeed = 0;
 	int engineSpeed = 0;
 
@@ -53,17 +55,14 @@ public class RouteAnalyzer {
 		public void handleMessage(Message msg) {
 
 			//naive check that the car is off
-			if (engineSpeed<MIN_ENGINE_SPEED && vehicleSpeed <MIN_VEHICLE_SPEED){
-				driveRoute.endLocation = driveRoute.route.get(driveRoute.route.size() - 1);
+			if (engineSpeed<MIN_ENGINE_SPEED && vehicleSpeed <MIN_VEHICLE_SPEED) {
 				driveRoute.setEndTime(System.currentTimeMillis());
-
-				bus.post(new EndOfRouteStatusMessage(driveRoute.endLocation));
+				bus.post(new EndOfRouteStatusMessage(driveRoute.getEndLocation()));
 				bus.post(driveRoute);
 				firstTimeInit = true;
 				driveStarted = false;
 				durationHandler.removeMessages(1);
-			}else
-			{
+			} else {
 				restartTimer();
 			}
 		}
@@ -73,16 +72,15 @@ public class RouteAnalyzer {
 
 	@Subscribe
 	public void onLocationUpdate(LocationMessage message){
-		currentLong = message.location.getLongitude();
-		currentLat = message.location.getLatitude();
+		currentLocation = new Location(message.location);
+		
 		if (firstTimeInit){
 			firstTimeInit = false;
-			refLong = message.location.getLongitude();
-			refLat = message.location.getLatitude();
+			
+			refLocation = message.location;
 			driveRoute = new RouteStatusMessage();
 			driveRoute.setStartTime(System.currentTimeMillis());
-			driveRoute.setStartLocation(new Location(refLat, refLong));
-			driveRoute.route.add(driveRoute.startLocation);
+			driveRoute.getRoute().add(new Location(refLocation));
 
 		}else{
 			distanceCheck();
@@ -108,31 +106,43 @@ public class RouteAnalyzer {
 	}
 
 	private void distanceCheck(){
-		if (Calculator.distance(currentLat,currentLong, refLat, refLong)>MIN_DISTANCE_KM){
+		if (Calculator.distance(currentLocation, refLocation) > MIN_DISTANCE_KM) {
+			
 			if (!driveStarted){
 				driveStarted = true;
-				bus.post(new StartOfRouteStatusMessage(driveRoute.route.get(0)));
+				bus.post(new StartOfRouteStatusMessage(driveRoute.getStartLocation()));
 			}
 
-			refLat = currentLat;
-			refLong = currentLong;
-			driveRoute.route.add(new Location(currentLat, currentLong));
+			refLocation = new Location(currentLocation);
+			driveRoute.getRoute().add(refLocation);
 			restartTimer();
 
 		}
 	}
 
+	@Produce
+	public StartOfRouteStatusMessage produceStartOfRouteStatusMessage() {
+		if(driveStarted) {
+			return new StartOfRouteStatusMessage(driveRoute.getStartLocation());
+		}
+		return null;
+	}
+	
+	@Produce
+	public EndOfRouteStatusMessage produceEndOfRouteStatusMessage() {
+		if(!driveStarted && driveRoute != null && driveRoute.isEnded()) {
+			return new EndOfRouteStatusMessage(driveRoute.getEndLocation());
+		}
+		return null;
+	}
 
 	/**
 	 * for ending the route.
 	 * if not called within MAX_STATIC_DURATION - the process ended
 	 */
-	private void restartTimer(){
-
+	private void restartTimer() {
 		durationHandler.removeMessages(1);
 		durationHandler.sendEmptyMessageDelayed(1, MAX_STATIC_DURATION);
 	}
-
-
 
 }
