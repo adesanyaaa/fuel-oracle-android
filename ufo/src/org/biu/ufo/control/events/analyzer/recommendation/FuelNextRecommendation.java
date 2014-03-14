@@ -2,12 +2,40 @@ package org.biu.ufo.control.events.analyzer.recommendation;
 
 import java.util.List;
 
+import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
 
 public class FuelNextRecommendation {
-	final List<Station> stations;
+	private long time;
+	Double fuelLevelAtRecommendTime;
+	Location locationAtRecommendTime;
+	List<Station> stations;
+
+	public FuelNextRecommendation() {
+		this.time = System.currentTimeMillis();
+	}
 	
-	public FuelNextRecommendation(List<Station> stations) {
+	public long getTime() {
+		return time;
+	}
+	
+	public void setFuelLevel(double fuelLevel) {
+		this.fuelLevelAtRecommendTime = fuelLevel;
+	}
+	
+	public Double getFuelLevelAtRecommendTime() {
+		return fuelLevelAtRecommendTime;
+	}
+	
+	public void setLocation(Location locationAtRecommendTime) {
+		this.locationAtRecommendTime = locationAtRecommendTime;
+	}
+	
+	public Location getLocationAtRecommendTime() {
+		return locationAtRecommendTime;
+	}
+	
+	public void setStations(List<Station> stations) {
 		this.stations = stations;
 	}
 	
@@ -24,4 +52,6 @@ public class FuelNextRecommendation {
 	public boolean shouldFuel() {
 		return stations != null;
 	}
+	
+	
 }

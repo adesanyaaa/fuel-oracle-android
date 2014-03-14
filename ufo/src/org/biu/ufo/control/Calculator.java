@@ -8,6 +8,10 @@ public class Calculator {
 	    return (100 / metric_speed) * litersPerHour;
 	}
 	
+	public static float getLitersFromUSGallons(float galons) {
+		return 3.78541178f * galons;
+	}	
+
 	public static float estimateMilesPerUSGallon(float metric_speed, float litersPerHour) {
 	    return 235.2f / estimateLitersPer100Km(metric_speed, litersPerHour);
 	}

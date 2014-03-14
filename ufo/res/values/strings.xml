@@ -19,8 +19,25 @@
         <item quantity="one">Dismissing in 1...</item>
         <item quantity="other">Dismissing in %d...</item>
     </plurals>
-    
     <string name="countdown_dismissing">Dismissing</string>
+    
+    <!-- Recommendation card -->
+    <string name="rec_fuel_cost">0</string>
+    <string name="rec_station_name">Station Name</string>
+    
+    <string name="currency_dollar">$</string>
+    <string name="currency_cent">¢</string>
+    <string name="currency_nis">₪</string>
+
+    <string name="measurement_liter">liter</string>
+    <string name="measurement_uk_gal">gal</string>
+    <string name="measurement_us_gal">gal</string>
+    
+    <string name="measurement_km">km</string>
+    <string name="measurement_mile">mile</string>
+    
+    <string name="navigate">Navigate</string>
+    <string name="separator_arrow">→</string>
     
     <!-- Demo activity -->
     <string name="fuel_next_msg">FUEL NEXT</string>

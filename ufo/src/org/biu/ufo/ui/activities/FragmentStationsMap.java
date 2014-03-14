@@ -279,7 +279,7 @@ public class FragmentStationsMap extends Fragment {
 			// Setting the latitude
 			tvLat.setText(markTitle);
 			if (info !=null) {
-				tvLng.setText(info.getPrice() + info.getPriceCurrency());
+				tvLng.setText(info.getPrice() + info.getPriceCurrency().toString());
 				cmp = info.getCompany();
 			}
 

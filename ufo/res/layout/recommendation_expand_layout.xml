@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ *******************************************************************************
+  ~   Copyright (c) 2013-2014 Gabriele Mariotti.
+  ~
+  ~   Licensed under the Apache License, Version 2.0 (the "License");
+  ~   you may not use this file except in compliance with the License.
+  ~   You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~   Unless required by applicable law or agreed to in writing, software
+  ~   distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~  *****************************************************************************
+--><!-- This is the InnerContent of Expand/Collapse Area -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:orientation="vertical">
+
+    <!-- First Line -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Amount of Fuel-->
+        <TextView
+            android:id="@+id/rec_fuel_amount"
+            style="@style/card.expand_simple_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:paddingRight="0dp"
+            android:text="82"
+            android:textSize="30dp" />
+
+        <!-- Fuel measurement-->
+        <TextView
+            android:id="@+id/rec_fuel_measurement"
+            style="@style/card.expand_simple_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:paddingLeft="1dp"
+            android:text="@string/measurement_liter"
+            android:textSize="15dp" />
+
+        <!-- Arrow Separator-->
+        <TextView
+            android:id="@+id/card_arrow"
+            style="@style/card.expand_simple_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="@string/separator_arrow"
+            android:textSize="40dp" />
+
+        <!-- Total Cost-->
+        <TextView
+            android:id="@+id/rec_fuel_total_cost"
+            style="@style/card.expand_simple_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:paddingRight="0dp"
+            android:text="321"
+            android:textSize="30dp" />
+
+        <!-- Cost Currency-->
+        <TextView
+            android:id="@+id/rec_fuel_cost_currency"
+            style="@style/card.expand_simple_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:paddingLeft="1dp"
+            android:text="@string/currency_dollar"
+            android:textSize="15dp" />
+    </LinearLayout>
+
+    <!-- Second Line -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal">
+
+        <!-- Station Address-->
+        <TextView
+            android:id="@+id/rec_station_address"
+            style="@style/card.expand_simple_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:paddingRight="0dp"
+            android:lines="1"
+            android:ellipsize="end"
+            android:text="Default Address"
+            android:textSize="20dp" />
+    </LinearLayout>
+
+    <!-- Third Line -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:orientation="horizontal">
+
+        <!-- Station Distance-->
+        <TextView
+            android:id="@+id/rec_station_distance"
+            style="@style/card.expand_simple_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:paddingRight="0dp"
+            android:text="5"
+            android:textSize="25dp" android:layout_weight="0"/>
+
+        <!-- Distance Measurement-->
+        <TextView
+            android:id="@+id/rec_station_distance_measurement"
+            style="@style/card.expand_simple_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:paddingLeft="0dp"
+            android:text="@string/measurement_km"
+            android:textSize="15dp" android:layout_weight="1"/>
+
+        <!-- Navigate Button-->
+        <Button
+            style="@style/card_action_button"
+            android:id="@+id/rec_navigate_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            android:paddingRight="20dp"
+            android:paddingLeft="20dp"
+            android:background="@drawable/action_button_selector"
+            android:gravity="center"
+            android:text="@string/navigate"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+</LinearLayout>

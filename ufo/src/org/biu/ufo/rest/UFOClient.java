@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.rest.RestService;
+import org.biu.ufo.rest.Station.CapacityUnit;
+import org.biu.ufo.rest.Station.DistanceUnit;
+import org.biu.ufo.rest.Station.PriceCurrency;
 
 @EBean
 public class UFOClient implements Client {
@@ -18,13 +21,21 @@ public class UFOClient implements Client {
 		List<Station> result = new ArrayList<Station>(stations.size());
 		for(org.biu.ufo.rest.internal.ufoserver.Station ufoStation : stations) {
 			Station station = new Station(ufoStation);
+			
 			station.setAddress(ufoStation.address);
-			station.setDistance(String.format("%.2f", ufoStation.distance) + "km");
+			
 			station.setLat(ufoStation.location.latitude);
 			station.setLng(ufoStation.location.longitude);
+
 			station.setCompany(ufoStation.company);
-			station.setPrice(String.format("%.2f", ufoStation.cost));
-			station.setPriceCurrency("\u20AA");
+
+			station.setPrice(ufoStation.cost);
+			station.setPriceCurrency(PriceCurrency.NIS);
+			station.setCapacityUnit(CapacityUnit.LITTERS);
+			
+			station.setDistance((float)ufoStation.distance);
+			station.setDistanceUnit(DistanceUnit.KM);
+			
 			result.add(station);
 		}
 		

@@ -6,12 +6,13 @@ import it.gmariotti.cardslib.library.internal.CardHeader.OnClickCardHeaderOtherB
 
 import org.biu.ufo.R;
 import org.biu.ufo.control.events.route.PeekNewDestination;
+import org.biu.ufo.model.Location;
 import org.biu.ufo.model.Place;
 import org.biu.ufo.ui.activities.MainActivity;
+import org.biu.ufo.ui.utils.NavigationIntent;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,12 +79,9 @@ public class RouteOverviewCard extends Card {
             @Override
             public void onClick(Card card, View view) {
             	if(destination != null) {
-                    String destStr = "waze://?ll=";
-                    destStr += String.valueOf(destination.getAddress().getLatitude());
-                    destStr += ",";
-                    destStr += String.valueOf(destination.getAddress().getLongitude());
-                    destStr += "&navigate=yes";
-                    getContext().startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(destStr)));            		
+                    Intent intent = NavigationIntent.getNavigationIntent(
+                    		new Location(destination.getAddress().getLatitude(), destination.getAddress().getLongitude()));
+                    getContext().startActivity(intent);            		
             	}
             }
         });

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- This is the InnerContent of Header -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <!-- Station Name -->
+
+    <TextView
+        android:id="@+id/rec_station_name"
+        style="@style/card.header_with_items_title"
+
+        android:layout_height="wrap_content"
+        android:paddingLeft="3dp"
+        android:layout_weight="1"
+        android:lines="1"
+        android:ellipsize="end"
+        android:text="@string/rec_station_name"
+        android:layout_width="wrap_content" />
+
+    <!-- Price per Liter -->
+    <TextView
+        android:id="@+id/rec_station_price"
+        style="@style/card.header_with_items_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/rec_fuel_cost"
+        android:lines="1"
+        android:layout_weight="0" />
+
+    <!-- Currency -->
+    <TextView
+        android:id="@+id/rec_station_price_currency"
+        style="@style/card.header_with_items_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="3dp"
+        android:paddingRight="3dp"
+        android:text="@string/currency_cent"
+        android:layout_weight="0"
+        android:textSize="20sp" />
+</LinearLayout>

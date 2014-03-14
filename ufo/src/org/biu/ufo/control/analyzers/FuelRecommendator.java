@@ -25,6 +25,16 @@ import android.util.Log;
 import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
 
+/**
+ * FuelRecommendator
+ * Recommendation generator
+ * 
+ * TODO: only while driving?
+ * TODO: use route estimator and query interest points on the way
+ * 
+ * @author Roee Shlomo
+ *
+ */
 @EBean
 public class FuelRecommendator {
 	public static final String TAG = "FuelRecommendator";
@@ -41,12 +51,11 @@ public class FuelRecommendator {
 	Client stationsClient;
 
 	Handler handler = new Handler();
+	private volatile long currentRequestId;
 	
 	private Location currentLocation;
-	private Double currentFuelLevel;
-	
-	private volatile long currentRequestId;
-	private LastRecommendation lastRecommendation = new LastRecommendation();	
+	private Double currentFuelLevel;	
+	private FuelNextRecommendation lastRecommendation;	
 
 	private void recommendIfNeeded() {
 		if(isLowFuelLevel()) {
@@ -54,15 +63,14 @@ public class FuelRecommendator {
 				recommendNow();
 			}
 		} else {
-//			bus.post(new FuelNextRecommendation(null));
+			lastRecommendation = null;
 		}
 	}
 	
 	public void recommendNow() {
-		lastRecommendation = new LastRecommendation();
-		lastRecommendation.time = System.currentTimeMillis();
-		lastRecommendation.location = new Location(currentLocation.getLatitude(), currentLocation.getLongitude());
-		
+		lastRecommendation = new FuelNextRecommendation();
+		lastRecommendation.setFuelLevel(currentFuelLevel.doubleValue());
+		lastRecommendation.setLocation(new Location(currentLocation));
 		requestNearbyStations();
 	}
 	
@@ -81,7 +89,6 @@ public class FuelRecommendator {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				Log.d(TAG, "fetchStations.run");
 				if(requestId == currentRequestId) {
 					delieverStationsList(stations);
 				}
@@ -89,20 +96,8 @@ public class FuelRecommendator {
 		});
 	}
 
-	@Produce
-	public FuelNextRecommendation produceFuelNextRecommendation() {
-		if(lastRecommendation != null) {
-			return new FuelNextRecommendation(lastRecommendation.stations);			
-		}
-		return new FuelNextRecommendation(null);
-	}
-	
 	void delieverStationsList(final List<Station> stations) {
-		Log.d(TAG, "delieverStationsList");
-		lastRecommendation.stations = stations;
-		bus.post(new FuelNextRecommendation(stations));
-		PopupActivity_.intent(context).flags(Intent.FLAG_ACTIVITY_NEW_TASK).start();
-		
+		Log.d(TAG, "delieverStationsList");		
 //		Collections.sort(stations, new Comparator<Station>() {
 //
 //			@Override
@@ -111,7 +106,11 @@ public class FuelRecommendator {
 //			}
 //			
 //		});
+		lastRecommendation.setStations(stations);
+		bus.post(lastRecommendation);
 		
+		// TODO: this is a popup test! Should make sure MainActivity is not visible!!!
+		PopupActivity_.intent(context).flags(Intent.FLAG_ACTIVITY_NEW_TASK).start();	
 	}
 	
 	private boolean isLowFuelLevel() {
@@ -123,19 +122,28 @@ public class FuelRecommendator {
 		if(currentLocation == null)
 			return false;
 		
-		if(lastRecommendation.location == null)
+		if(lastRecommendation == null)
 			return true;
 		
-		double distance = Calculator.distance(currentLocation.getLatitude(), currentLocation.getLongitude(),
-				lastRecommendation.location.getLatitude(), lastRecommendation.location.getLongitude());
-		
+		double distance = Calculator.distance(currentLocation, lastRecommendation.getLocationAtRecommendTime());
 		return distance > MIN_DISTANCE_BETWEEN_RUNS;
 	}
 
 	private boolean isEnoughTimePassed() {
-		return System.currentTimeMillis() - lastRecommendation.time > MIN_DURATION_BETWEEN_RUNS;
+		if(lastRecommendation == null)
+			return true;
+		
+		return System.currentTimeMillis() - lastRecommendation.getTime() > MIN_DURATION_BETWEEN_RUNS;
 	}
 
+	@Produce
+	public FuelNextRecommendation produceFuelNextRecommendation() {
+		if(lastRecommendation != null && lastRecommendation.getStations() != null) {
+			return lastRecommendation;
+		}
+		return null;
+	}
+	
 	@Subscribe
 	public void onLocationUpdate(LocationMessage message){
 		currentLocation = message.getLocation();
@@ -147,9 +155,4 @@ public class FuelRecommendator {
 		currentFuelLevel = message.getFuelLevelValue();
 	}
 	
-	class LastRecommendation {
-		long time = 0;
-		Location location;
-		List<Station> stations;
-	};
 }
