@@ -109,7 +109,7 @@ public class FragmentDestination extends Fragment {
 	}
 	
 	protected void onPlaceSelected(Place place) {
-		Toast.makeText(getActivity(), place.toString(), Toast.LENGTH_LONG).show();
+//		Toast.makeText(getActivity(), place.toString(), Toast.LENGTH_LONG).show();
 		bus.post(new DestinationSelected(place));
 	}
 

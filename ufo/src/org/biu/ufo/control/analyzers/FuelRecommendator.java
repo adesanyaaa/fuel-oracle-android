@@ -5,6 +5,7 @@ import java.util.List;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.RootContext;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.control.Calculator;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelNextRecommendation;
@@ -14,7 +15,10 @@ import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Client;
 import org.biu.ufo.rest.MGFClient;
 import org.biu.ufo.rest.Station;
+import org.biu.ufo.ui.activities.PopupActivity_;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 
@@ -26,6 +30,9 @@ public class FuelRecommendator {
 	public static final String TAG = "FuelRecommendator";
 	public static final long MIN_DURATION_BETWEEN_RUNS = 5*60*1000;
 	public static final long MIN_DISTANCE_BETWEEN_RUNS = 1000;
+	
+	@RootContext
+	Context context;
 	
 	@Bean
 	OttoBus bus;
@@ -47,7 +54,7 @@ public class FuelRecommendator {
 				recommendNow();
 			}
 		} else {
-			bus.post(new FuelNextRecommendation(null));
+//			bus.post(new FuelNextRecommendation(null));
 		}
 	}
 	
@@ -94,6 +101,8 @@ public class FuelRecommendator {
 		Log.d(TAG, "delieverStationsList");
 		lastRecommendation.stations = stations;
 		bus.post(new FuelNextRecommendation(stations));
+		PopupActivity_.intent(context).flags(Intent.FLAG_ACTIVITY_NEW_TASK).start();
+		
 //		Collections.sort(stations, new Comparator<Station>() {
 //
 //			@Override

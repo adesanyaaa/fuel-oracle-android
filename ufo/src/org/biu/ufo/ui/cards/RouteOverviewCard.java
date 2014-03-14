@@ -25,17 +25,14 @@ public class RouteOverviewCard extends Card {
     
 
     public RouteOverviewCard(Context context) {
-        this(context, null);     
-    }
-    
-    public RouteOverviewCard(Context context, Place destination) {
         super(context, R.layout.card_content_destination_overview);
-        this.destination = destination;
-        
         init();
     }
+        
+    public void setDestination(Place dest) {
+        this.destination = dest;
+    }
     
-
     private void init() {
         CardHeader header = new CardHeader(getContext());
         if(destination != null && !TextUtils.isEmpty(destination.getLabel())) {
@@ -61,7 +58,6 @@ public class RouteOverviewCard extends Card {
             @Override
             public void onClick(Card card, View view) {
             	if(destination != null) {
-                    Toast.makeText(getContext(), "Click Listener card=", Toast.LENGTH_LONG).show();
                     String destStr = "waze://?ll=";
                     destStr += String.valueOf(destination.getAddress().getLatitude());
                     destStr += ",";
@@ -75,7 +71,6 @@ public class RouteOverviewCard extends Card {
 
     @Override
     public void setupInnerViewElements(ViewGroup parent, View view) {
-
         //Retrieve elements
         mText = (TextView) parent.findViewById(R.id.destination_text);
 

@@ -18,6 +18,16 @@
     </style>
     
     <!-- Style for Content ******************************************************-->
+	<style name="Theme.FloatingDialog" parent="@android:style/Theme.Dialog">
+		<item name="android:windowIsFloating">true</item>
+		<item name="android:backgroundDimEnabled">true</item>
+		<item name="android:windowAnimationStyle">@null</item>
+		<item name="android:windowBackground">@android:color/transparent</item>
+	</style>
+	
+	<style name="Theme.FloatingDialog.NoTitle" parent="@style/Theme.FloatingDialog">
+		<item name="android:windowNoTitle">true</item>
+	</style>
 
     <!--Style for Content View-->
     <style name="card.content_outer_layout">

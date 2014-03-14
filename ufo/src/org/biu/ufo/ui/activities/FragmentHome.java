@@ -3,7 +3,7 @@ package org.biu.ufo.ui.activities;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.biu.ufo.R;
-import org.biu.ufo.services.UfoMainService_;
+import org.biu.ufo.services.*;
 
 import android.support.v4.app.Fragment;
 

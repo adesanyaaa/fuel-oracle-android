@@ -10,6 +10,7 @@ import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelNextRecommendation;
+import org.biu.ufo.control.events.analyzer.routemonitor.EstimatedDestination;
 import org.biu.ufo.control.events.raw.EngineSpeedMessage;
 import org.biu.ufo.control.events.raw.FuelLevelMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
@@ -88,13 +89,24 @@ public class FragmentMain extends Fragment{
 //		vehicleSpeedCard.setTileColor(getActivity().getResources().getColor(R.color.navy_tile));
 	}
 
+	@Subscribe
+	public void onEstimatedDestination(EstimatedDestination message) {
+		RouteOverviewCard card = (RouteOverviewCard)card_route_overview.getCard();
+		card.setDestination(message.getPlace());
+		card_route_overview.refreshCard(card);
+	}
+	
 	@UiThread
 	@Subscribe
 	public void onFuelNextRecommendation(FuelNextRecommendation message) {
 		Log.d("FragmentMain", "onFuelNextRecommendation");
 		FuelSuggestionCard card = (FuelSuggestionCard)card_fuel_suggestion.getCard();
 		if(message.shouldFuel()) {
-			card.setTitle(message.getTopStation().getAddress());	
+			if(message.getStations().isEmpty()) {
+				card.setTitle("No nearby stations");	
+			} else {
+				card.setTitle(message.getTopStation().getAddress());					
+			}
 		} else {
 			card.setTitle("all good");
 		}

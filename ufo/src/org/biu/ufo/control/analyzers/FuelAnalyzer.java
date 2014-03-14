@@ -30,7 +30,7 @@ import com.squareup.otto.Subscribe;
 public class FuelAnalyzer {
 	public static final int FUELLING_PROCESS = 1;
 	public static final int FUEL_LOSS_PROCESS = 2;
-	
+
 	//if factors apply - alert on fuel change
 	public static float MIN_PERCENTAGE_CHANGE = 5;	//minimum change in fuel status
 	public static long MAX_FUEL_DURATION_SECONDS = 10;
@@ -38,83 +38,83 @@ public class FuelAnalyzer {
 
 	@Bean
 	OttoBus bus;
-	
+
 	float refFuelLevel;
 	float currentFuelLevel;
-	
+
 	int fuelStatus = 0;
-	
+
 	boolean firstTimeInit = true;
-	
+
 	FuelProcessDetailsMessage details = new FuelProcessDetailsMessage();
 
 	Handler durationHandler = new Handler(){
 
 		@Override
 		public void handleMessage(Message msg) {
-			
+
 			details.setEndFuelLevel(currentFuelLevel);
 			details.setEndTime(System.currentTimeMillis());
-			
+
 			FuellingProcessStatusMessage endProcessMessage;
 			if (msg.what == FUELLING_PROCESS){
 				endProcessMessage = new FuellingProcessEndedStatusMessage();
 			}else {
 				endProcessMessage = new FuelLossProcessEndedStatusMessage();
 			}
-			
+
 			//the process has ended
 			bus.post(endProcessMessage);
 			bus.post(details);
-			
+
 			fuelStatus = 0;
 			firstTimeInit = true;
 		}
 
 	};
 
-	
+
 	@UiThread
 	@Subscribe
 	public void onFuelLevelUpdate(FuelLevelMessage message){
 		if (firstTimeInit){
 			firstTimeInit = false;
 			refFuelLevel= (float) message.getFuelLevelValue();
-			
+
 		}else{
 			currentFuelLevel = (float) message.getFuelLevelValue();
 			fuelDeltaCheck();
 		}
 
 	}
-	
-	
+
+
 	private void fuelDeltaCheck(){
 		float delta_fuel = currentFuelLevel - refFuelLevel;
 		//observable change in fuel level - alert
 		if (Math.abs(delta_fuel) >= MIN_PERCENTAGE_CHANGE) {
-			
+
 			//increase in fuel level
 			if (delta_fuel>0){
-				
+
 				//notify that fuelling process has began
 				if (fuelStatus != FUELLING_PROCESS){
 					bus.post(new FuellingProcessStartedStatusMessage());
 					fuelStatus = FUELLING_PROCESS;
-					
+
 					initFuelDetails();
 				}
-				
-				
+
+
 			}else{//decrease in fuel level - CAUTION!
-				
+
 				//notify that fuelling loss process has began
 				if (fuelStatus != FUEL_LOSS_PROCESS){
 					bus.post(new FuelLossProcessStartedStatusMessage());
 					fuelStatus = FUEL_LOSS_PROCESS;
 					initFuelDetails();
 				}
-				
+
 			}
 			//reset timeout for fuelling process
 			restartTimer();
@@ -122,23 +122,24 @@ public class FuelAnalyzer {
 		//update reference fuel level
 		refFuelLevel = currentFuelLevel;
 	}
+
 	private void initFuelDetails(){
 		details = new FuelProcessDetailsMessage();
 		details.setStartTime(System.currentTimeMillis());
 		details.setStartFuelLevel(refFuelLevel);
 	}
-	
-	
+
+
 	/**
 	 * for ending the current fuel process.
 	 * if not called within MIN_FUEL_DURATION - the process ended
 	 */
 	private void restartTimer(){
-			
+
 		//remove pending messages
 		durationHandler.removeMessages(FUELLING_PROCESS);
 		durationHandler.removeMessages(FUEL_LOSS_PROCESS);
-		
+
 		//set new one
 		durationHandler.sendEmptyMessageDelayed(fuelStatus, MAX_FUEL_DURATION);
 	}

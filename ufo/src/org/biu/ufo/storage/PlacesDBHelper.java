@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class PlacesDBHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "places.db";
-	private static final int DATABASE_VERSION = 4;
+	private static final int DATABASE_VERSION = 5;
 
 	public static final String TABLE_HISTORY = "hostory";
 
@@ -27,7 +27,7 @@ public class PlacesDBHelper extends SQLiteOpenHelper {
 		String CREATE_HISTORY = "create table "
 				+ TABLE_HISTORY + "(" 
 				+ COLUMN_ID + " INTEGER primary key autoincrement, " 
-				+ COLUMN_ADDRESS + " TEXT not null,"
+				+ COLUMN_ADDRESS + " TEXT not null unique on conflict ignore,"
 				+ COLUMN_LABEL + " TEXT not null,"
 				+ COLUMN_LATITUDE + " REAL not null,"
 				+ COLUMN_LONGITUDE + " REAL not null"

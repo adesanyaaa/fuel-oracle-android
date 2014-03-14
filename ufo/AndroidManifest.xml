@@ -76,7 +76,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-       
+        
+       	<activity android:name="org.biu.ufo.ui.activities.PopupActivity_"
+       	    android:windowSoftInputMode="stateHidden"
+       	    android:launchMode="singleInstance"
+       	    android:configChanges="orientation"
+       	    android:excludeFromRecents="true"
+       	    android:enabled="true"
+       	    android:theme="@style/Theme.FloatingDialog.NoTitle" />
+        
         <activity
             android:name="org.biu.ufo.ui.activities.MainActivityLegacy_"
             android:label="@string/title_activity_main_old" >

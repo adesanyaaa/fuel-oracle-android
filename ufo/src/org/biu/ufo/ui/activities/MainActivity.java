@@ -9,6 +9,7 @@ import org.androidannotations.annotations.res.StringArrayRes;
 import org.androidannotations.annotations.res.StringRes;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
+import org.biu.ufo.control.events.route.DestinationSelected;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +23,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.squareup.otto.Subscribe;
 
 @EActivity(R.layout.activity_main)
 @OptionsMenu(R.menu.main)
@@ -108,7 +111,19 @@ public class MainActivity extends FragmentActivity {
 	    }
 	    super.onBackPressed();
 	}
+	
+	@Subscribe
+	public void onDestinationSelected(DestinationSelected message) {
+		// TODO: only if current fragment isn't main!
+		if(!(getCurrentFragment() instanceof FragmentMain)) {			
+			selectItem(MAIN);
+		}
+	}
 
+	private Fragment getCurrentFragment() {
+		return getSupportFragmentManager().findFragmentByTag("CURRENT_FRAGMENT");
+	}
+	
 	private static final int HOME = 0;
 	private static final int MAIN = 1;
 	private static final int DEST = 2;
@@ -149,7 +164,7 @@ public class MainActivity extends FragmentActivity {
 			if(animate) {
 				transaction.setCustomAnimations(R.anim.push_left_in, R.anim.push_left_out);
 			}
-			transaction.replace(R.id.content_frame, fragment).commit();			
+			transaction.replace(R.id.content_frame, fragment, "CURRENT_FRAGMENT").commit();			
 		}
 
 		// update selected item and title, then close the drawer
