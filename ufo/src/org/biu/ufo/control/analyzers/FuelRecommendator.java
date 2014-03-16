@@ -62,7 +62,7 @@ public class FuelRecommendator implements IAnalyzer {
 
 	Controller controller;
 	
-//	Handler handler = new Handler();
+	Handler handler = new Handler();
 	private volatile long currentRequestId;
 	private volatile int pendingRequests;
 	
@@ -149,20 +149,17 @@ public class FuelRecommendator implements IAnalyzer {
 
 		final float distance = 1; // in KM
 		final List<Station> stations = stationsClient.getStations(String.valueOf(lat), String.valueOf(lng), distance);
-//		handler.post(new Runnable() {
-//			@Override
-//			public void run() {
-//				if(requestId == currentRequestId) {
-//					delieverStationsList(stations);
-//				}
-//			}
-//		});
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				if(requestId == currentRequestId) {
+					delieverStationsList(stations);
+				}
+			}
+		});
 	}
 
-	@UiThread
 	void delieverStationsList(final List<Station> stations) {
-//		if(requestId != currentRequestId)
-//			return;
 		Log.d(TAG, "delieverStationsList");		
 
 		if(stations != null) {
