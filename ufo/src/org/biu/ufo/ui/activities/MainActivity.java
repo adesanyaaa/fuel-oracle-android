@@ -210,11 +210,11 @@ public class MainActivity extends FragmentActivity {
 		// update selected item and title, then close the drawer
 		mDrawerList.setItemChecked(position, true);
 		mDrawerList.setSelection(position);
-		if(position == 0) {
-			setTitle(mDrawerTitle);
-		} else {
-			setTitle(mDrawerElemetsTitles[position]);        	
-		}
+//		if(position == 0) {
+//			setTitle(mDrawerTitle);
+//		} else {
+//			setTitle(mDrawerElemetsTitles[position]);        	
+//		}
 		mDrawerLayout.closeDrawer(mDrawerList);
 	}
 

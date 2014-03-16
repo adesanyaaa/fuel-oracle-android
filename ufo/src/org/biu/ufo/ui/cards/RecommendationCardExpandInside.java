@@ -24,7 +24,7 @@ public class RecommendationCardExpandInside extends CardExpand {
 
 	private String stationAddress;
 
-	private float stationDistance;
+	private double stationDistance;
 	private int stationDistanceUnitResId;
 
 	private Location location;
@@ -89,7 +89,7 @@ public class RecommendationCardExpandInside extends CardExpand {
 		this.stationAddress = stationAddress;
 	}
 
-	public void setStationDistance(float stationDistance) {
+	public void setStationDistance(double stationDistance) {
 		this.stationDistance = stationDistance;
 	}
 

@@ -27,9 +27,16 @@ public class Controller {
 	RouteEstimator routeEstimator;
 		
 	public void init(){
+		routeAnalyzer.setController(this);
 		routeAnalyzer.start();
+		
+		routeEstimator.setController(this);
 		routeEstimator.start();
+		
+		fuelAnalyzer.setController(this);
 		fuelAnalyzer.start();
+		
+		fuelingRecommendator.setController(this);
 		fuelingRecommendator.start();
 	}
 	

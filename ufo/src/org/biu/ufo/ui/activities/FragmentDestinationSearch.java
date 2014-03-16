@@ -64,6 +64,8 @@ class FragmentDestinationSearch extends Fragment {
 
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+		    	inputMethodManager.hideSoftInputFromWindow(searchView.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+
 				Place place = (Place) adapterView.getItemAtPosition(position);
 				parent.placesDataStore.storePlace(place);
 				parent.onPlaceSelected(place);
@@ -91,7 +93,7 @@ class FragmentDestinationSearch extends Fragment {
 		});
 		searchView.requestFocus();
 	}
-	
+		
 	protected void constraintChanged(String constraint) {
 		searchAdapter.getFilter().filter(constraint);
 	}

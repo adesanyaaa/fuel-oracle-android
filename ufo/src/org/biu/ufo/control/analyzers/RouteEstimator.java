@@ -91,6 +91,7 @@ public class RouteEstimator implements IAnalyzer {
 		lastRouteFetchTime = 0;
 		
 		// Clear stop points
+		routeParts = new LinkedList<RouteSummaryMessage>();
 		stopPoints = new LinkedList<RouteEstimator.WayPoint>();
 	}
 
@@ -169,6 +170,7 @@ public class RouteEstimator implements IAnalyzer {
 		double latitude = message.getPlace().getAddress().getLatitude();
 		double longitude = message.getPlace().getAddress().getLongitude();
 		
+		destPoint = new WayPoint();
 		destPoint.location = new Location(latitude, longitude);
 		destPoint.place = message.getPlace();
 		isDestLocationEstimated = false;
@@ -186,6 +188,9 @@ public class RouteEstimator implements IAnalyzer {
 	 */
 	private void getNewRouteEstimation() {
 		clearEstimatedRoute();
+		
+		if(currentLocation == null)
+			return;
 		
 		Routing routing = new Routing(TravelMode.DRIVING);
 		routing.registerListener(new RoutingListener() {
@@ -282,7 +287,7 @@ public class RouteEstimator implements IAnalyzer {
 
 	@Produce
 	public EstimatedDestinationMessage produceEstimatedDestination() {
-		if(destPoint.place != null) {
+		if(destPoint != null && destPoint.place != null) {
 			return new EstimatedDestinationMessage(destPoint.place, isDestLocationEstimated);			
 		}
 		return null;

@@ -16,7 +16,7 @@ public class Station {
 	private PriceCurrency priceCurrency;
 	private CapacityUnit capacityUnit;
 	
-	private float distance;
+	private double distance;
 	private DistanceUnit distanceUnit;
 	
 	public Station(Object original) {
@@ -83,11 +83,11 @@ public class Station {
 		this.capacityUnit = capacityUnit;
 	}
 
-	public float getDistance() {
+	public double getDistance() {
 		return distance;
 	}
 
-	public void setDistance(float distance) {
+	public void setDistance(double distance) {
 		this.distance = distance;
 	}
 

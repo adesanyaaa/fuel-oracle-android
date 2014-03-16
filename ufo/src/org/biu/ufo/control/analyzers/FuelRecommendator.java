@@ -6,6 +6,7 @@ import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
+import org.androidannotations.annotations.UiThread;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.control.Calculator;
 import org.biu.ufo.control.Controller;
@@ -17,6 +18,7 @@ import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Client;
 import org.biu.ufo.rest.MGFClient;
 import org.biu.ufo.rest.Station;
+import org.biu.ufo.rest.Station.DistanceUnit;
 import org.biu.ufo.ui.activities.PopupActivity_;
 
 import android.content.Context;
@@ -60,7 +62,7 @@ public class FuelRecommendator implements IAnalyzer {
 
 	Controller controller;
 	
-	Handler handler = new Handler();
+//	Handler handler = new Handler();
 	private volatile long currentRequestId;
 	private volatile int pendingRequests;
 	
@@ -116,11 +118,15 @@ public class FuelRecommendator implements IAnalyzer {
 			return;
 		}
 		
-		generateStationsRequestId();		
+		generateStationsRequestId();
 		
+		Log.d(TAG, "onEstimatedRouteMessage got " + message.getEstimatedRoute().size() + " points");
+
 		int numberOfRequests = 0;
 		LatLng lastPoint = new LatLng(0, 0);
+		int testCounted = 0;
 		for(LatLng point : message.getEstimatedRoute()) {
+			++testCounted;
 			if(Calculator.distance(lastPoint, point) > MIN_DISTANCE_BETWEEN_STATIONS_REQUEST_POINTS) {
 				requestNearbyStations(point.latitude, point.longitude);
 				++numberOfRequests;
@@ -131,6 +137,9 @@ public class FuelRecommendator implements IAnalyzer {
 				break;
 			}
 		}
+		
+		Log.d(TAG, "onEstimatedRouteMessage queried " + numberOfRequests + " points. Last at pos=" + testCounted);
+
 	}
 	
 
@@ -140,17 +149,20 @@ public class FuelRecommendator implements IAnalyzer {
 
 		final float distance = 1; // in KM
 		final List<Station> stations = stationsClient.getStations(String.valueOf(lat), String.valueOf(lng), distance);
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if(requestId == currentRequestId) {
-					delieverStationsList(stations);
-				}
-			}
-		});
+//		handler.post(new Runnable() {
+//			@Override
+//			public void run() {
+//				if(requestId == currentRequestId) {
+//					delieverStationsList(stations);
+//				}
+//			}
+//		});
 	}
 
+	@UiThread
 	void delieverStationsList(final List<Station> stations) {
+//		if(requestId != currentRequestId)
+//			return;
 		Log.d(TAG, "delieverStationsList");		
 
 		if(stations != null) {
@@ -159,11 +171,16 @@ public class FuelRecommendator implements IAnalyzer {
 		
 		--pendingRequests;
 		if(pendingRequests == 0) {
+			// Fix distance
+			for(Station station : lastRecommendation.getStations()) {
+				station.setDistanceUnit(DistanceUnit.KM);
+				station.setDistance(Calculator.distance(currentLocation, new Location(station.getLat(), station.getLng())));
+			}
 			bus.post(lastRecommendation);
 		}
 		
 		// TODO: this is a popup test! Should make sure MainActivity is not visible!!!
-		PopupActivity_.intent(context).flags(Intent.FLAG_ACTIVITY_NEW_TASK).start();	
+//		PopupActivity_.intent(context).flags(Intent.FLAG_ACTIVITY_NEW_TASK).start();	
 	}
 	
 	private boolean isLowFuelLevel() {
