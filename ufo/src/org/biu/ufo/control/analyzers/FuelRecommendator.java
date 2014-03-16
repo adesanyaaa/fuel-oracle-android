@@ -43,9 +43,10 @@ public class FuelRecommendator implements IAnalyzer {
 	
 	public static final boolean ONLY_NEARBY = false;	// Set to false on final release
 	
-	public static final long MIN_DURATION_BETWEEN_RUNS = 5*60*1000;	// 5 Minutes
-	public static final long MIN_DISTANCE_BETWEEN_RUNS = 1;	// 1 KM
-	public static final float MIN_DISTANCE_BETWEEN_PATH_POINTS = 1.5f;	// 1.5 KM
+	public static final long MAX_STATIONS_REQUESTS = 10;
+	public static final float MIN_DISTANCE_BETWEEN_STATIONS_REQUEST_POINTS = 1.5f;	// 1.5 KM
+	public static final long MIN_DURATION_BETWEEN_RECOMMENDATIONS = 5*60*1000;	// 5 Minutes
+	public static final long MIN_DISTANCE_BETWEEN_RECOMMENDATIONS = 1;	// 1 KM
 	
 	
 	@RootContext
@@ -116,11 +117,18 @@ public class FuelRecommendator implements IAnalyzer {
 		}
 		
 		generateStationsRequestId();		
+		
+		int numberOfRequests = 0;
 		LatLng lastPoint = new LatLng(0, 0);
 		for(LatLng point : message.getEstimatedRoute()) {
-			if(Calculator.distance(lastPoint, point) > MIN_DISTANCE_BETWEEN_PATH_POINTS) {
+			if(Calculator.distance(lastPoint, point) > MIN_DISTANCE_BETWEEN_STATIONS_REQUEST_POINTS) {
 				requestNearbyStations(point.latitude, point.longitude);
+				++numberOfRequests;
 				lastPoint = point;
+			}
+			
+			if(numberOfRequests >= MAX_STATIONS_REQUESTS) {
+				break;
 			}
 		}
 	}
@@ -171,14 +179,14 @@ public class FuelRecommendator implements IAnalyzer {
 			return true;
 		
 		double distance = Calculator.distance(currentLocation, lastRecommendation.getLocationAtRecommendTime());
-		return distance > MIN_DISTANCE_BETWEEN_RUNS;
+		return distance > MIN_DISTANCE_BETWEEN_RECOMMENDATIONS;
 	}
 
 	private boolean isEnoughTimePassed() {
 		if(lastRecommendation == null)
 			return true;
 		
-		return System.currentTimeMillis() - lastRecommendation.getTime() > MIN_DURATION_BETWEEN_RUNS;
+		return System.currentTimeMillis() - lastRecommendation.getTime() > MIN_DURATION_BETWEEN_RECOMMENDATIONS;
 	}
 
 	@Subscribe
