@@ -1,11 +1,11 @@
-package org.biu.ufo.control.events.route;
+package org.biu.ufo.control.events.user;
 
 import org.biu.ufo.model.Place;
 
-public class DestinationSelected {
+public class DestinationSelectedMessage {
 	private Place place;
 	
-	public DestinationSelected(Place place) {
+	public DestinationSelectedMessage(Place place) {
 		this.place = place;
 	}
 	

@@ -9,8 +9,9 @@ import org.androidannotations.annotations.res.StringArrayRes;
 import org.androidannotations.annotations.res.StringRes;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
-import org.biu.ufo.control.events.route.DestinationSelected;
-import org.biu.ufo.control.events.route.PeekNewDestination;
+import org.biu.ufo.control.events.user.DestinationSelectedMessage;
+import org.biu.ufo.control.events.user.PeekNewDestinationMessage;
+import org.biu.ufo.control.events.user.ShowRecommendationsMessage;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,6 +38,10 @@ public class MainActivity extends FragmentActivity {
 	private static final int DEST = 2;
 	private static final int STATUS_ANALYZER = 3;
 	private static final int SETTINGS = 4;
+	
+	private static final int RECOMMENDATIONS = 101;
+
+	
 	
 
 	@ViewById(R.id.drawer_layout)
@@ -126,7 +131,7 @@ public class MainActivity extends FragmentActivity {
 	
 	
 	@Subscribe
-	public void onPeekNewDestination(PeekNewDestination message) {
+	public void onPeekNewDestination(PeekNewDestinationMessage message) {
 		// TODO: only if current fragment isn't destination!
 		if(!(getCurrentFragment() instanceof FragmentDestination)) {			
 			selectItem(DEST, true);
@@ -134,7 +139,15 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	@Subscribe
-	public void onDestinationSelected(DestinationSelected message) {
+	public void onShowRecommendationsMessage(ShowRecommendationsMessage message) {
+		// TODO: only if current fragment isn't destination!
+		if(!(getCurrentFragment() instanceof FragmentRecommendationsList)) {			
+			selectItem(RECOMMENDATIONS, true);
+		}
+	}
+	
+	@Subscribe
+	public void onDestinationSelected(DestinationSelectedMessage message) {
 		// TODO: only if current fragment isn't main!
 		if(!(getCurrentFragment() instanceof FragmentMain)) {			
 			selectItem(MAIN);
@@ -167,6 +180,9 @@ public class MainActivity extends FragmentActivity {
 			break;	
 		case STATUS_ANALYZER:
 			fragment = new FragmentStatusAnalyzer_();
+			break;
+		case RECOMMENDATIONS:
+			fragment = new FragmentRecommendationsList_();
 			break;
 		case SETTINGS:
 			openSettings();

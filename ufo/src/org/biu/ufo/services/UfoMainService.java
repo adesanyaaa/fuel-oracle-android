@@ -8,8 +8,8 @@ import org.biu.ufo.R;
 import org.biu.ufo.car.openxc.VehicleManagerConnector;
 import org.biu.ufo.car.openxc.VehicleManagerConnector.VehicleManagerConnectorCallback;
 import org.biu.ufo.control.Controller;
-import org.biu.ufo.control.events.connection.ObdConnectionLost;
-import org.biu.ufo.control.events.connection.ObdDeviceAddressChanged;
+import org.biu.ufo.control.events.connection.ObdConnectionLostMessage;
+import org.biu.ufo.control.events.connection.ObdDeviceAddressChangedMessage;
 import org.biu.ufo.control.events.raw.EngineSpeedMessage;
 import org.biu.ufo.control.events.raw.FuelConsumedMessage;
 import org.biu.ufo.control.events.raw.FuelLevelMessage;
@@ -197,7 +197,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 	}
 
 	@Subscribe 
-	public void onObdDeviceAddressChanged(final ObdDeviceAddressChanged event) {
+	public void onObdDeviceAddressChanged(final ObdDeviceAddressChangedMessage event) {
 		Log.e(TAG, "OBD device changed");
 		if(mCarGateway != null) {
 			mCarGateway.stop();
@@ -216,7 +216,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 	}
 
 	@Subscribe 
-	public void onObdConnectionLost(final ObdConnectionLost event) {
+	public void onObdConnectionLost(final ObdConnectionLostMessage event) {
 		Log.e(TAG, "OBD connection lost");
 	}
 

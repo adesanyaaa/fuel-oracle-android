@@ -17,7 +17,7 @@ import org.biu.ufo.control.events.analyzer.routemonitor.RouteCompletedMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteSummaryMessage;
 import org.biu.ufo.control.events.raw.LocationMessage;
-import org.biu.ufo.control.events.route.DestinationSelected;
+import org.biu.ufo.control.events.user.DestinationSelectedMessage;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.model.Place;
 
@@ -165,7 +165,7 @@ public class RouteEstimator implements IAnalyzer {
 	 * @param message
 	 */
 	@Subscribe
-	public void onDestinationSelected(DestinationSelected message) {
+	public void onDestinationSelected(DestinationSelectedMessage message) {
 		double latitude = message.getPlace().getAddress().getLatitude();
 		double longitude = message.getPlace().getAddress().getLongitude();
 		

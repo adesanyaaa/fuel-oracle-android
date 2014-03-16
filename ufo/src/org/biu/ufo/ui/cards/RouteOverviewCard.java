@@ -5,7 +5,7 @@ import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardHeader.OnClickCardHeaderOtherButtonListener;
 
 import org.biu.ufo.R;
-import org.biu.ufo.control.events.route.PeekNewDestination;
+import org.biu.ufo.control.events.user.PeekNewDestinationMessage;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.model.Place;
 import org.biu.ufo.ui.activities.MainActivity;
@@ -31,6 +31,7 @@ public class RouteOverviewCard extends Card {
         super(context, R.layout.card_content_destination_overview);
         destination = null;
         isDriving = false;
+        initialize();
     }    
 
     public Place getDestination() {
@@ -49,7 +50,7 @@ public class RouteOverviewCard extends Card {
         this.isDriving = drivingState;
     }
     
-    private String getHeaderTitle() {
+    public String getHeaderTitle() {
         String title = "Ready";
         if(isDriving) {
         	title = "Driving";
@@ -61,7 +62,7 @@ public class RouteOverviewCard extends Card {
         return title;
     }
     
-    public void initialize() {
+    private void initialize() {
         CardHeader header = new CardHeader(getContext());
         header.setTitle(getHeaderTitle());        	
         header.setOtherButtonDrawable(R.drawable.card_menu_button_rounded_overflow);
@@ -69,7 +70,7 @@ public class RouteOverviewCard extends Card {
         header.setOtherButtonClickListener(new OnClickCardHeaderOtherButtonListener() {
 			@Override
 			public void onButtonItemClick(Card card, View view) {
-				((MainActivity)getContext()).getBus().post(new PeekNewDestination());
+				((MainActivity)getContext()).getBus().post(new PeekNewDestinationMessage());
 			}
 		});
         addCardHeader(header);

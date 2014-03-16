@@ -65,7 +65,6 @@ public class FragmentMain extends Fragment {
 	@AfterViews
 	void initialize() {
 		RouteOverviewCard routeOverviewCard = new RouteOverviewCard(getActivity());
-		routeOverviewCard.initialize();
 		card_route_overview.setCard(routeOverviewCard);
 		
 		FuelSuggestionCard fuelSuggestionCard = new FuelSuggestionCard(getActivity());
@@ -79,32 +78,26 @@ public class FragmentMain extends Fragment {
 		
 		SquareCarDataCard vehicleCard = new SquareCarDataCard(getActivity(), "Speed", 0);
 		card_vehicle_speed.setCard(vehicleCard);
-		
-//		fuelLevelCard.setTitle("Fuel Level");
-//		fuelLevelCard.setImageResource(R.drawable.gasstation);
-//		fuelLevelCard.setTileColor(getActivity().getResources().getColor(R.color.green_tile));
-//		
-//		engineSpeedCard.setTitle("Engine Speed");
-//		engineSpeedCard.setTileColor(getActivity().getResources().getColor(R.color.navy_tile));
-//
-//		vehicleSpeedCard.setTitle("Vehicle Speed");
-//		vehicleSpeedCard.setTileColor(getActivity().getResources().getColor(R.color.navy_tile));
 	}
 	
 	@Subscribe
-	public void onStartOfRouteMessage(RouteStartMessage message) {
-		RouteOverviewCard oldCard = (RouteOverviewCard)card_route_overview.getCard();
-		
-		RouteOverviewCard card = new RouteOverviewCard(oldCard.getContext());
-		card.setDestination(oldCard.getDestination());
+	public void onRouteStartMessage(RouteStartMessage message) {		
+		RouteOverviewCard card = (RouteOverviewCard)card_route_overview.getCard();
 		card.setDrivingState(true);
-		card.initialize();
-		
-		card_route_overview.replaceCard(card);
+		card.setTitle(card.getHeaderTitle());
+		card_route_overview.refreshCard(card);
+	}
+	
+	@Subscribe
+	public void onRouteStopMessage(RouteStartMessage message) {
+		RouteOverviewCard card = (RouteOverviewCard)card_route_overview.getCard();
+		card.setDrivingState(false);
+		card.setTitle(card.getHeaderTitle());
+		card_route_overview.refreshCard(card);
 	}
 
 	@Subscribe
-	public void onEstimatedDestination(EstimatedDestinationMessage message) {
+	public void onEstimatedDestinationMessage(EstimatedDestinationMessage message) {
 		RouteOverviewCard card = (RouteOverviewCard)card_route_overview.getCard();
 		card.setDestination(message.getPlace());
 		card_route_overview.refreshCard(card);
@@ -112,18 +105,19 @@ public class FragmentMain extends Fragment {
 	
 	@UiThread
 	@Subscribe
-	public void onFuelNextRecommendation(FuelRecommendationMessage message) {
+	public void onFuelRecommendationMessage(FuelRecommendationMessage message) {
 		Log.d("FragmentMain", "onFuelNextRecommendation");
 		FuelSuggestionCard card = (FuelSuggestionCard)card_fuel_suggestion.getCard();
 		if(message.shouldFuel()) {
 			if(message.getStations().isEmpty()) {
-				card.setTitle("No nearby stations");	
+				card.setTitle("No stations on near path");	
 			} else {
 				card.setTitle(message.getTopStation().getAddress());					
 			}
 		} else {
-			card.setTitle("all good");
+			card.setTitle("All good");
 		}
+		
 		card_fuel_suggestion.refreshCard(card);
 	}
 	

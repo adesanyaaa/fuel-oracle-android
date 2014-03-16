@@ -5,7 +5,7 @@ import org.androidannotations.annotations.EFragment;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
 import org.biu.ufo.control.events.SpeechStartCommand;
-import org.biu.ufo.control.events.route.DestinationSelected;
+import org.biu.ufo.control.events.user.DestinationSelectedMessage;
 import org.biu.ufo.model.Place;
 import org.biu.ufo.storage.PlacesDataStore;
 
@@ -110,7 +110,7 @@ public class FragmentDestination extends Fragment {
 	
 	protected void onPlaceSelected(Place place) {
 //		Toast.makeText(getActivity(), place.toString(), Toast.LENGTH_LONG).show();
-		bus.post(new DestinationSelected(place));
+		bus.post(new DestinationSelectedMessage(place));
 	}
 
 

@@ -6,7 +6,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.UiThread;
 import org.biu.ufo.OttoBus;
-import org.biu.ufo.control.events.connection.ObdDeviceAddressChanged;
+import org.biu.ufo.control.events.connection.ObdDeviceAddressChangedMessage;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -63,11 +63,11 @@ public class BluetoothPreferenceManager extends VehiclePreferenceManager {
                 getVehicleManager().removeVehicleInterface(BluetoothVehicleInterface.class);
                 
                 // But use OBD connection
-                bus.post(new ObdDeviceAddressChanged(deviceAddress));                	
+                bus.post(new ObdDeviceAddressChangedMessage(deviceAddress));                	
 
         	} else {
         		// Stop the OBD connection
-        		bus.post(new ObdDeviceAddressChanged(null));
+        		bus.post(new ObdDeviceAddressChangedMessage(null));
 
                 // Connect to CX-VI device
             	if(deviceAddress == null || deviceAddress.equals(AUTO_DEVICE_SELECTION_ENTRY)) {
@@ -86,7 +86,7 @@ public class BluetoothPreferenceManager extends VehiclePreferenceManager {
         } else {
         	// No more connections please
         	getVehicleManager().removeVehicleInterface(BluetoothVehicleInterface.class);
-        	bus.post(new ObdDeviceAddressChanged(null));
+        	bus.post(new ObdDeviceAddressChangedMessage(null));
         }
             	
     }

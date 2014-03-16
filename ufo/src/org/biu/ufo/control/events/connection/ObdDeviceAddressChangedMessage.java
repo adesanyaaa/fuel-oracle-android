@@ -1,9 +1,9 @@
 package org.biu.ufo.control.events.connection;
 
-public class ObdDeviceAddressChanged {
+public class ObdDeviceAddressChangedMessage {
 	String address;
 	
-	public ObdDeviceAddressChanged(String address) {
+	public ObdDeviceAddressChangedMessage(String address) {
 		this.address = address;
 	}
 	

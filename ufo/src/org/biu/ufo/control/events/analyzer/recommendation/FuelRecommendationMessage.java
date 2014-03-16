@@ -8,10 +8,11 @@ import org.biu.ufo.rest.Station;
 
 public class FuelRecommendationMessage {
 	private long time;
+	
 	Double fuelLevelAtRecommendTime;
 	Location locationAtRecommendTime;
 	List<Station> stations = new LinkedList<Station>();
-
+	
 	public FuelRecommendationMessage() {
 		this.time = System.currentTimeMillis();
 	}
@@ -48,14 +49,17 @@ public class FuelRecommendationMessage {
 		return stations;
 	}
 	
+	
 	public Station getTopStation() {
-		if(!stations.isEmpty())
-			return stations.get(0);
-		return null;
-	}
+		if(stations.isEmpty()) {
+			return null;
+		}
+		return stations.get(0);
+	}	
 
 	public boolean shouldFuel() {
-		return locationAtRecommendTime != null; /*!stations.isEmpty();*/
-	}	
+		return locationAtRecommendTime != null;
+	}
+
 	
 }

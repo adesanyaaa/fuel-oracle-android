@@ -26,7 +26,7 @@ import org.biu.ufo.car.obd.enums.ObdProtocols;
 import org.biu.ufo.car.openxc.VehicleManagerConnector;
 import org.biu.ufo.car.openxc.VehicleManagerConnector.VehicleManagerConnectorCallback;
 import org.biu.ufo.car.openxc.sources.ObdDataSource;
-import org.biu.ufo.control.events.connection.ObdConnectionLost;
+import org.biu.ufo.control.events.connection.ObdConnectionLostMessage;
 
 import android.content.Intent;
 import android.os.Binder;
@@ -163,7 +163,7 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 			Log.e(TAG, "Connection lost to " + source.toString());
 			if(shouldBeActive.get()) {
 				stop();
-				bus.post(new ObdConnectionLost());
+				bus.post(new ObdConnectionLostMessage());
 			}
 		}
 	}
