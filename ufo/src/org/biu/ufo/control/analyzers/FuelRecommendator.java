@@ -174,10 +174,9 @@ public class FuelRecommendator implements IAnalyzer {
 				station.setDistance(Calculator.distance(currentLocation, new Location(station.getLat(), station.getLng())));
 			}
 			bus.post(lastRecommendation);
+			// TODO: this is a popup test! Should make sure MainActivity is not visible!!!
+			PopupActivity_.intent(context.getApplicationContext()).flags(Intent.FLAG_ACTIVITY_NEW_TASK).start();	
 		}
-		
-		// TODO: this is a popup test! Should make sure MainActivity is not visible!!!
-//		PopupActivity_.intent(context).flags(Intent.FLAG_ACTIVITY_NEW_TASK).start();	
 	}
 	
 	private boolean isLowFuelLevel() {

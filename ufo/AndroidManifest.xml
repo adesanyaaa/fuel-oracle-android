@@ -83,7 +83,7 @@
        	    android:configChanges="orientation"
        	    android:excludeFromRecents="true"
        	    android:enabled="true"
-       	    android:theme="@style/Theme.FloatingDialog.NoTitle" />
+       	    android:theme="@style/Theme.FloatingDialog" />
         
         <activity
             android:name="org.biu.ufo.ui.activities.MainActivityLegacy_"

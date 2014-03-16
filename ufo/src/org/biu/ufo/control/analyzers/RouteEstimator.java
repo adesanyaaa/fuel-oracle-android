@@ -189,7 +189,7 @@ public class RouteEstimator implements IAnalyzer {
 	private void getNewRouteEstimation() {
 		clearEstimatedRoute();
 		
-		if(currentLocation == null)
+		if(currentLocation == null || destPoint == null)
 			return;
 		
 		Routing routing = new Routing(TravelMode.DRIVING);
