@@ -4,17 +4,21 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.UiThread;
 import org.biu.ufo.R;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 
-@EActivity(R.layout.card_layout)
-public class PopupActivity extends Activity {
+@EActivity(R.layout.activity_popup)
+public class PopupActivity extends FragmentActivity {
 	    	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +35,20 @@ public class PopupActivity extends Activity {
 		params.flags = params.flags & ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
 		getWindow().setAttributes(params);
 		
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		Fragment fragment = new FuelNextFragment_();
+		fragment.setRetainInstance(true);
+		FragmentTransaction transaction = fragmentManager.beginTransaction();
+		transaction.replace(R.id.content_frame, fragment, "POPUP_FRAGMENT").commit();			
+
 		automaticClosing();
+	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		
+		//intent.getAction()
 	}
 	
 	@Override
@@ -43,10 +60,7 @@ public class PopupActivity extends Activity {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-//			if(event.getX() < 0 || event.getX() > getWindow().getAttributes().width ||
-//				event.getY() < -DisplayTools.toPixels(this, WidgetBase.HEADER_SIZE_IN_DIP) || event.getY() > getWindow().getAttributes().height /*+ DisplayTools.toPixels(this, WidgetBase.FOOTER_SIZE_IN_DIP)*/) {
-				finish();
-//			}
+			finish();
 		}
 		return super.onTouchEvent(event);			
 	}
@@ -61,7 +75,7 @@ public class PopupActivity extends Activity {
     	return super.onKeyDown(keyCode, event);
     };
 
-    @UiThread(delay=5000)
+    @UiThread(delay=10000)
     public void automaticClosing() {
     	if(!isFinishing() && !isDestroyed()) {
     		finish();

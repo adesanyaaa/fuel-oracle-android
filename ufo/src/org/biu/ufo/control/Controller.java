@@ -27,17 +27,17 @@ public class Controller {
 	RouteEstimator routeEstimator;
 		
 	public void init(){
-		bus.register(fuelAnalyzer);
-		bus.register(routeAnalyzer);
-		bus.register(fuelingRecommendator);
-		bus.register(routeEstimator);
+		routeAnalyzer.start();
+		routeEstimator.start();
+		fuelAnalyzer.start();
+		fuelingRecommendator.start();
 	}
 	
 	public void close(){
-		bus.unregister(routeAnalyzer);
-		bus.unregister(fuelAnalyzer);
-		bus.unregister(fuelingRecommendator);
-		bus.unregister(routeEstimator);
+		fuelingRecommendator.stop();
+		fuelAnalyzer.stop();
+		routeEstimator.stop();
+		routeAnalyzer.stop();
 	}
 	
 }

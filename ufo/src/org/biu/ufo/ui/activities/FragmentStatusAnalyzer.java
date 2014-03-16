@@ -10,9 +10,9 @@ import org.biu.ufo.control.events.analyzer.fueling.FuelProcessDetailsMessage;
 import org.biu.ufo.control.events.analyzer.fueling.FuellingProcessEndedStatusMessage;
 import org.biu.ufo.control.events.analyzer.fueling.FuellingProcessStartedStatusMessage;
 import org.biu.ufo.control.events.analyzer.fueling.FuellingProcessStatusMessage;
-import org.biu.ufo.control.events.analyzer.routemonitor.EndOfRouteStatusMessage;
-import org.biu.ufo.control.events.analyzer.routemonitor.RouteStatusMessage;
-import org.biu.ufo.control.events.analyzer.routemonitor.StartOfRouteStatusMessage;
+import org.biu.ufo.control.events.analyzer.routemonitor.RouteStopMessage;
+import org.biu.ufo.control.events.analyzer.routemonitor.RouteSummaryMessage;
+import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
 
 import android.support.v4.app.Fragment;
 import android.widget.TextView;
@@ -98,7 +98,7 @@ public class FragmentStatusAnalyzer extends Fragment {
 	
 	@UiThread
 	@Subscribe
-	public void onStartRoute(StartOfRouteStatusMessage message){
+	public void onStartRoute(RouteStartMessage message){
 		drivingValue.setText(R.string.status_yes_msg);
 		startLatitude.setText(String.valueOf(message.getLocation().getLatitude()));
 		startLongitude.setText(String.valueOf(message.getLocation().getLongitude()));
@@ -106,7 +106,7 @@ public class FragmentStatusAnalyzer extends Fragment {
 	
 	@UiThread
 	@Subscribe
-	public void onEndRoute(EndOfRouteStatusMessage message){
+	public void onEndRoute(RouteStopMessage message){
 		drivingValue.setText(R.string.status_no_msg);
 		endLatitude.setText(String.valueOf(message.location.getLatitude()));
 		endLongitude.setText(String.valueOf(message.location.getLongitude()));
@@ -115,7 +115,7 @@ public class FragmentStatusAnalyzer extends Fragment {
 	
 	@UiThread
 	@Subscribe
-	public void onRouteDetails(RouteStatusMessage message){
+	public void onRouteDetails(RouteSummaryMessage message){
 		endLatitude.setText(String.valueOf(message.getEndLocation().getLatitude()));
 		endLongitude.setText(String.valueOf(message.getEndLocation().getLongitude()));
 		

@@ -9,9 +9,9 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
-import org.biu.ufo.control.events.analyzer.recommendation.FuelNextRecommendation;
-import org.biu.ufo.control.events.analyzer.routemonitor.EstimatedDestination;
-import org.biu.ufo.control.events.analyzer.routemonitor.StartOfRouteStatusMessage;
+import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
+import org.biu.ufo.control.events.analyzer.routemonitor.EstimatedDestinationMessage;
+import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
 import org.biu.ufo.control.events.raw.EngineSpeedMessage;
 import org.biu.ufo.control.events.raw.FuelLevelMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
@@ -26,7 +26,7 @@ import android.widget.ScrollView;
 import com.squareup.otto.Subscribe;
 
 @EFragment(R.layout.fragment_main)
-public class FragmentMain extends Fragment{
+public class FragmentMain extends Fragment {
 	
 	@Bean
 	OttoBus bus;
@@ -92,7 +92,7 @@ public class FragmentMain extends Fragment{
 	}
 	
 	@Subscribe
-	public void onStartOfRouteMessage(StartOfRouteStatusMessage message) {
+	public void onStartOfRouteMessage(RouteStartMessage message) {
 		RouteOverviewCard oldCard = (RouteOverviewCard)card_route_overview.getCard();
 		
 		RouteOverviewCard card = new RouteOverviewCard(oldCard.getContext());
@@ -104,7 +104,7 @@ public class FragmentMain extends Fragment{
 	}
 
 	@Subscribe
-	public void onEstimatedDestination(EstimatedDestination message) {
+	public void onEstimatedDestination(EstimatedDestinationMessage message) {
 		RouteOverviewCard card = (RouteOverviewCard)card_route_overview.getCard();
 		card.setDestination(message.getPlace());
 		card_route_overview.refreshCard(card);
@@ -112,7 +112,7 @@ public class FragmentMain extends Fragment{
 	
 	@UiThread
 	@Subscribe
-	public void onFuelNextRecommendation(FuelNextRecommendation message) {
+	public void onFuelNextRecommendation(FuelRecommendationMessage message) {
 		Log.d("FragmentMain", "onFuelNextRecommendation");
 		FuelSuggestionCard card = (FuelSuggestionCard)card_fuel_suggestion.getCard();
 		if(message.shouldFuel()) {

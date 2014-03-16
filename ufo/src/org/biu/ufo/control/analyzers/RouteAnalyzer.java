@@ -4,9 +4,9 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.control.Calculator;
-import org.biu.ufo.control.events.analyzer.routemonitor.EndOfRouteStatusMessage;
-import org.biu.ufo.control.events.analyzer.routemonitor.RouteStatusMessage;
-import org.biu.ufo.control.events.analyzer.routemonitor.StartOfRouteStatusMessage;
+import org.biu.ufo.control.events.analyzer.routemonitor.RouteStopMessage;
+import org.biu.ufo.control.events.analyzer.routemonitor.RouteSummaryMessage;
+import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
 import org.biu.ufo.control.events.raw.EngineSpeedMessage;
 import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
@@ -28,7 +28,7 @@ import com.squareup.otto.Subscribe;
  *
  */
 @EBean
-public class RouteAnalyzer {
+public class RouteAnalyzer implements IAnalyzer {
 
 	public static final double MIN_DISTANCE_KM = 0.02;			//minimum distance (in km) to count as movement
 	public static final long MAX_STATIC_DURATION_SECONDS = 5;	//maximum time (in sec) to be standing still in the same position
@@ -44,7 +44,7 @@ public class RouteAnalyzer {
 	double vehicleSpeed = 0;
 	int engineSpeed = 0;
 
-	RouteStatusMessage driveRoute;
+	RouteSummaryMessage driveRoute;
 
 	boolean driveStarted = false;
 	boolean firstTimeInit = true;
@@ -57,7 +57,7 @@ public class RouteAnalyzer {
 			//naive check that the car is off
 			if (engineSpeed<MIN_ENGINE_SPEED && vehicleSpeed <MIN_VEHICLE_SPEED) {
 				driveRoute.setEndTime(System.currentTimeMillis());
-				bus.post(new EndOfRouteStatusMessage(driveRoute.getEndLocation()));
+				bus.post(new RouteStopMessage(driveRoute.getEndLocation()));
 				bus.post(driveRoute);
 				firstTimeInit = true;
 				driveStarted = false;
@@ -78,7 +78,7 @@ public class RouteAnalyzer {
 			firstTimeInit = false;
 			
 			refLocation = message.location;
-			driveRoute = new RouteStatusMessage();
+			driveRoute = new RouteSummaryMessage();
 			driveRoute.setStartTime(System.currentTimeMillis());
 			driveRoute.getRoute().add(new Location(refLocation));
 
@@ -105,12 +105,28 @@ public class RouteAnalyzer {
 
 	}
 
+	@Produce
+	public RouteStartMessage produceStartOfRouteStatusMessage() {
+		if(driveStarted) {
+			return new RouteStartMessage(driveRoute.getStartLocation());
+		}
+		return null;
+	}
+	
+	@Produce
+	public RouteStopMessage produceEndOfRouteStatusMessage() {
+		if(!driveStarted && driveRoute != null && driveRoute.isEnded()) {
+			return new RouteStopMessage(driveRoute.getEndLocation());
+		}
+		return null;
+	}
+	
 	private void distanceCheck(){
 		if (Calculator.distance(currentLocation, refLocation) > MIN_DISTANCE_KM) {
 			
 			if (!driveStarted){
 				driveStarted = true;
-				bus.post(new StartOfRouteStatusMessage(driveRoute.getStartLocation()));
+				bus.post(new RouteStartMessage(driveRoute.getStartLocation()));
 			}
 
 			refLocation = new Location(currentLocation);
@@ -120,22 +136,6 @@ public class RouteAnalyzer {
 		}
 	}
 
-	@Produce
-	public StartOfRouteStatusMessage produceStartOfRouteStatusMessage() {
-		if(driveStarted) {
-			return new StartOfRouteStatusMessage(driveRoute.getStartLocation());
-		}
-		return null;
-	}
-	
-	@Produce
-	public EndOfRouteStatusMessage produceEndOfRouteStatusMessage() {
-		if(!driveStarted && driveRoute != null && driveRoute.isEnded()) {
-			return new EndOfRouteStatusMessage(driveRoute.getEndLocation());
-		}
-		return null;
-	}
-
 	/**
 	 * for ending the route.
 	 * if not called within MAX_STATIC_DURATION - the process ended
@@ -143,6 +143,16 @@ public class RouteAnalyzer {
 	private void restartTimer() {
 		durationHandler.removeMessages(1);
 		durationHandler.sendEmptyMessageDelayed(1, MAX_STATIC_DURATION);
+	}
+
+	@Override
+	public void start() {
+		bus.register(this);
+	}
+
+	@Override
+	public void stop() {
+		bus.unregister(this);		
 	}
 
 }

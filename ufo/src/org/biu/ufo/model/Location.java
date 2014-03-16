@@ -1,5 +1,7 @@
 package org.biu.ufo.model;
 
+import com.google.android.gms.maps.model.LatLng;
+
 public class Location {
 	private double latitude;
 	private double longitude;
@@ -13,11 +15,21 @@ public class Location {
 		this.latitude = latitude;
 		this.longitude = longitude;
 	}
-	
+
 	public Location(){
 		this.latitude = 0;
 		this.longitude = 0;
 	}
+	
+	public Location(LatLng latlng){
+		this.latitude = latlng.latitude;
+		this.longitude = latlng.longitude;
+	}
+
+	public LatLng getLatLng() {
+		return new LatLng(latitude, longitude);
+	}
+	
 	
 	public double getLatitude() {
 		return latitude;

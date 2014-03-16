@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import org.biu.ufo.control.events.StatusMessage;
 import org.biu.ufo.model.Location;
 
-public class RouteStatusMessage extends StatusMessage{
+public class RouteSummaryMessage extends StatusMessage {
 	
 	private ArrayList<Location> route;
 	private long startTime;
 	private long endTime;
 	
-	public RouteStatusMessage(){
+	public RouteSummaryMessage(){
 		this.route = new ArrayList<Location>();
 		this.message = "Route details";
 	}

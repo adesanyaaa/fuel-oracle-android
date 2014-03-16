@@ -8,7 +8,7 @@ import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.control.Calculator;
-import org.biu.ufo.control.events.analyzer.recommendation.FuelNextRecommendation;
+import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
 import org.biu.ufo.control.events.raw.FuelLevelMessage;
 import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.model.Location;
@@ -36,7 +36,7 @@ import com.squareup.otto.Subscribe;
  *
  */
 @EBean
-public class FuelRecommendator {
+public class FuelRecommendator implements IAnalyzer {
 	public static final String TAG = "FuelRecommendator";
 	public static final long MIN_DURATION_BETWEEN_RUNS = 5*60*1000;
 	public static final long MIN_DISTANCE_BETWEEN_RUNS = 1000;
@@ -55,8 +55,8 @@ public class FuelRecommendator {
 	
 	private Location currentLocation;
 	private Double currentFuelLevel;	
-	private FuelNextRecommendation lastRecommendation;	
-
+	private FuelRecommendationMessage lastRecommendation;	
+	
 	private void recommendIfNeeded() {
 		if(isLowFuelLevel()) {
 			if(isEnoughTimePassed() && isEnoughDistanceTraveled()) {
@@ -68,16 +68,16 @@ public class FuelRecommendator {
 	}
 	
 	public void recommendNow() {
-		lastRecommendation = new FuelNextRecommendation();
+		lastRecommendation = new FuelRecommendationMessage();
 		lastRecommendation.setFuelLevel(currentFuelLevel.doubleValue());
 		lastRecommendation.setLocation(new Location(currentLocation));
-		requestNearbyStations();
+		requestNearbyStations(currentLocation.getLatitude(), currentLocation.getLongitude());
 	}
 	
-	protected void requestNearbyStations() {
+	protected void requestNearbyStations(double lat, double lng) {
 		Log.d(TAG, "requestNearbyStations");
 		currentRequestId = (currentRequestId + 1) % 500;
-		fetchStations(currentRequestId, currentLocation.getLatitude(), currentLocation.getLongitude());
+		fetchStations(currentRequestId, lat, lng);
 	}
 
 	@Background
@@ -137,7 +137,7 @@ public class FuelRecommendator {
 	}
 
 	@Produce
-	public FuelNextRecommendation produceFuelNextRecommendation() {
+	public FuelRecommendationMessage produceFuelNextRecommendation() {
 		if(lastRecommendation != null && lastRecommendation.getStations() != null) {
 			return lastRecommendation;
 		}
@@ -153,6 +153,16 @@ public class FuelRecommendator {
 	@Subscribe
 	public void onFuelLevel(FuelLevelMessage message){
 		currentFuelLevel = message.getFuelLevelValue();
+	}
+
+	@Override
+	public void start() {
+		bus.register(this);
+	}
+
+	@Override
+	public void stop() {
+		bus.unregister(this);		
 	}
 	
 }

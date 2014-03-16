@@ -30,7 +30,7 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
-import org.biu.ufo.control.events.analyzer.recommendation.FuelNextRecommendation;
+import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
 import org.biu.ufo.rest.Station.CapacityUnit;
@@ -73,11 +73,11 @@ public class FragmentRecommendationsList extends Fragment {
 	}
 	
 	@Subscribe
-	public void onFuelNextRecommendation(FuelNextRecommendation message) {
+	public void onFuelNextRecommendation(FuelRecommendationMessage message) {
 		loadCards(message);
 	}
 	
-    private void loadCards(FuelNextRecommendation message) {
+    private void loadCards(FuelRecommendationMessage message) {
     	cards.clear();
         
     	for(Station station : message.getStations()) {
@@ -97,7 +97,7 @@ public class FragmentRecommendationsList extends Fragment {
      * This method builds a standard header with a custom expand/collpase
      * @param recommendation
      */
-    private Card getRecommendationCard(FuelNextRecommendation recommendation, Station station) {
+    private Card getRecommendationCard(FuelRecommendationMessage recommendation, Station station) {
         RecommendationCard card = new RecommendationCard(getActivity());
 
         // Header

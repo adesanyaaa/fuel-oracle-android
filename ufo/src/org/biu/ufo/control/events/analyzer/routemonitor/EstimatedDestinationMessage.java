@@ -2,15 +2,15 @@ package org.biu.ufo.control.events.analyzer.routemonitor;
 
 import org.biu.ufo.model.Place;
 
-public class EstimatedDestination {
+public class EstimatedDestinationMessage {
 	private Place place;
 	private boolean isDestLocationEstimated;
 		
-	public EstimatedDestination(Place place) {
+	public EstimatedDestinationMessage(Place place) {
 		this(place, true);
 	}
 	
-	public EstimatedDestination(Place place, boolean isDestLocationEstimated) {
+	public EstimatedDestinationMessage(Place place, boolean isDestLocationEstimated) {
 		this.isDestLocationEstimated = isDestLocationEstimated;
 		this.place = place;
 	}

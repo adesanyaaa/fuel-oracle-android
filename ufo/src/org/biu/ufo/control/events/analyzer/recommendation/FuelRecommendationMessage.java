@@ -5,13 +5,13 @@ import java.util.List;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
 
-public class FuelNextRecommendation {
+public class FuelRecommendationMessage {
 	private long time;
 	Double fuelLevelAtRecommendTime;
 	Location locationAtRecommendTime;
 	List<Station> stations;
 
-	public FuelNextRecommendation() {
+	public FuelRecommendationMessage() {
 		this.time = System.currentTimeMillis();
 	}
 	

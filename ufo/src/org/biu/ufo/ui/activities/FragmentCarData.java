@@ -9,8 +9,7 @@ import org.biu.ufo.R;
 import org.biu.ufo.control.events.raw.EngineSpeedMessage;
 import org.biu.ufo.control.events.raw.FuelConsumedMessage;
 import org.biu.ufo.control.events.raw.FuelLevelMessage;
-import org.biu.ufo.control.events.raw.LatitudeMessage;
-import org.biu.ufo.control.events.raw.LongitudeMessage;
+import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
 
 import android.support.v4.app.Fragment;
@@ -78,14 +77,9 @@ public class FragmentCarData extends Fragment {
 
 	@UiThread
 	@Subscribe
-	public void onLongitudeUpdate(LongitudeMessage message){
-		longtidueCaption.setText(message.longitudeMessage);
-	}
-
-	@UiThread
-	@Subscribe
-	public void onLatitudeUpdate(LatitudeMessage message){
-		latitudeCaption.setText(message.latitudeMessage);
+	public void onLocationUpdate(LocationMessage message){
+		latitudeCaption.setText(String.valueOf(message.location.getLatitude()));
+		longtidueCaption.setText(String.valueOf(message.location.getLongitude()));
 	}
 
 	@UiThread

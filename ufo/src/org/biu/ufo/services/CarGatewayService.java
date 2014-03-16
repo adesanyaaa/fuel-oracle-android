@@ -223,7 +223,9 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 			vmCustomDataSource.notifyMeasurement(new EngineSpeed(((EngineRPMObdCommand) job).getRPM()).toRaw());
 		} else if(job instanceof SpeedObdCommand) {
 			vmCustomDataSource.notifyMeasurement(new VehicleSpeed(((SpeedObdCommand) job).getMetricSpeed()).toRaw());
-		}				
+		}/* else if(job instanceof FuelConsumptionRateObdCommand) {
+			vmCustomDataSource.notifyMeasurement(new FuelConsumed(((FuelConsumptionRateObdCommand) job).getMetricSpeed()).toRaw());
+		}*/
 	}
 
 	private static boolean write(Connection connection, IObdCommand job) throws IOException, InterruptedException {

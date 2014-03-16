@@ -5,11 +5,11 @@ import org.biu.ufo.model.Location;
 
 
 
-public class StartOfRouteStatusMessage extends StatusMessage {
+public class RouteStartMessage extends StatusMessage {
 	
 	private Location location;
 	
-	public StartOfRouteStatusMessage(Location location){
+	public RouteStartMessage(Location location){
 		this.time = System.currentTimeMillis();
 		this.message = "START OF ROUTE";
 		this.location = location;

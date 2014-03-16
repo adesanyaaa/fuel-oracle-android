@@ -27,7 +27,7 @@ import com.squareup.otto.Subscribe;
  *
  */
 @EBean
-public class FuelAnalyzer {
+public class FuelAnalyzer implements IAnalyzer {
 	public static final int FUELLING_PROCESS = 1;
 	public static final int FUEL_LOSS_PROCESS = 2;
 
@@ -142,5 +142,17 @@ public class FuelAnalyzer {
 
 		//set new one
 		durationHandler.sendEmptyMessageDelayed(fuelStatus, MAX_FUEL_DURATION);
+	}
+
+
+	@Override
+	public void start() {
+		bus.register(this);
+	}
+
+
+	@Override
+	public void stop() {
+		bus.unregister(this);		
 	}
 }

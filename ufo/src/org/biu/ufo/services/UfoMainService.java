@@ -13,9 +13,7 @@ import org.biu.ufo.control.events.connection.ObdDeviceAddressChanged;
 import org.biu.ufo.control.events.raw.EngineSpeedMessage;
 import org.biu.ufo.control.events.raw.FuelConsumedMessage;
 import org.biu.ufo.control.events.raw.FuelLevelMessage;
-import org.biu.ufo.control.events.raw.LatitudeMessage;
 import org.biu.ufo.control.events.raw.LocationMessage;
-import org.biu.ufo.control.events.raw.LongitudeMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
 import org.biu.ufo.services.CarGatewayService.CarGatewayServiceBinder;
 import org.biu.ufo.settings.PreferenceManagerService_;
@@ -256,7 +254,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		@UiThread
 		public void receive(Measurement measurement) {
 			final Latitude latitude = (Latitude) measurement;
-			post(new LatitudeMessage(latitude));
+//			post(new LatitudeMessage(latitude));
 			
 			locationMessage.setLatitude(latitude.getValue().doubleValue());
 			if (locationMessage.properLocation()){
@@ -271,7 +269,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		@Override
 		public void receive(Measurement measurement) {
 			final Longitude longitude = (Longitude) measurement;
-			post(new LongitudeMessage(longitude));
+//			post(new LongitudeMessage(longitude));
 			
 			locationMessage.setLongitude(longitude.getValue().doubleValue());
 			if (locationMessage.properLocation()){
