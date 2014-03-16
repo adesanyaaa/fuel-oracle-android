@@ -33,11 +33,14 @@ public class Controller {
 		fuelingRecommendator.start();
 	}
 	
-	public void close(){
+	public void close(){		
 		fuelingRecommendator.stop();
 		fuelAnalyzer.stop();
 		routeEstimator.stop();
 		routeAnalyzer.stop();
 	}
 	
+	public RouteEstimator getRouteEstimator() {
+		return routeEstimator;
+	}
 }

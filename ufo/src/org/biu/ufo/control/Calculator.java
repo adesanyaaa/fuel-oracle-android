@@ -2,6 +2,8 @@ package org.biu.ufo.control;
 
 import org.biu.ufo.model.Location;
 
+import com.google.android.gms.maps.model.LatLng;
+
 public class Calculator {
 	
 	public static float estimateLitersPer100Km(float metric_speed, float litersPerHour) {
@@ -19,6 +21,10 @@ public class Calculator {
 	// In KM
 	public static double distance(Location loc1, Location loc2) {
 		return distance(loc1.getLatitude(), loc1.getLongitude(), loc2.getLatitude(), loc2.getLongitude());
+	}
+	
+	public static double distance(LatLng loc1, LatLng loc2) {
+		return distance(loc1.latitude, loc1.longitude, loc2.latitude, loc2.longitude);
 	}
 
 	public static double distance(double lat1, double lon1, double lat2, double lon2) {

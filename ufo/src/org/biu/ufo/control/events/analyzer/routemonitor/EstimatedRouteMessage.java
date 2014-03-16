@@ -15,5 +15,8 @@ public class EstimatedRouteMessage {
 		this.estimatedRoute = estimatedRoute;
 	}
 
+	public List<LatLng> getEstimatedRoute() {
+		return estimatedRoute;
+	}
 	
 }

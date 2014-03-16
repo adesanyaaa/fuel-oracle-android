@@ -8,7 +8,9 @@ import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.control.Calculator;
+import org.biu.ufo.control.Controller;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
+import org.biu.ufo.control.events.analyzer.routemonitor.EstimatedRouteMessage;
 import org.biu.ufo.control.events.raw.FuelLevelMessage;
 import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.model.Location;
@@ -22,6 +24,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
 
@@ -30,7 +33,6 @@ import com.squareup.otto.Subscribe;
  * Recommendation generator
  * 
  * TODO: only while driving?
- * TODO: use route estimator and query interest points on the way
  * 
  * @author Roee Shlomo
  *
@@ -38,8 +40,13 @@ import com.squareup.otto.Subscribe;
 @EBean
 public class FuelRecommendator implements IAnalyzer {
 	public static final String TAG = "FuelRecommendator";
-	public static final long MIN_DURATION_BETWEEN_RUNS = 5*60*1000;
-	public static final long MIN_DISTANCE_BETWEEN_RUNS = 1000;
+	
+	public static final boolean ONLY_NEARBY = false;	// Set to false on final release
+	
+	public static final long MIN_DURATION_BETWEEN_RUNS = 5*60*1000;	// 5 Minutes
+	public static final long MIN_DISTANCE_BETWEEN_RUNS = 1;	// 1 KM
+	public static final float MIN_DISTANCE_BETWEEN_PATH_POINTS = 1.5f;	// 1.5 KM
+	
 	
 	@RootContext
 	Context context;
@@ -50,8 +57,11 @@ public class FuelRecommendator implements IAnalyzer {
 	@Bean(MGFClient.class)
 	Client stationsClient;
 
+	Controller controller;
+	
 	Handler handler = new Handler();
 	private volatile long currentRequestId;
+	private volatile int pendingRequests;
 	
 	private Location currentLocation;
 	private Double currentFuelLevel;	
@@ -63,7 +73,12 @@ public class FuelRecommendator implements IAnalyzer {
 				recommendNow();
 			}
 		} else {
-			lastRecommendation = null;
+			controller.getRouteEstimator().setRouteEstimationNeeded(false);
+			if(lastRecommendation != null) {
+				lastRecommendation = null;
+				// Empty recommendation means "all good"
+				bus.post(new FuelRecommendationMessage());
+			}
 		}
 	}
 	
@@ -71,14 +86,45 @@ public class FuelRecommendator implements IAnalyzer {
 		lastRecommendation = new FuelRecommendationMessage();
 		lastRecommendation.setFuelLevel(currentFuelLevel.doubleValue());
 		lastRecommendation.setLocation(new Location(currentLocation));
-		requestNearbyStations(currentLocation.getLatitude(), currentLocation.getLongitude());
+		
+		if(ONLY_NEARBY) {
+			generateStationsRequestId();
+			requestNearbyStations(currentLocation.getLatitude(), currentLocation.getLongitude());			
+		} else {
+			controller.getRouteEstimator().requestRouteEstimation();
+		}
+	}
+	
+	private void generateStationsRequestId() {
+		currentRequestId = (currentRequestId + 1) % 500;
+		pendingRequests = 0;
 	}
 	
 	protected void requestNearbyStations(double lat, double lng) {
 		Log.d(TAG, "requestNearbyStations");
-		currentRequestId = (currentRequestId + 1) % 500;
+		++pendingRequests;
 		fetchStations(currentRequestId, lat, lng);
 	}
+
+	@Subscribe
+	public void onEstimatedRouteMessage(EstimatedRouteMessage message) {
+		if(message.getEstimatedRoute().size() == 0) {
+			Log.e(TAG, "Empty route!!! Using current location only!");
+			generateStationsRequestId();
+			requestNearbyStations(currentLocation.getLatitude(), currentLocation.getLongitude());			
+			return;
+		}
+		
+		generateStationsRequestId();		
+		LatLng lastPoint = new LatLng(0, 0);
+		for(LatLng point : message.getEstimatedRoute()) {
+			if(Calculator.distance(lastPoint, point) > MIN_DISTANCE_BETWEEN_PATH_POINTS) {
+				requestNearbyStations(point.latitude, point.longitude);
+				lastPoint = point;
+			}
+		}
+	}
+	
 
 	@Background
 	protected void fetchStations(final long requestId, double lat, double lng) {
@@ -98,16 +144,15 @@ public class FuelRecommendator implements IAnalyzer {
 
 	void delieverStationsList(final List<Station> stations) {
 		Log.d(TAG, "delieverStationsList");		
-//		Collections.sort(stations, new Comparator<Station>() {
-//
-//			@Override
-//			public int compare(Station a, Station b) {
-//				return 0;
-//			}
-//			
-//		});
-		lastRecommendation.setStations(stations);
-		bus.post(lastRecommendation);
+
+		if(stations != null) {
+			lastRecommendation.addStations(stations);			
+		}
+		
+		--pendingRequests;
+		if(pendingRequests == 0) {
+			bus.post(lastRecommendation);
+		}
 		
 		// TODO: this is a popup test! Should make sure MainActivity is not visible!!!
 		PopupActivity_.intent(context).flags(Intent.FLAG_ACTIVITY_NEW_TASK).start();	
@@ -136,14 +181,6 @@ public class FuelRecommendator implements IAnalyzer {
 		return System.currentTimeMillis() - lastRecommendation.getTime() > MIN_DURATION_BETWEEN_RUNS;
 	}
 
-	@Produce
-	public FuelRecommendationMessage produceFuelNextRecommendation() {
-		if(lastRecommendation != null && lastRecommendation.getStations() != null) {
-			return lastRecommendation;
-		}
-		return null;
-	}
-	
 	@Subscribe
 	public void onLocationUpdate(LocationMessage message){
 		currentLocation = message.getLocation();
@@ -154,6 +191,15 @@ public class FuelRecommendator implements IAnalyzer {
 	public void onFuelLevel(FuelLevelMessage message){
 		currentFuelLevel = message.getFuelLevelValue();
 	}
+	
+	@Produce
+	public FuelRecommendationMessage produceFuelNextRecommendation() {
+		if(lastRecommendation != null) {
+			return lastRecommendation;
+		}
+		return new FuelRecommendationMessage();
+	}
+	
 
 	@Override
 	public void start() {
@@ -163,6 +209,11 @@ public class FuelRecommendator implements IAnalyzer {
 	@Override
 	public void stop() {
 		bus.unregister(this);		
+	}
+
+	@Override
+	public void setController(Controller controller) {
+		this.controller = controller;
 	}
 	
 }

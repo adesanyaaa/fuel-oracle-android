@@ -4,6 +4,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.UiThread;
 import org.biu.ufo.OttoBus;
+import org.biu.ufo.control.Controller;
 import org.biu.ufo.control.events.analyzer.fueling.FuelLossProcessEndedStatusMessage;
 import org.biu.ufo.control.events.analyzer.fueling.FuelLossProcessStartedStatusMessage;
 import org.biu.ufo.control.events.analyzer.fueling.FuelProcessDetailsMessage;
@@ -38,7 +39,9 @@ public class FuelAnalyzer implements IAnalyzer {
 
 	@Bean
 	OttoBus bus;
-
+	
+	Controller controller;
+	
 	float refFuelLevel;
 	float currentFuelLevel;
 
@@ -154,5 +157,11 @@ public class FuelAnalyzer implements IAnalyzer {
 	@Override
 	public void stop() {
 		bus.unregister(this);		
+	}
+
+
+	@Override
+	public void setController(Controller controller) {
+		this.controller = controller;
 	}
 }

@@ -8,6 +8,7 @@ import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.control.Calculator;
+import org.biu.ufo.control.Controller;
 import org.biu.ufo.control.PlaceResolver;
 import org.biu.ufo.control.PlaceResolver.OnPlaceResolved;
 import org.biu.ufo.control.events.analyzer.routemonitor.EstimatedDestinationMessage;
@@ -55,6 +56,8 @@ public class RouteEstimator implements IAnalyzer {
 	@Bean
 	PlaceResolver placeResolver;
 	
+	Controller controller;
+	
 	WayPoint destPoint;		// Final destination point : as selected by user or estimated
 	boolean isDestLocationEstimated;	// False if destination selected by user
 	
@@ -63,6 +66,7 @@ public class RouteEstimator implements IAnalyzer {
 	
 	List<LatLng> estimatedRoute;	// Estimated route points
 	int currentPositionInEstimatedRoute;
+	boolean isEstimatedRouteNeeded = false;
 
 	Location currentLocation;
 	long lastRouteFetchTime = 0;
@@ -169,17 +173,20 @@ public class RouteEstimator implements IAnalyzer {
 		destPoint.place = message.getPlace();
 		isDestLocationEstimated = false;
 		
-		// Clear route estimation
-		clearEstimatedRoute();
-		getNewRoute();
-
+		// Get route estimation
+		if(isEstimatedRouteNeeded) {
+			getNewRouteEstimation();			
+		}
+		
 		bus.post(new EstimatedDestinationMessage(destPoint.place, isDestLocationEstimated));		
 	}
 
 	/**
 	 * Fetch route directions
 	 */
-	private void getNewRoute() {
+	private void getNewRouteEstimation() {
+		clearEstimatedRoute();
+		
 		Routing routing = new Routing(TravelMode.DRIVING);
 		routing.registerListener(new RoutingListener() {
 			
@@ -224,24 +231,24 @@ public class RouteEstimator implements IAnalyzer {
 		currentLocation = message.getLocation();
 		
 		// Check if needs new route estimation
-		if(estimatedRoute != null) {
+		if(isEstimatedRouteNeeded) {
 			boolean onRoute = false;
 			
-			
-			for(int i = currentPositionInEstimatedRoute; i < estimatedRoute.size(); ++i) {
-				LatLng point = estimatedRoute.get(i);
-				
-				if(Calculator.distance(currentLocation, new Location(point)) < CLOSE_ENOUGH_DISTANCE) {
-					currentPositionInEstimatedRoute = i;
-					onRoute = true;
-				} else if(i - currentPositionInEstimatedRoute > 10) {
-					break;
+			if(estimatedRoute != null) {
+				for(int i = currentPositionInEstimatedRoute; i < estimatedRoute.size(); ++i) {
+					LatLng point = estimatedRoute.get(i);
+					
+					if(Calculator.distance(currentLocation, new Location(point)) < CLOSE_ENOUGH_DISTANCE) {
+						currentPositionInEstimatedRoute = i;
+						onRoute = true;
+					} else if(i - currentPositionInEstimatedRoute > 10) {
+						break;
+					}
 				}
 			}
 			
 			if(!onRoute && System.currentTimeMillis() - lastRouteFetchTime > MIN_INTERVAL_BETWEEN_ROUTE_REQUESTS) {
-				clearEstimatedRoute();
-				getNewRoute();
+				getNewRouteEstimation();
 			}
 			
 		}
@@ -251,7 +258,28 @@ public class RouteEstimator implements IAnalyzer {
 		estimatedRoute = null;
 		currentPositionInEstimatedRoute = 0;
 	}
+	
+	public void setRouteEstimationNeeded(boolean isNeeded) {
+		if(isEstimatedRouteNeeded == isNeeded) {
+			return;
+		}
 		
+		isEstimatedRouteNeeded = isNeeded;			
+		if(isEstimatedRouteNeeded) {
+			getNewRouteEstimation();
+		} else {
+			clearEstimatedRoute();
+		}
+	}
+	
+	public void requestRouteEstimation() {
+		if(estimatedRoute != null) {
+			bus.post(new EstimatedRouteMessage(destPoint.place, estimatedRoute));
+		} else {
+			setRouteEstimationNeeded(true);
+		}
+	}
+
 	@Produce
 	public EstimatedDestinationMessage produceEstimatedDestination() {
 		if(destPoint.place != null) {
@@ -270,5 +298,11 @@ public class RouteEstimator implements IAnalyzer {
 		routeCompleted();
 		bus.unregister(this);
 	}
+	
+	@Override
+	public void setController(Controller controller) {
+		this.controller = controller;
+	}
+
 	
 }

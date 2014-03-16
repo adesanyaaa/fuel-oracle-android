@@ -4,6 +4,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.control.Calculator;
+import org.biu.ufo.control.Controller;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteStopMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteSummaryMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
@@ -38,7 +39,8 @@ public class RouteAnalyzer implements IAnalyzer {
 
 	@Bean
 	OttoBus bus;
-
+	Controller controller;
+	
 	Location refLocation;
 	Location currentLocation;
 	double vehicleSpeed = 0;
@@ -153,6 +155,11 @@ public class RouteAnalyzer implements IAnalyzer {
 	@Override
 	public void stop() {
 		bus.unregister(this);		
+	}
+
+	@Override
+	public void setController(Controller controller) {
+		this.controller = controller;
 	}
 
 }

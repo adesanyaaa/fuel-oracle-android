@@ -1,5 +1,6 @@
 package org.biu.ufo.control.events.analyzer.recommendation;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.biu.ufo.model.Location;
@@ -9,7 +10,7 @@ public class FuelRecommendationMessage {
 	private long time;
 	Double fuelLevelAtRecommendTime;
 	Location locationAtRecommendTime;
-	List<Station> stations;
+	List<Station> stations = new LinkedList<Station>();
 
 	public FuelRecommendationMessage() {
 		this.time = System.currentTimeMillis();
@@ -35,8 +36,12 @@ public class FuelRecommendationMessage {
 		return locationAtRecommendTime;
 	}
 	
-	public void setStations(List<Station> stations) {
-		this.stations = stations;
+	public void addStations(List<Station> stations) {
+		for(Station station : stations) {
+			if(!this.stations.contains(station)) {
+				this.stations.add(station);
+			}
+		}
 	}
 	
 	public List<Station> getStations() {
@@ -50,8 +55,7 @@ public class FuelRecommendationMessage {
 	}
 
 	public boolean shouldFuel() {
-		return stations != null;
-	}
-	
+		return locationAtRecommendTime != null; /*!stations.isEmpty();*/
+	}	
 	
 }
