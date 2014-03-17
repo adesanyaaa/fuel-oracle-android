@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class RecommendationCardExpandInside extends CardExpand {
@@ -26,6 +27,8 @@ public class RecommendationCardExpandInside extends CardExpand {
 
 	private double stationDistance;
 	private int stationDistanceUnitResId;
+	
+	private int companyLogo;
 
 	private Location location;
 
@@ -57,6 +60,9 @@ public class RecommendationCardExpandInside extends CardExpand {
 		TextView station_distance_measurement = (TextView)view.findViewById(R.id.rec_station_distance_measurement);
 		station_distance_measurement.setText(stationDistanceUnitResId);
 
+		ImageView company_logo = (ImageView)view.findViewById(R.id.rec_company_logo);
+		company_logo.setImageResource(companyLogo);
+		
 		Button navigateButton = (Button)view.findViewById(R.id.rec_navigate_button);
 		navigateButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -99,5 +105,9 @@ public class RecommendationCardExpandInside extends CardExpand {
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+	
+	public void setCompanyLogo(int companyLogo){
+		this.companyLogo = companyLogo;
 	}
 }

@@ -110,6 +110,7 @@ public class FragmentRecommendationsList extends Fragment {
         expand.setLocation(new Location(station.getLat(), station.getLng()));
         expand.setStationAddress(station.getAddress());
         expand.setStationDistance(station.getDistance());
+        expand.setCompanyLogo(UnitConverter.getResourceForStationLogo(station.getCompany()));
         expand.setFuelCostCurrencyResId(UnitConverter.getResourceForPriceCurrency(station.getPriceCurrency()));
         expand.setStationDistanceUnitResId(UnitConverter.getResourceForDistanceUnit(station.getDistanceUnit()));
         expand.setFuelMeasurementResId(UnitConverter.getResourceForCapacityUnit(station.getCapacityUnit()));        

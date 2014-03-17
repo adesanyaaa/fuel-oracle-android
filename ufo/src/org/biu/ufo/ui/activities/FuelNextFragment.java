@@ -16,6 +16,7 @@ import org.biu.ufo.ui.utils.UnitConverter;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -47,7 +48,7 @@ public class FuelNextFragment extends Fragment {
 	ImageView popup_gas_station_logo;
 
 	@ViewById
-	ImageButton popup_more_button;
+	Button popup_more_button;
 	
 	private Location location;
 	
@@ -100,7 +101,7 @@ public class FuelNextFragment extends Fragment {
 		popup_distance_unit.setText(UnitConverter.getResourceForDistanceUnit(station.getDistanceUnit()));
 
 		popup_station_address.setText(station.getAddress());
-		
+		popup_gas_station_logo.setImageResource(UnitConverter.getResourceForStationLogo(station.getCompany()));
 	}
 
 }

@@ -4,6 +4,7 @@ import org.biu.ufo.R;
 import org.biu.ufo.rest.Station.CapacityUnit;
 import org.biu.ufo.rest.Station.DistanceUnit;
 import org.biu.ufo.rest.Station.PriceCurrency;
+import java.lang.reflect.Field;
 
 public class UnitConverter {
 	
@@ -56,5 +57,15 @@ public class UnitConverter {
          }
     	return AVERAGE_GAS_TANK_SIZE_US;
     }
+    
+	public static int getResourceForStationLogo(String companyName) {
+		companyName = companyName.toLowerCase().trim();
+	    try {
+	        Field idField = R.drawable.class.getDeclaredField("logo_"+companyName);
+	        return idField.getInt(idField);
+	    } catch (Exception e) {
+	       return R.drawable.logo_default;
+	    }
+	}
 
 }
