@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.RootContext;
 import org.biu.ufo.model.Place;
 
 import android.content.ContentValues;
@@ -17,9 +19,16 @@ import android.text.TextUtils;
 
 @EBean
 public class PlacesDataStore {
+	
+	@RootContext
+	Context context;
+
+	@Bean
+	DBHelper dbHelper;
+
 	// Database fields
 	private SQLiteDatabase database;
-	private PlacesDBHelper dbHelper;
+
 	public static final String[] allColumns = { 
 			PlacesDBHelper.COLUMN_ID,
 			PlacesDBHelper.COLUMN_ADDRESS,
@@ -27,10 +36,6 @@ public class PlacesDataStore {
 			PlacesDBHelper.COLUMN_LATITUDE,
 			PlacesDBHelper.COLUMN_LONGITUDE,
 	};
-
-	public PlacesDataStore(Context context) {
-		dbHelper = new PlacesDBHelper(context);
-	}
 
 	public void open() throws SQLException {
 		database = dbHelper.getWritableDatabase();
@@ -41,7 +46,7 @@ public class PlacesDataStore {
 	}
 
 	public void deletePlace(long id) {
-		database.delete(PlacesDBHelper.TABLE_HISTORY,
+		database.delete(dbHelper.mPlacesDBHelper.TABLE_NAME,
 				PlacesDBHelper.COLUMN_ID + " = " + id,
 				null);
 	}
@@ -55,11 +60,11 @@ public class PlacesDataStore {
 		values.put(PlacesDBHelper.COLUMN_LATITUDE, place.getAddress().getLatitude());
 		values.put(PlacesDBHelper.COLUMN_LONGITUDE, place.getAddress().getLongitude());
 		values.put(PlacesDBHelper.COLUMN_ADDRESS, place.toString());
-		return database.insert(PlacesDBHelper.TABLE_HISTORY, null, values);
+		return database.insert(dbHelper.mPlacesDBHelper.TABLE_NAME, null, values);
 	}
 	
 	public Cursor getAllPlacesCursor() {
-		return database.query(PlacesDBHelper.TABLE_HISTORY,
+		return database.query(dbHelper.mPlacesDBHelper.TABLE_NAME,
 				allColumns, null, null, null, null, null);
 	}
 
