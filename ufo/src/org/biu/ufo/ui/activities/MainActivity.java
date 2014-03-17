@@ -33,16 +33,13 @@ import com.squareup.otto.Subscribe;
 public class MainActivity extends FragmentActivity {
 	public static final String TAG = "MainActivity";
 	
-	private static final int HOME = 0;
-	private static final int MAIN = 1;
-	private static final int DEST = 2;
-	private static final int STATUS_ANALYZER = 3;
-	private static final int SETTINGS = 4;
+	public static final int HOME = 0;
+	public static final int MAIN = 1;
+	public static final int DEST = 2;
+	public static final int STATUS_ANALYZER = 3;
+	public static final int SETTINGS = 4;
 	
-	private static final int RECOMMENDATIONS = 101;
-
-	
-	
+	public static final int RECOMMENDATIONS = 101;
 
 	@ViewById(R.id.drawer_layout)
 	DrawerLayout mDrawerLayout;
@@ -67,23 +64,59 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	@Override
+	protected void onCreate(Bundle arg0) {
+		// TODO Auto-generated method stub
+		super.onCreate(arg0);
+		
+	}
+	
+	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 		
-		if (savedInstanceState == null) {
+		int screen = getIntent().getIntExtra("screen", -1);
+		
+		if (savedInstanceState == null && screen == -1) {
 			// on first time display view for first nav item
 			selectItem(0);
+		} else {
+			selectItem(screen);
 		}
 	}
+	
 	@Override
-	protected void onPause() {
-		super.onPause();
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		
+		int screen = intent.getIntExtra("screen", -1);
+		if(screen >= 0) {
+			selectItem(screen);
+		}
+	}
+	
+//	@Override
+//	protected void onPause() {
+//		super.onPause();
+//		bus.unregister(this);
+//	}
+//	
+//	@Override
+//	protected void onResume() {
+//		super.onResume();
+//		bus.register(this);
+//	}
+	
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
 		bus.unregister(this);
 	}
 	
 	@Override
-	protected void onResume() {
-		super.onResume();
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
 		bus.register(this);
 	}
 	

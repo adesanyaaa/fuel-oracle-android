@@ -58,7 +58,7 @@ public class FuelRecommendationMessage {
 		if(stations.isEmpty()) {
 			return null;
 		}
-		return stations.get(0);
+		return getStations().get(0);
 	}	
 
 	public boolean shouldFuel() {

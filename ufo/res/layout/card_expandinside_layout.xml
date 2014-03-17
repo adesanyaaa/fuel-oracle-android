@@ -48,16 +48,22 @@
 
         <!-- Expand layout. You can customize this element with your CardExpand class -->
 
+<!--         <FrameLayout -->
+<!--             android:id="@+id/card_content_expand_layout" -->
+<!--             style="@style/card.main_contentExpand" -->
+<!--             android:layout_width="match_parent" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:layout_marginBottom="8dp" -->
+<!--             android:layout_marginLeft="8dp" -->
+<!--             android:layout_marginRight="8dp"></FrameLayout> -->
         <FrameLayout
             android:id="@+id/card_content_expand_layout"
-            style="@style/card.main_contentExpand"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"></FrameLayout>
-
-
+            android:layout_marginRight="8dp" />
+        
         <!-- Main Content View Patch (hidden but needed for clicking in listviews) -->
         <FrameLayout
             android:id="@+id/card_main_content_layout"
