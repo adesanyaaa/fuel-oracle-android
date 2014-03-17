@@ -1,9 +1,13 @@
 package org.biu.ufo.ui.activities;
 
+import java.io.IOException;
+
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.UiThread;
 import org.biu.ufo.R;
 
+import android.content.res.AssetFileDescriptor;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -40,9 +44,27 @@ public class PopupActivity extends FragmentActivity {
 			FragmentTransaction transaction = fragmentManager.beginTransaction();
 			transaction.replace(R.id.content_frame, fragment, "POPUP_FRAGMENT").commit();			
 		}
-
+		playNotificationSound();
 		automaticClosing();
 	}
+	
+	private void playNotificationSound(){
+		AssetFileDescriptor afd;
+		try {
+			afd = getAssets().openFd("popup_notification.mp3");
+			MediaPlayer player = new MediaPlayer();
+			player.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
+		    player.prepare();
+		    player.start();
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
+	}
+
 		
 	@Override
 	protected void onPause() {
