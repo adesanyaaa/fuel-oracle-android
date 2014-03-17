@@ -1,18 +1,17 @@
 package org.biu.ufo.ui.activities;
 
+import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
+import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.res.StringArrayRes;
+import org.androidannotations.annotations.res.StringRes;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
-import org.biu.ufo.control.events.analyzer.routemonitor.EstimatedDestinationMessage;
 import org.biu.ufo.control.events.user.DestinationSelectedMessage;
 import org.biu.ufo.control.events.user.PeekNewDestinationMessage;
 import org.biu.ufo.control.events.user.ShowRecommendationsMessage;
-import org.biu.ufo.services.*;
-
-import com.squareup.otto.Subscribe;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,56 +19,132 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
+import com.squareup.otto.Subscribe;
 
-@EActivity(R.layout.activity_real_main)
+@EActivity(R.layout.activity_main)
 @OptionsMenu(R.menu.main)
-public class MainActivity extends FragmentActivity {
-	public static final String TAG = "RealMainActivity";
+public class MainActivityDev extends FragmentActivity {
+	public static final String TAG = "MainActivity";
 	
-	public static final int DEST = 0;
+	public static final int HOME = 0;
 	public static final int MAIN = 1;
+	public static final int DEST = 2;
+	public static final int STATUS_ANALYZER = 3;
+	public static final int SETTINGS = 4;
+	
 	public static final int RECOMMENDATIONS = 101;
+
+	@ViewById(R.id.drawer_layout)
+	DrawerLayout mDrawerLayout;
+
+	@ViewById(R.id.left_drawer)
+	ListView mDrawerList;
+
+	@StringRes(R.string.app_name)
+	String mDrawerTitle;
+
+	@StringRes(R.string.app_name)
+	String mTitle;
+
+	@StringArrayRes(R.array.drawer_elements)
+	String[] mDrawerElemetsTitles;
 
 	@Bean
 	OttoBus bus;
 	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
-		// TODO: make sure not opening the same shit twice!
-		UfoMainService_.intent(this).start();
+	public OttoBus getBus() {
+		return bus;
 	}
-
+	
 	@Override
-	protected void onPause() {
-		super.onPause();
+	protected void onCreate(Bundle arg0) {
+		// TODO Auto-generated method stub
+		super.onCreate(arg0);
+		
+	}
+	
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		
+		int screen = getIntent().getIntExtra("screen", -1);
+		
+		if (savedInstanceState == null && screen == -1) {
+			// on first time display view for first nav item
+			selectItem(0);
+		} else {
+			selectItem(screen);
+		}
+	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		
+		int screen = intent.getIntExtra("screen", -1);
+		if(screen >= 0) {
+			selectItem(screen);
+		}
+	}
+	
+//	@Override
+//	protected void onPause() {
+//		super.onPause();
+//		bus.unregister(this);
+//	}
+//	
+//	@Override
+//	protected void onResume() {
+//		super.onResume();
+//		bus.register(this);
+//	}
+	
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
 		bus.unregister(this);
 	}
 	
 	@Override
-	protected void onResume() {
-		super.onResume();
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
 		bus.register(this);
 	}
 	
-	@OptionsItem(R.id.action_settings)
+	@AfterViews
+	protected void setupDrawer() {
+		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+		mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+				R.layout.drawer_list_item, mDrawerElemetsTitles));
+		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+	}
+
+	@Override
+	public void setTitle(CharSequence title) {
+		mTitle = title.toString();
+	}
+
 	void openSettings() {
 		startActivity(new Intent(this, SettingsActivity.class));
 	}
-	
-//	@OptionsItem(R.id.action_start_service)
-//	void startService() {
-//		UfoMainService_.intent(this).start();
-//	}
-	
-	@OptionsItem(R.id.action_stop_service)
-	void stopService() {
-		UfoMainService_.intent(this).stop();
-		finish();
+
+	/* The click listener for ListView in the navigation drawer */
+	private class DrawerItemClickListener implements ListView.OnItemClickListener {
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			selectItem(position);        		
+		}
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 	    // if there is a fragment and the back stack of this fragment is not empty,
@@ -86,7 +161,8 @@ public class MainActivity extends FragmentActivity {
 	    }
 	    super.onBackPressed();
 	}
-
+	
+	
 	@Subscribe
 	public void onPeekNewDestination(PeekNewDestinationMessage message) {
 		// TODO: only if current fragment isn't destination!
@@ -103,47 +179,11 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 	
-	
-	@Subscribe
-	public void onEstimatedDestinationMessage(EstimatedDestinationMessage message) {
-		// TODO: only if current fragment isn't main!
-		int screen = getIntent().getIntExtra("screen", -1);
-		if(screen == -1) {
-			if(!(getCurrentFragment() instanceof FragmentMain)) {			
-				selectItem(MAIN);
-			}
-		}
-	}
-	
 	@Subscribe
 	public void onDestinationSelected(DestinationSelectedMessage message) {
 		// TODO: only if current fragment isn't main!
 		if(!(getCurrentFragment() instanceof FragmentMain)) {			
 			selectItem(MAIN);
-		}
-	}
-
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
-		
-		int screen = getIntent().getIntExtra("screen", -1);
-		
-		if (savedInstanceState == null && screen == -1) {
-			// on first time display view for first nav item
-			selectItem(DEST);
-		} else {
-			selectItem(screen);
-		}
-	}
-	
-	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-		
-		int screen = intent.getIntExtra("screen", -1);
-		if(screen >= 0) {
-			selectItem(screen);
 		}
 	}
 
@@ -161,6 +201,9 @@ public class MainActivity extends FragmentActivity {
 		// update the main content by replacing fragments
 		Fragment fragment;
 		switch (position) {
+		case HOME:
+			fragment = new FragmentHome_();
+			break;
 		case MAIN:
 			fragment = new FragmentMain_();
 			animate = true;
@@ -168,9 +211,15 @@ public class MainActivity extends FragmentActivity {
 		case DEST:
 			fragment = new FragmentDestination_();
 			break;	
+		case STATUS_ANALYZER:
+			fragment = new FragmentStatusAnalyzer_();
+			break;
 		case RECOMMENDATIONS:
 			fragment = new FragmentRecommendationsList_();
 			break;
+		case SETTINGS:
+			openSettings();
+			return;
 		default:
 			fragment = null;
 			break;
@@ -190,10 +239,16 @@ public class MainActivity extends FragmentActivity {
 			}
 			transaction.replace(R.id.content_frame, fragment, "CURRENT_FRAGMENT").commit();			
 		}
-	}
 
-	public OttoBus getBus() {
-		return bus;
+		// update selected item and title, then close the drawer
+		mDrawerList.setItemChecked(position, true);
+		mDrawerList.setSelection(position);
+//		if(position == 0) {
+//			setTitle(mDrawerTitle);
+//		} else {
+//			setTitle(mDrawerElemetsTitles[position]);        	
+//		}
+		mDrawerLayout.closeDrawer(mDrawerList);
 	}
 
 }

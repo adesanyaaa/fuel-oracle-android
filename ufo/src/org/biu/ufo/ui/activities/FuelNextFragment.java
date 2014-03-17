@@ -79,8 +79,9 @@ public class FuelNextFragment extends Fragment {
 	
 	@Click(R.id.popup_more_button)
 	public void showMoreButton() {
-		startActivity(new Intent(getActivity(), MainActivity_.class).putExtra("screen", MainActivity.RECOMMENDATIONS)
-				.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT));
+		startActivity(new Intent(getActivity(), MainActivity_.class).putExtra("screen", MainActivity.RECOMMENDATIONS));
+//				.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT));
+		getActivity().finish();
 	}
 
 

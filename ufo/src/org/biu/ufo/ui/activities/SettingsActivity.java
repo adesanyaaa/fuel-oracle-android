@@ -63,6 +63,10 @@ public class SettingsActivity extends PreferenceActivity {
         initializeLegacyLayout();
     }
 
+    @Override
+    protected boolean isValidFragment(String fragmentName) {
+    	return true;
+    }
     @SuppressWarnings("deprecation")
 	private void initializeLegacyLayout() {
         String action = getIntent().getAction();

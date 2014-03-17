@@ -1,10 +1,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
+<!--     <item -->
+<!--         android:id="@+id/action_start_service" -->
+<!--         android:orderInCategory="101" -->
+<!--         android:showAsAction="always" -->
+<!--         android:icon="@drawable/play" -->
+<!--         android:title="@string/action_start"/> -->
+    
+    <item
+        android:id="@+id/action_stop_service"
+        android:orderInCategory="101"
+        android:showAsAction="always"
+        android:icon="@drawable/stop"
+        android:title="@string/action_stop"/>
+    
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:showAsAction="ifRoom"
         android:icon="@android:drawable/ic_menu_preferences"
         android:title="@string/action_settings"/>
-
+    
 </menu>

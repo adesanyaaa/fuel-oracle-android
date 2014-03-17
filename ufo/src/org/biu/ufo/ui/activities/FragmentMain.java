@@ -106,7 +106,9 @@ public class FragmentMain extends Fragment {
 		header.setTitle(message);
 		//Add Header to card
 		card.addCardHeader(header);
-
+//		card.setExpanded(true);
+//		card_fuel_suggestion.setExpanded(true);
+		
 		if (init){
 			card_fuel_suggestion.setCard(card);
 		}else{
@@ -160,7 +162,6 @@ public class FragmentMain extends Fragment {
 
 				//Set the header title
 				header.setTitle(station.getAddress());
-				header.setPrice(String.valueOf(station.getPrice()));
 		        header.setPrice(String.format("%.2f", station.getPrice()));
 		        header.setPriceCurrencyResId(UnitConverter.getResourceForPriceCurrency(station.getPriceCurrency()));
 				
@@ -192,7 +193,8 @@ public class FragmentMain extends Fragment {
 						.setupView(card_fuel_suggestion);
 				card.setViewToClickToExpand(viewToClickToExpand);
 
-
+				card_fuel_suggestion.setExpanded(true);
+				card.setExpanded(true);
 				card_fuel_suggestion.replaceCard(card);
 				
 			}else{

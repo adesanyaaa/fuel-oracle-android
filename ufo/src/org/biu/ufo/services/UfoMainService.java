@@ -19,6 +19,7 @@ import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
 import org.biu.ufo.services.CarGatewayService.CarGatewayServiceBinder;
 import org.biu.ufo.settings.PreferenceManagerService_;
+import org.biu.ufo.ui.activities.MainActivity;
 
 import android.app.PendingIntent;
 import android.app.Service;
@@ -130,8 +131,9 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 					Class.forName("org.biu.ufo.ui.activities.MainActivity_"));
 			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
 					Intent.FLAG_ACTIVITY_SINGLE_TOP);
+			intent.putExtra("screen", MainActivity.MAIN);
 			PendingIntent pendingIntent = PendingIntent.getActivity(
-					this, 0, intent, 0);
+					this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 			NotificationCompat.Builder notificationBuilder =
 					new NotificationCompat.Builder(this);
