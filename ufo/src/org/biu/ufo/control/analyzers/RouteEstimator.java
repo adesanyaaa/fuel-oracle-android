@@ -43,6 +43,7 @@ public class RouteEstimator implements IAnalyzer {
 	private static final long MIN_INTERVAL_BETWEEN_ROUTE_REQUESTS = 2*60*1000;
 	
 	static class WayPoint {
+		long time = System.currentTimeMillis();
 		Location location;
 		Place place;
 	}
@@ -246,7 +247,7 @@ public class RouteEstimator implements IAnalyzer {
 					if(Calculator.distance(currentLocation, new Location(point)) < CLOSE_ENOUGH_DISTANCE) {
 						currentPositionInEstimatedRoute = i;
 						onRoute = true;
-					} else if(i - currentPositionInEstimatedRoute > 10) {
+					} else if(i - currentPositionInEstimatedRoute > 50) {
 						break;
 					}
 				}

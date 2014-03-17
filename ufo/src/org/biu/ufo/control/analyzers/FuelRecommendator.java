@@ -6,7 +6,6 @@ import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
-import org.androidannotations.annotations.UiThread;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.control.Calculator;
 import org.biu.ufo.control.Controller;
@@ -221,7 +220,6 @@ public class FuelRecommendator implements IAnalyzer {
 		return new FuelRecommendationMessage();
 	}
 	
-
 	@Override
 	public void start() {
 		bus.register(this);
