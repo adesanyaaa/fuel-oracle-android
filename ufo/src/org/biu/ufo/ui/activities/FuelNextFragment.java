@@ -1,8 +1,8 @@
 package org.biu.ufo.ui.activities;
 
-import it.gmariotti.cardslib.library.internal.CardHeader;
-import it.gmariotti.cardslib.library.view.component.CardHeaderView;
+import it.gmariotti.cardslib.library.view.CardView;
 
+import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
@@ -14,14 +14,14 @@ import android.support.v4.app.Fragment;
 
 import com.squareup.otto.Subscribe;
 
-@EFragment(R.layout.card_layout)
+@EFragment(R.layout.popup_layout)
 public class FuelNextFragment extends Fragment {
 	
 	@Bean
 	OttoBus bus;
 
 	@ViewById
-	CardHeaderView card_header_layout;
+	CardView popup_card_view;
 	
 	@Override
 	public void onPause() {
@@ -34,6 +34,11 @@ public class FuelNextFragment extends Fragment {
 		super.onResume();
 		bus.register(this);
 	}
+
+	@AfterViews
+	public void initialize() {
+		// Maybe nothing
+	}
 	
 	@Subscribe
 	public void onFuelRecommendationMessage(FuelRecommendationMessage message) {
@@ -42,9 +47,7 @@ public class FuelNextFragment extends Fragment {
 			return;
 		}
 		
-		CardHeader cardHeader = new CardHeader(getActivity());
-		cardHeader.setTitle(message.getTopStation().getAddress());
-		card_header_layout.addCardHeader(cardHeader);
+		// Initialize Card and set on popup_card_view
 	}
 
 }

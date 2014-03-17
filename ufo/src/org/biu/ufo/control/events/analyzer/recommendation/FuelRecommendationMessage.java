@@ -5,10 +5,13 @@ import java.util.List;
 
 import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
+import org.biu.ufo.rest.Station.CapacityUnit;
+import org.biu.ufo.ui.utils.UnitConverter;
 
 public class FuelRecommendationMessage {
 	private long time;
 	
+	Double fuelAmount;
 	Double fuelLevelAtRecommendTime;
 	Location locationAtRecommendTime;
 	List<Station> stations = new LinkedList<Station>();
@@ -23,6 +26,7 @@ public class FuelRecommendationMessage {
 	
 	public void setFuelLevel(double fuelLevel) {
 		this.fuelLevelAtRecommendTime = fuelLevel;
+
 	}
 	
 	public Double getFuelLevelAtRecommendTime() {
@@ -61,5 +65,8 @@ public class FuelRecommendationMessage {
 		return locationAtRecommendTime != null;
 	}
 
+	public Double getFuelAmount(CapacityUnit unit) {
+		return UnitConverter.getAverageGasTankSize(unit) * ((100 - fuelLevelAtRecommendTime)/100.0);
+	}
 	
 }

@@ -177,8 +177,9 @@ public class FragmentMain extends Fragment {
 		        expand.setFuelMeasurementResId(UnitConverter.getResourceForCapacityUnit(station.getCapacityUnit()));        
 				card.addCardExpand(expand);
 				
-				float fuelAmount = UnitConverter.getAverageGasTankSize(station.getCapacityUnit());
-				
+//				float fuelAmount = UnitConverter.getAverageGasTankSize(station.getCapacityUnit());
+		        double fuelAmount = message.getFuelAmount(station.getCapacityUnit());
+
 		        expand.setFuelAmount(fuelAmount);
 		        expand.setFuelTotalCost(fuelAmount * station.getPrice());
 

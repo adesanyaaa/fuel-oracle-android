@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 public class RecommendationCardExpandInside extends CardExpand {
 
-	private float fuelAmount;
+	private double fuelAmount;
 	private int fuelMeasurementResId;
 
 	private double fuelTotalCost;
@@ -69,7 +69,7 @@ public class RecommendationCardExpandInside extends CardExpand {
 		});
 	}
 
-	public void setFuelAmount(float fuelAmount) {
+	public void setFuelAmount(double fuelAmount) {
 		this.fuelAmount = fuelAmount;
 	}
 

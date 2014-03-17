@@ -33,9 +33,6 @@ import org.biu.ufo.R;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
-import org.biu.ufo.rest.Station.CapacityUnit;
-import org.biu.ufo.rest.Station.DistanceUnit;
-import org.biu.ufo.rest.Station.PriceCurrency;
 import org.biu.ufo.ui.cards.RecommendationCard;
 import org.biu.ufo.ui.cards.RecommendationCardExpandInside;
 import org.biu.ufo.ui.cards.RecommendationCardHeader;
@@ -116,8 +113,7 @@ public class FragmentRecommendationsList extends Fragment {
         expand.setFuelCostCurrencyResId(UnitConverter.getResourceForPriceCurrency(station.getPriceCurrency()));
         expand.setStationDistanceUnitResId(UnitConverter.getResourceForDistanceUnit(station.getDistanceUnit()));
         expand.setFuelMeasurementResId(UnitConverter.getResourceForCapacityUnit(station.getCapacityUnit()));        
-
-        float fuelAmount = UnitConverter.getAverageGasTankSize(station.getCapacityUnit());
+        double fuelAmount = recommendation.getFuelAmount(station.getCapacityUnit());
         expand.setFuelAmount(fuelAmount);
         expand.setFuelTotalCost(fuelAmount * station.getPrice());
         card.addCardExpand(expand);
