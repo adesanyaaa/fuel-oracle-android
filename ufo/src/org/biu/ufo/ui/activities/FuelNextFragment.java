@@ -20,9 +20,6 @@ public class FuelNextFragment extends Fragment {
 	@Bean
 	OttoBus bus;
 
-	@ViewById
-	CardView popup_card_view;
-	
 	@Override
 	public void onPause() {
 		super.onPause();

@@ -16,17 +16,109 @@
   ~   See the License for the specific language governing permissions and
   ~   limitations under the License.
   ~  *****************************************************************************
-  -->
-
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:card="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-     
-     <it.gmariotti.cardslib.library.view.CardView
-        android:id="@+id/popup_card_view"
-        android:layout_width="match_parent"
+    xmlns:card="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fuel_next"
+    android:orientation="horizontal" >
+
+    <!-- Main message -->
+
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        card:card_layout_resourceID="@layout/card_layout" />
-     
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/popup_header_caption"
+            style="@style/popup.header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/fuel_next_msg" />
+
+        <!-- Fuel Price -->
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/popup_ditance"
+                style="@style/popup.sub_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/separator_arrow" />
+            
+			<TextView
+                android:id="@+id/popup_ditance"
+                style="@style/popup.sub_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="22" />
+			
+			<TextView
+                android:id="@+id/popup_ditance_measurement"
+                style="@style/popup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="km" />
+
+        </LinearLayout>
+        
+        <!-- Distance -->
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/popup_ditance"
+                style="@style/popup.sub_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/separator_arrow" />
+            
+			<TextView
+                android:id="@+id/popup_ditance"
+                style="@style/popup.sub_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="22" />
+			
+			<TextView
+                android:id="@+id/popup_ditance_measurement"
+                style="@style/popup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="km" />
+
+			<TextView
+                android:id="@+id/popup_ditance_measurement"
+                style="@style/popup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="km" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <!-- Gas station logo -->
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="0" >
+
+        <ImageView
+            android:id="@+id/popup_gas_station_logo"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="15dp"
+            android:src="@drawable/delek" />
+    </LinearLayout>
+
 </LinearLayout>
