@@ -51,7 +51,8 @@ public class PopupNotificationManager {
 	}
 	
 	private void showPopupIfNeededAndPossible() {
-		if(recommendation != null && recommendation.shouldFuel() && currentSpeed < 50.0) {
+		if(recommendation != null && recommendation.shouldFuel() && recommendation.getTopStation() != null
+				&& currentSpeed < 50.0) {
 			recommendation = null;
 			IntentBuilder_ builder = PopupActivity_.intent(context).flags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			builder.get().putExtra("type", "fuel_next");
