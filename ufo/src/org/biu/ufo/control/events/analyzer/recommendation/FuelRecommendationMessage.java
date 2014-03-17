@@ -15,6 +15,7 @@ public class FuelRecommendationMessage {
 	Double fuelLevelAtRecommendTime;
 	Location locationAtRecommendTime;
 	List<Station> stations = new LinkedList<Station>();
+	List<Station> sortedStations;
 	
 	public FuelRecommendationMessage() {
 		this.time = System.currentTimeMillis();
@@ -50,7 +51,10 @@ public class FuelRecommendationMessage {
 	}
 	
 	public List<Station> getStations() {
-		return stations;
+		if(sortedStations == null) {
+			// Build sortedStations
+		}
+		return sortedStations;
 	}
 	
 	
