@@ -77,7 +77,7 @@ public class RouteDataStore {
 	
 	public boolean addLocation(Location location){
 		if(recorder != null)
-			return recorder.writeRecord(formatLocation(startLocation));
+			return recorder.writeRecord("location", formatLocation(startLocation));
 		return false;
 	}
 	

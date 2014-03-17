@@ -9,6 +9,7 @@ import java.util.Locale;
 
 import android.util.Log;
 
+import com.openxc.measurements.serializers.JsonSerializer;
 import com.openxc.util.FileOpener;
 
 /**
@@ -39,14 +40,15 @@ public class FileRecorder {
     	return openTimestampedFile();
     }
 
-    public synchronized boolean writeRecord(String record) {
+    public synchronized boolean writeRecord(String type, Object value) {
         if(mWriter == null) {
         	Log.e(TAG, "no file!");
         	return false;
         }
 
         try {
-            mWriter.write(record);
+        	mWriter.write(JsonSerializer.serialize(type, value, null, System.currentTimeMillis()));
+//            mWriter.write(value);
             mWriter.newLine();
         } catch(IOException e) {
             Log.w(TAG, "Unable to write measurement to file", e);
