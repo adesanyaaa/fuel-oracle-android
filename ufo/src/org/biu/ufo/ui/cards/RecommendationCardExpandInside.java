@@ -8,6 +8,7 @@ import org.biu.ufo.ui.utils.NavigationIntent;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ public class RecommendationCardExpandInside extends CardExpand {
 	private double stationDistance;
 	private int stationDistanceUnitResId;
 	
+	private String company;
 	private int companyLogo;
 
 	private Location location;
@@ -51,8 +53,12 @@ public class RecommendationCardExpandInside extends CardExpand {
 		TextView fuel_cost_currency = (TextView)view.findViewById(R.id.rec_fuel_cost_currency);
 		fuel_cost_currency.setText(fuelCostCurrencyResId);
 
-		TextView station_address = (TextView)view.findViewById(R.id.rec_station_address);
-		station_address.setText(stationAddress);
+		TextView station_company = (TextView)view.findViewById(R.id.rec_station_company);
+		if(!TextUtils.isEmpty(company)) {
+			station_company.setText(company);			
+		} else {
+			station_company.setText(stationAddress);
+		}
 
 		TextView station_distance = (TextView)view.findViewById(R.id.rec_station_distance);
 		station_distance.setText(String.format("%.2f", stationDistance));
@@ -109,5 +115,13 @@ public class RecommendationCardExpandInside extends CardExpand {
 	
 	public void setCompanyLogo(int companyLogo){
 		this.companyLogo = companyLogo;
+	}
+
+	public String getStationCompany() {
+		return company;
+	}
+	
+	public void setStationCompany(String company) {
+		this.company = company;
 	}
 }

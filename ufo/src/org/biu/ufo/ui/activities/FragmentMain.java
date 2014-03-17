@@ -171,6 +171,7 @@ public class FragmentMain extends Fragment {
 				RecommendationCardExpandInside expand = new RecommendationCardExpandInside(getActivity());
 		        expand.setLocation(new Location(station.getLat(), station.getLng()));
 		        expand.setStationAddress(station.getAddress());
+		        expand.setStationCompany(station.getCompany());
 		        expand.setCompanyLogo(UnitConverter.getResourceForStationLogo(station.getCompany()));
 		        expand.setStationDistance(station.getDistance());
 		        expand.setFuelCostCurrencyResId(UnitConverter.getResourceForPriceCurrency(station.getPriceCurrency()));

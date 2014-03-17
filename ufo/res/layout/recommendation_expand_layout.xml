@@ -110,7 +110,7 @@
                 android:layout_height="wrap_content" >
 
                 <TextView
-                    android:id="@+id/rec_station_address"
+                    android:id="@+id/rec_station_company"
                     style="@style/card.expand_simple_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -59,8 +59,8 @@ public class UnitConverter {
     }
     
 	public static int getResourceForStationLogo(String companyName) {
-		companyName = companyName.toLowerCase().trim();
 	    try {
+			companyName = companyName.toLowerCase().trim();
 	        Field idField = R.drawable.class.getDeclaredField("logo_"+companyName);
 	        return idField.getInt(idField);
 	    } catch (Exception e) {
