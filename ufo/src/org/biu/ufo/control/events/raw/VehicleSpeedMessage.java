@@ -11,4 +11,8 @@ public class VehicleSpeedMessage {
 		this.vehicleSpeed = String.valueOf(vehicleSpeed.getValue().doubleValue());
 		this.speed = vehicleSpeed.getValue().doubleValue();
 	}
+	
+	public double getSpeed() {
+		return speed;
+	}
 }

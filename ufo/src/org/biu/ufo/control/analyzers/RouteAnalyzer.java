@@ -171,7 +171,10 @@ public class RouteAnalyzer implements IAnalyzer {
 	@Override
 	public void stop() {
 		bus.unregister(this);		
-		routeDataStore.closeRecord(driveRoute.getEndLocation());
+		if(driveRoute != null && driveRoute.getEndLocation() != null) {
+			routeDataStore.closeRecord(driveRoute.getEndLocation());			
+		}
+		
 		routeDataStore.close();
 	}
 

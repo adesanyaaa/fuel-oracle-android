@@ -8,6 +8,7 @@ import org.biu.ufo.R;
 import org.biu.ufo.car.openxc.VehicleManagerConnector;
 import org.biu.ufo.car.openxc.VehicleManagerConnector.VehicleManagerConnectorCallback;
 import org.biu.ufo.control.Controller;
+import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
 import org.biu.ufo.control.events.connection.ObdConnectionLostMessage;
 import org.biu.ufo.control.events.connection.ObdDeviceAddressChangedMessage;
 import org.biu.ufo.control.events.raw.DistanceTraveled;
@@ -150,7 +151,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		Log.i(TAG, "Removing service from foreground.");
 		stopForeground(true);
 	}
-
+	
 	@Override
 	@UiThread
 	public void onVMConnected() {

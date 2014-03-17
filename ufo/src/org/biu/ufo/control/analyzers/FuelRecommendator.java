@@ -18,10 +18,8 @@ import org.biu.ufo.rest.Client;
 import org.biu.ufo.rest.MGFClient;
 import org.biu.ufo.rest.Station;
 import org.biu.ufo.rest.Station.DistanceUnit;
-import org.biu.ufo.ui.activities.PopupActivity_;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 
@@ -174,7 +172,7 @@ public class FuelRecommendator implements IAnalyzer {
 			}
 			bus.post(lastRecommendation);
 			// TODO: this is a popup test! Should make sure MainActivity is not visible!!!
-			PopupActivity_.intent(context.getApplicationContext()).flags(Intent.FLAG_ACTIVITY_NEW_TASK).start();	
+//			PopupActivity_.intent(context.getApplicationContext()).flags(Intent.FLAG_ACTIVITY_NEW_TASK).start();	
 		}
 	}
 	

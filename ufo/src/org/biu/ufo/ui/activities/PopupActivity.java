@@ -32,16 +32,18 @@ public class PopupActivity extends FragmentActivity {
 		params.flags = params.flags | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH;	
 		params.flags = params.flags & ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
 		getWindow().setAttributes(params);
-		
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		Fragment fragment = new FuelNextFragment_();
-		fragment.setRetainInstance(true);
-		FragmentTransaction transaction = fragmentManager.beginTransaction();
-		transaction.replace(R.id.content_frame, fragment, "POPUP_FRAGMENT").commit();			
+	
+		if(getIntent().getStringExtra("type").equals("fuel_next")) {
+			FragmentManager fragmentManager = getSupportFragmentManager();
+			Fragment fragment = new FuelNextFragment_();
+			fragment.setRetainInstance(true);
+			FragmentTransaction transaction = fragmentManager.beginTransaction();
+			transaction.replace(R.id.content_frame, fragment, "POPUP_FRAGMENT").commit();			
+		}
 
 		automaticClosing();
 	}
-	
+		
 	@Override
 	protected void onPause() {
 		overridePendingTransition(0, 0);
