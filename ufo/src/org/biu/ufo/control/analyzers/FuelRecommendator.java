@@ -87,7 +87,7 @@ public class FuelRecommendator implements IAnalyzer {
 		lastRecommendation.setFuelLevel(currentFuelLevel.doubleValue());
 		lastRecommendation.setLocation(new Location(currentLocation));
 		
-		if(ONLY_NEARBY) {
+		if(ONLY_NEARBY || controller.getRouteEstimator().getDestinationLocation() == null) {
 			generateStationsRequestId();
 			requestNearbyStations(currentLocation.getLatitude(), currentLocation.getLongitude());			
 		} else {

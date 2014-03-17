@@ -1,6 +1,6 @@
 package org.biu.ufo.receivers;
 
-import org.biu.ufo.settings.PreferenceManagerService_;
+import org.biu.ufo.services.UfoMainService_;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -8,11 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.openxc.VehicleManager;
 import com.openxc.interfaces.bluetooth.BluetoothVehicleInterface;
 
-// TODO don't use OpenXC device name prefix
-//  instead just read latest device address from configuration
 public class BluetoothReceiver extends BroadcastReceiver {
     private final static String TAG = BluetoothReceiver.class.getSimpleName();
 
@@ -22,23 +19,26 @@ public class BluetoothReceiver extends BroadcastReceiver {
 
         // If a Bluetooth device with the OpenXC device name prefix is
         // connected, start the service if it's not already started
-        if(intent.getAction().compareTo(
-                    BluetoothDevice.ACTION_ACL_CONNECTED) == 0){
-            BluetoothDevice bluetoothDevice = (BluetoothDevice)
-                intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+        if(intent.getAction().compareTo(BluetoothDevice.ACTION_ACL_CONNECTED) == 0) {
+            BluetoothDevice bluetoothDevice = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
             if(bluetoothDevice != null
                     && bluetoothDevice.getName() != null
-                    && bluetoothDevice.getName().contains(
-                        BluetoothVehicleInterface.DEVICE_NAME_PREFIX)){
-
+                    && isVehicleDevice(bluetoothDevice.getName())) {
+            	
                 Log.i(TAG, "Starting vehicle service on bluetooth connection " +
-                        "to " + BluetoothVehicleInterface.DEVICE_NAME_PREFIX +
-                        "*.");
-                context.startService(new Intent(context, VehicleManager.class));
-                context.startService(new Intent(context,
-                            PreferenceManagerService_.class));
+                        "to " + bluetoothDevice.getName());
+                
+                UfoMainService_.intent(context.getApplicationContext()).start();
             }
+        } else if(intent.getAction().compareTo(BluetoothDevice.ACTION_ACL_DISCONNECTED) == 0) {
+        	// TODO: stop it!!!!!!
         }
+    }
+    
+    private boolean isVehicleDevice(String name) {
+    	return name.contains(BluetoothVehicleInterface.DEVICE_NAME_PREFIX) ||
+    			name.toLowerCase().contains("OBD");
+    			
     }
 }

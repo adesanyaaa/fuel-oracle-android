@@ -21,6 +21,9 @@
     </plurals>
     <string name="countdown_dismissing">Dismissing</string>
     
+    <!-- Route overview card -->
+    <string name="click_to_choose_dest">Tap to choose destination</string>    
+    
     <!-- Recommendation card -->
     <string name="rec_fuel_cost">0</string>
     <string name="rec_station_name">Station Name</string>

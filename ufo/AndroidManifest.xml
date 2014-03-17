@@ -49,15 +49,16 @@
         <service android:name="org.biu.ufo.services.AlwaysListeningSpeechRecognizerService_" />
         
         <!-- Receivers -->
-        <receiver android:name="org.biu.ufo.receivers.BootupReceiver" >
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
+<!--         <receiver android:name="org.biu.ufo.receivers.BootupReceiver" > -->
+<!--             <intent-filter> -->
+<!--                 <action android:name="android.intent.action.BOOT_COMPLETED" /> -->
+<!--             </intent-filter> -->
+<!--         </receiver> -->
         <receiver android:name="org.biu.ufo.receivers.BluetoothReceiver" >
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
-            </intent-filter>
+                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
+                </intent-filter>
         </receiver>
 
         <!-- Activities -->
