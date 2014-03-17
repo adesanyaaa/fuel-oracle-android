@@ -20,7 +20,7 @@ import org.biu.ufo.car.obd.enums.AvailableCommandNames;
  * Distance traveled since codes cleared-up.
  */
 public class DistanceTraveledSinceCodesClearedObdCommand extends BaseObdQueryCommand implements SystemOfUnits {
-	public static String CMD = "01 44";
+	public static String CMD = "01 31";
 
 	private int km = 0;
 

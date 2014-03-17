@@ -10,6 +10,7 @@ import org.biu.ufo.car.openxc.VehicleManagerConnector.VehicleManagerConnectorCal
 import org.biu.ufo.control.Controller;
 import org.biu.ufo.control.events.connection.ObdConnectionLostMessage;
 import org.biu.ufo.control.events.connection.ObdDeviceAddressChangedMessage;
+import org.biu.ufo.control.events.raw.DistanceTraveled;
 import org.biu.ufo.control.events.raw.EngineSpeedMessage;
 import org.biu.ufo.control.events.raw.FuelConsumedMessage;
 import org.biu.ufo.control.events.raw.FuelLevelMessage;
@@ -36,6 +37,7 @@ import com.openxc.measurements.FuelLevel;
 import com.openxc.measurements.Latitude;
 import com.openxc.measurements.Longitude;
 import com.openxc.measurements.Measurement;
+import com.openxc.measurements.Odometer;
 import com.openxc.measurements.UnrecognizedMeasurementTypeException;
 import com.openxc.measurements.VehicleSpeed;
 import com.openxc.remote.VehicleServiceException;
@@ -158,6 +160,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 			mVMmConnector.getVehicleManager().addListener(FuelLevel.class, fuelLevelListener);
 			mVMmConnector.getVehicleManager().addListener(VehicleSpeed.class, vehicleSpeedListener);
 			mVMmConnector.getVehicleManager().addListener(FuelConsumed.class, fuelConsumedListener);
+			mVMmConnector.getVehicleManager().addListener(Odometer.class, odometerListener);
 			mVMmConnector.getVehicleManager().addListener(Latitude.class, latitudeListener);
 			mVMmConnector.getVehicleManager().addListener(Longitude.class, longitudeListener);
 			mVMmConnector.getVehicleManager().addListener(EngineSpeed.class, engineSpeedListener);
@@ -315,6 +318,15 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 			post(new FuelLevelMessage(fuelLevel));
 		}
 	};
+	
+	private Odometer.Listener odometerListener = new Odometer.Listener() {
 
+		@Override
+		public void receive(Measurement measurement) {
+			final Odometer odometer = (Odometer) measurement;
+			post(new DistanceTraveled(odometer));		}
+		
+	};
+	
 	
 }

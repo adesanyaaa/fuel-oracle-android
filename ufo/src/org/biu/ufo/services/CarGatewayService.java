@@ -12,6 +12,7 @@ import org.biu.ufo.OttoBus;
 import org.biu.ufo.car.obd.commands.BaseObdQueryCommand;
 import org.biu.ufo.car.obd.commands.IObdCommand;
 import org.biu.ufo.car.obd.commands.SpeedObdCommand;
+import org.biu.ufo.car.obd.commands.control.DistanceTraveledSinceCodesClearedObdCommand;
 import org.biu.ufo.car.obd.commands.engine.EngineRPMObdCommand;
 import org.biu.ufo.car.obd.commands.fuel.FuelLevelObdCommand;
 import org.biu.ufo.car.obd.commands.protocol.EchoOffObdCommand;
@@ -35,6 +36,7 @@ import android.util.Log;
 
 import com.openxc.measurements.EngineSpeed;
 import com.openxc.measurements.FuelLevel;
+import com.openxc.measurements.Odometer;
 import com.openxc.measurements.VehicleSpeed;
 
 /**
@@ -223,7 +225,10 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 			vmCustomDataSource.notifyMeasurement(new EngineSpeed(((EngineRPMObdCommand) job).getRPM()).toRaw());
 		} else if(job instanceof SpeedObdCommand) {
 			vmCustomDataSource.notifyMeasurement(new VehicleSpeed(((SpeedObdCommand) job).getMetricSpeed()).toRaw());
-		}/* else if(job instanceof FuelConsumptionRateObdCommand) {
+		} else if(job instanceof DistanceTraveledSinceCodesClearedObdCommand) {
+			vmCustomDataSource.notifyMeasurement(new Odometer(((DistanceTraveledSinceCodesClearedObdCommand) job).getKm()).toRaw());
+		}
+		/* else if(job instanceof FuelConsumptionRateObdCommand) {
 			vmCustomDataSource.notifyMeasurement(new FuelConsumed(((FuelConsumptionRateObdCommand) job).getMetricSpeed()).toRaw());
 		}*/
 	}
@@ -258,6 +263,7 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 					addQuery(new FuelLevelObdCommand());
 					addQuery(new EngineRPMObdCommand());
 					addQuery(new SpeedObdCommand(false));
+					addQuery(new DistanceTraveledSinceCodesClearedObdCommand());
 
 					// run again in 5s
 					runOnBackgroundDelayed(mQueueCommands, 5000);				
