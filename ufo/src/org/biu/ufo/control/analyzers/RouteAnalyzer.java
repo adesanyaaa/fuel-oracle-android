@@ -5,13 +5,14 @@ import org.androidannotations.annotations.EBean;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.control.Calculator;
 import org.biu.ufo.control.Controller;
+import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteStopMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteSummaryMessage;
-import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
 import org.biu.ufo.control.events.raw.EngineSpeedMessage;
 import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
 import org.biu.ufo.model.Location;
+import org.biu.ufo.storage.RouteDataStore;
 
 import android.os.Handler;
 import android.os.Message;
@@ -39,8 +40,12 @@ public class RouteAnalyzer implements IAnalyzer {
 
 	@Bean
 	OttoBus bus;
+
+	@Bean
+	RouteDataStore routeDataStore;
+
 	Controller controller;
-	
+
 	Location refLocation;
 	Location currentLocation;
 	double vehicleSpeed = 0;
@@ -61,6 +66,9 @@ public class RouteAnalyzer implements IAnalyzer {
 				driveRoute.setEndTime(System.currentTimeMillis());
 				bus.post(new RouteStopMessage(driveRoute.getEndLocation()));
 				bus.post(driveRoute);
+				
+				routeDataStore.closeRecord(driveRoute.getEndLocation());
+
 				firstTimeInit = true;
 				driveStarted = false;
 				durationHandler.removeMessages(1);
@@ -75,15 +83,17 @@ public class RouteAnalyzer implements IAnalyzer {
 	@Subscribe
 	public void onLocationUpdate(LocationMessage message){
 		currentLocation = new Location(message.location);
-		
+
 		if (firstTimeInit){
 			firstTimeInit = false;
-			
+
 			refLocation = message.location;
 			driveRoute = new RouteSummaryMessage();
 			driveRoute.setStartTime(System.currentTimeMillis());
 			driveRoute.getRoute().add(new Location(refLocation));
-
+			
+			routeDataStore.initRecord(refLocation);
+			
 		}else{
 			distanceCheck();
 		}
@@ -114,7 +124,7 @@ public class RouteAnalyzer implements IAnalyzer {
 		}
 		return null;
 	}
-	
+
 	@Produce
 	public RouteStopMessage produceEndOfRouteStatusMessage() {
 		if(!driveStarted && driveRoute != null && driveRoute.isEnded()) {
@@ -122,10 +132,10 @@ public class RouteAnalyzer implements IAnalyzer {
 		}
 		return null;
 	}
-	
+
 	private void distanceCheck(){
 		if (Calculator.distance(currentLocation, refLocation) > MIN_DISTANCE_KM) {
-			
+
 			if (!driveStarted){
 				driveStarted = true;
 				bus.post(new RouteStartMessage(driveRoute.getStartLocation()));
@@ -133,6 +143,7 @@ public class RouteAnalyzer implements IAnalyzer {
 
 			refLocation = new Location(currentLocation);
 			driveRoute.getRoute().add(refLocation);
+			routeDataStore.addLocation(refLocation);
 			restartTimer();
 
 		}
@@ -150,11 +161,14 @@ public class RouteAnalyzer implements IAnalyzer {
 	@Override
 	public void start() {
 		bus.register(this);
+		routeDataStore.open();
 	}
 
 	@Override
 	public void stop() {
 		bus.unregister(this);		
+		routeDataStore.closeRecord(driveRoute.getEndLocation());
+		routeDataStore.close();
 	}
 
 	@Override

@@ -1,13 +1,6 @@
 package org.biu.ufo.storage;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.Date;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
@@ -16,25 +9,20 @@ import org.biu.ufo.model.Location;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.text.format.DateFormat;
+
+import com.openxc.util.AndroidFileOpener;
 
 
 @EBean
 public class RouteDataStore {
-	
-	private static final String FILE_NAME_FORMAT = "yyyy-MM-dd_hh-mm-ss";
-	private static final String filepath = "RouteHistory";
-	private File routeHistoryFile;
-	private File directory = null;
-	
+	private static final String DIRECTORY_NAME = "UfoRoutes";
+
 	private Location startLocation;
 	private Location endLocation;
+	private FileRecorder recorder;
 	private String fileName;
-	private boolean fileCreated;
-	private BufferedWriter writer;
 	
 	// Database fields
 	private SQLiteDatabase database = null;
@@ -56,63 +44,56 @@ public class RouteDataStore {
 
 	
 	public void open() throws SQLException{
-		//database = dbHelper.getWritableDatabase();
+		database = dbHelper.getWritableDatabase();
 	}
 	
 	public void close() {
-		//dbHelper.close();
+		dbHelper.close();
 	}
 	
 	public boolean initRecord(Location startLocation){
-		if (database == null){
-			open();
+		// close old file
+		if(this.recorder != null) {
+			this.recorder.stop();			
 		}
-		if (directory == null){
-			ContextWrapper contextWrapper = new ContextWrapper(context);
-			directory = contextWrapper.getDir(filepath, Context.MODE_PRIVATE);	
+		
+		// open new file
+		this.recorder = new FileRecorder(new AndroidFileOpener(DIRECTORY_NAME));
+		try {
+			this.fileName = this.recorder.openNewFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+			this.recorder = null;
+			this.fileName = null;
+			return false;
 		}
 		this.startLocation = startLocation;
-		
-		fileName = (String) DateFormat.format(FILE_NAME_FORMAT, new Date());
-		routeHistoryFile = new File(directory, fileName);
-		
-		try {
-			FileOutputStream fOut = new FileOutputStream(routeHistoryFile);
-			BufferedOutputStream buf = new BufferedOutputStream(fOut);
-            OutputStreamWriter osw = new OutputStreamWriter(buf);
-            writer = new BufferedWriter(osw);
-			fileCreated = true;
-		} catch (FileNotFoundException e) {
-			fileCreated = false;
-			e.printStackTrace();
-		}
-		return fileCreated;
+		return addLocation(startLocation);
+	}
+	
+	public String formatLocation(Location location) {
+		return String.valueOf(location.getLongitude()) + "," +String.valueOf(location.getLatitude());
 	}
 	
 	public boolean addLocation(Location location){
-		if (fileCreated){
-			String locationStatement = String.valueOf(location.getLongitude()) + "," +String.valueOf(location.getLatitude()+"\n");
-			try {
-				writer.write(locationStatement);
-				writer.flush();
-			} catch (IOException e) {
-				return false;
-			}
-		}
-		return fileCreated;
+		if(recorder != null)
+			return recorder.writeRecord(formatLocation(startLocation));
+		return false;
 	}
 	
 	public boolean closeRecord(Location endlocation){
-		if (fileCreated){
-			try {
-				this.endLocation = endlocation;
-				writer.close();
-				storeRoute();
-			} catch (IOException e) {
-				return false;
-			}
-		}
-		return fileCreated;
+		if(this.recorder != null) {
+			this.endLocation = endlocation;
+			addLocation(this.endLocation);		
+			storeRoute();
+		
+			this.recorder.stop();	
+			this.recorder = null;
+			this.fileName = null;
+
+			return true;
+		}	
+		return false;
 	}
 	
 	private long storeRoute() {
