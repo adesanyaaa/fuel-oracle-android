@@ -62,7 +62,7 @@ public class RouteOverviewCard extends Card {
         return title;
     }
     
-    private void initialize() {
+    public void initialize() {
         CardHeader header = new CardHeader(getContext());
         header.setTitle(getHeaderTitle());        	
         header.setOtherButtonDrawable(R.drawable.card_menu_button_rounded_overflow);

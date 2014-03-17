@@ -16,6 +16,7 @@ import org.biu.ufo.storage.RouteDataStore;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
@@ -135,7 +136,6 @@ public class RouteAnalyzer implements IAnalyzer {
 
 	private void distanceCheck(){
 		if (Calculator.distance(currentLocation, refLocation) > MIN_DISTANCE_KM) {
-
 			if (!driveStarted){
 				driveStarted = true;
 				bus.post(new RouteStartMessage(driveRoute.getStartLocation()));
@@ -143,6 +143,10 @@ public class RouteAnalyzer implements IAnalyzer {
 
 			refLocation = new Location(currentLocation);
 			driveRoute.getRoute().add(refLocation);
+			
+//			double distance = Calculator.distance(currentLocation, refLocation);
+//			Log.e("distance", "" + distance + " lat=" + refLocation.getLatitude() + ", lng=" + refLocation.getLongitude());
+			
 			routeDataStore.addLocation(refLocation);
 			restartTimer();
 

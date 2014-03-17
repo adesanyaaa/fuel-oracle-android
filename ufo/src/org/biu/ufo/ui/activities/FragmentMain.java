@@ -12,6 +12,7 @@ import org.biu.ufo.R;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.EstimatedDestinationMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
+import org.biu.ufo.control.events.analyzer.routemonitor.RouteStopMessage;
 import org.biu.ufo.control.events.raw.EngineSpeedMessage;
 import org.biu.ufo.control.events.raw.FuelLevelMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
@@ -82,18 +83,24 @@ public class FragmentMain extends Fragment {
 	
 	@Subscribe
 	public void onRouteStartMessage(RouteStartMessage message) {		
-		RouteOverviewCard card = (RouteOverviewCard)card_route_overview.getCard();
+		RouteOverviewCard oldCard = (RouteOverviewCard)card_route_overview.getCard();
+		
+		RouteOverviewCard card = new RouteOverviewCard(oldCard.getContext());
+		card.setDestination(oldCard.getDestination());
 		card.setDrivingState(true);
-		card.setTitle(card.getHeaderTitle());
-		card_route_overview.refreshCard(card);
+		card.initialize();		
+		card_route_overview.replaceCard(card);
 	}
 	
 	@Subscribe
-	public void onRouteStopMessage(RouteStartMessage message) {
-		RouteOverviewCard card = (RouteOverviewCard)card_route_overview.getCard();
+	public void onRouteStopMessage(RouteStopMessage message) {
+		RouteOverviewCard oldCard = (RouteOverviewCard)card_route_overview.getCard();
+		
+		RouteOverviewCard card = new RouteOverviewCard(oldCard.getContext());
+		card.setDestination(oldCard.getDestination());
 		card.setDrivingState(false);
-		card.setTitle(card.getHeaderTitle());
-		card_route_overview.refreshCard(card);
+		card.initialize();
+		card_route_overview.replaceCard(card);
 	}
 
 	@Subscribe

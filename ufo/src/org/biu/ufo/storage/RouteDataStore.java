@@ -72,12 +72,12 @@ public class RouteDataStore {
 	}
 	
 	public String formatLocation(Location location) {
-		return String.valueOf(location.getLongitude()) + "," +String.valueOf(location.getLatitude());
+		return String.valueOf(location.getLatitude()) + "," +String.valueOf(location.getLongitude());
 	}
 	
 	public boolean addLocation(Location location){
 		if(recorder != null)
-			return recorder.writeRecord("location", formatLocation(startLocation));
+			return recorder.writeRecord("location", formatLocation(location));
 		return false;
 	}
 	
