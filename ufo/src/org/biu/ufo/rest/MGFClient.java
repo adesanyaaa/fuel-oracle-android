@@ -27,6 +27,9 @@ public class MGFClient implements Client {
 				
 		List<Station> result = new ArrayList<Station>(response.stations.size());
 		for(org.biu.ufo.rest.internal.mygasfeed.Station mgfStation : response.stations) {
+			if(mgfStation.price.equals("N/A"))
+				continue;
+			
 			Station station = new Station(mgfStation);
 			
 			station.setAddress(mgfStation.address);
