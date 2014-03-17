@@ -158,12 +158,16 @@ public class FuelRecommendator implements IAnalyzer {
 
 	void delieverStationsList(final List<Station> stations) {
 		Log.d(TAG, "delieverStationsList");		
+		--pendingRequests;
+
+		if(lastRecommendation == null)
+			return;
 
 		if(stations != null) {
 			lastRecommendation.addStations(stations);			
 		}
 		
-		--pendingRequests;
+
 		if(pendingRequests == 0) {
 			// Fix distance
 			for(Station station : lastRecommendation.getStations()) {

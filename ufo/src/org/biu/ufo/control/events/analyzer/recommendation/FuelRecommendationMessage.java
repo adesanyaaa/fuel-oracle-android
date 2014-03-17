@@ -1,5 +1,7 @@
 package org.biu.ufo.control.events.analyzer.recommendation;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,6 +11,9 @@ import org.biu.ufo.rest.Station.CapacityUnit;
 import org.biu.ufo.ui.utils.UnitConverter;
 
 public class FuelRecommendationMessage {
+	public static final double STATION_SCORE_ALPHA = 0.3; 
+
+	
 	private long time;
 	
 	Double fuelAmount;
@@ -16,7 +21,7 @@ public class FuelRecommendationMessage {
 	Location locationAtRecommendTime;
 	List<Station> stations = new LinkedList<Station>();
 	List<Station> sortedStations;
-	
+
 	public FuelRecommendationMessage() {
 		this.time = System.currentTimeMillis();
 	}
@@ -51,8 +56,18 @@ public class FuelRecommendationMessage {
 	}
 	
 	public List<Station> getStations() {
-		if(sortedStations == null) {
-			// Build sortedStations
+		if (sortedStations == null){
+			 Collections.sort(stations, new Comparator<Station>() {
+
+				@Override
+				public int compare(Station lhs, Station rhs) {
+					double score = lhs.getPrice()*STATION_SCORE_ALPHA + lhs.getDistance()*(1-STATION_SCORE_ALPHA);
+					double anotherScore = rhs.getPrice()*STATION_SCORE_ALPHA + rhs.getDistance()*(1-STATION_SCORE_ALPHA);
+					return (int) (score - anotherScore);
+	
+				}
+			});
+			 sortedStations = stations;
 		}
 		return sortedStations;
 	}

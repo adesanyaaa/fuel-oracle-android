@@ -83,10 +83,10 @@ public class FragmentRecommendationsList extends Fragment {
             cards.add(card);
         }
         
-        if(cards.size() > 0) {
-        	cards.get(0).setExpanded(true);
-        }
-        
+//        if(cards.size() > 0) {
+//        	cards.get(0).setExpanded(true);
+//        }
+//        
         ((CardArrayAdapter)listView.getAdapter()).notifyDataSetChanged();
     }
 
@@ -100,7 +100,7 @@ public class FragmentRecommendationsList extends Fragment {
 
         // Header
         RecommendationCardHeader header = new RecommendationCardHeader(getActivity());
-        header.setTitle(station.getCompany());
+        header.setTitle(station.getAddress());
         header.setPrice(String.format("%.2f", station.getPrice()));
         header.setPriceCurrencyResId(UnitConverter.getResourceForPriceCurrency(station.getPriceCurrency()));
         card.addCardHeader(header);
@@ -110,6 +110,7 @@ public class FragmentRecommendationsList extends Fragment {
         expand.setLocation(new Location(station.getLat(), station.getLng()));
         expand.setStationAddress(station.getAddress());
         expand.setStationDistance(station.getDistance());
+        expand.setStationCompany(station.getCompany());
         expand.setCompanyLogo(UnitConverter.getResourceForStationLogo(station.getCompany()));
         expand.setFuelCostCurrencyResId(UnitConverter.getResourceForPriceCurrency(station.getPriceCurrency()));
         expand.setStationDistanceUnitResId(UnitConverter.getResourceForDistanceUnit(station.getDistanceUnit()));
