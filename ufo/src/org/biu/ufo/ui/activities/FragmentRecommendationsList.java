@@ -39,6 +39,7 @@ import org.biu.ufo.rest.Station.PriceCurrency;
 import org.biu.ufo.ui.cards.RecommendationCard;
 import org.biu.ufo.ui.cards.RecommendationCardExpandInside;
 import org.biu.ufo.ui.cards.RecommendationCardHeader;
+import org.biu.ufo.ui.utils.UnitConverter;
 
 import android.support.v4.app.Fragment;
 
@@ -104,7 +105,7 @@ public class FragmentRecommendationsList extends Fragment {
         RecommendationCardHeader header = new RecommendationCardHeader(getActivity());
         header.setTitle(station.getCompany());
         header.setPrice(String.format("%.2f", station.getPrice()));
-        header.setPriceCurrencyResId(getResourceForPriceCurrency(station.getPriceCurrency()));
+        header.setPriceCurrencyResId(UnitConverter.getResourceForPriceCurrency(station.getPriceCurrency()));
         card.addCardHeader(header);
 
         // Expand area
@@ -112,11 +113,11 @@ public class FragmentRecommendationsList extends Fragment {
         expand.setLocation(new Location(station.getLat(), station.getLng()));
         expand.setStationAddress(station.getAddress());
         expand.setStationDistance(station.getDistance());
-        expand.setFuelCostCurrencyResId(getResourceForPriceCurrency(station.getPriceCurrency()));
-        expand.setStationDistanceUnitResId(getResourceForDistanceUnit(station.getDistanceUnit()));
-        expand.setFuelMeasurementResId(getResourceForCapacityUnit(station.getCapacityUnit()));        
-        //TODO!!!
-        float fuelAmount = 7;
+        expand.setFuelCostCurrencyResId(UnitConverter.getResourceForPriceCurrency(station.getPriceCurrency()));
+        expand.setStationDistanceUnitResId(UnitConverter.getResourceForDistanceUnit(station.getDistanceUnit()));
+        expand.setFuelMeasurementResId(UnitConverter.getResourceForCapacityUnit(station.getCapacityUnit()));        
+
+        float fuelAmount = UnitConverter.getAverageGasTankSize(station.getCapacityUnit());
         expand.setFuelAmount(fuelAmount);
         expand.setFuelTotalCost(fuelAmount * station.getPrice());
         card.addCardExpand(expand);
@@ -124,37 +125,5 @@ public class FragmentRecommendationsList extends Fragment {
         return card;
     }
     
-    int getResourceForPriceCurrency(PriceCurrency priceCurrency) {
-        switch(priceCurrency){
-		case CENTS:
-			return R.string.currency_cent;
-		case DOLLARS:
-			return R.string.currency_dollar;
-		case NIS:
-			return R.string.currency_nis;
-        }
-        return R.string.currency_dollar;
-    }
-
-    int getResourceForDistanceUnit(DistanceUnit distanceUnit) {
-        switch(distanceUnit){
-		case KM:
-			return R.string.measurement_km;
-		case MILES:
-			return R.string.measurement_mile;
-        }
-        return R.string.measurement_mile;
-    }
-
-    int getResourceForCapacityUnit(CapacityUnit capacityUnit) {
-        switch(capacityUnit){
-		case LITTERS:
-			return R.string.measurement_liter;
-		case UK_GALONS:
-			return R.string.measurement_uk_gal;
-		case US_GALONS:
-			return R.string.measurement_us_gal;
-        }
-        return R.string.measurement_us_gal;
-    }
+ 
 }
