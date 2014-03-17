@@ -310,5 +310,11 @@ public class RouteEstimator implements IAnalyzer {
 		this.controller = controller;
 	}
 
+	public Location getDestinationLocation() {
+		if(destPoint != null)
+			return destPoint.location;
+		return null;
+	}
+
 	
 }

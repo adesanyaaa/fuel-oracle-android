@@ -65,12 +65,18 @@ public class RouteOverviewCard extends Card {
     public void initialize() {
         CardHeader header = new CardHeader(getContext());
         header.setTitle(getHeaderTitle());        	
-        header.setOtherButtonDrawable(R.drawable.card_menu_button_rounded_overflow);
+        header.setOtherButtonDrawable(android.R.drawable.ic_menu_mapmode);
         header.setOtherButtonVisible(true);
         header.setOtherButtonClickListener(new OnClickCardHeaderOtherButtonListener() {
 			@Override
 			public void onButtonItemClick(Card card, View view) {
-				((MainActivity)getContext()).getBus().post(new PeekNewDestinationMessage());
+            	if(destination != null) {
+                    Intent intent = NavigationIntent.getNavigationIntent(
+                    		new Location(destination.getAddress().getLatitude(), destination.getAddress().getLongitude()));
+                    getContext().startActivity(intent);            		
+            	} else {
+    				((MainActivity)getContext()).getBus().post(new PeekNewDestinationMessage());
+            	}
 			}
 		});
         addCardHeader(header);
@@ -79,11 +85,7 @@ public class RouteOverviewCard extends Card {
         setOnClickListener(new OnCardClickListener() {
             @Override
             public void onClick(Card card, View view) {
-            	if(destination != null) {
-                    Intent intent = NavigationIntent.getNavigationIntent(
-                    		new Location(destination.getAddress().getLatitude(), destination.getAddress().getLongitude()));
-                    getContext().startActivity(intent);            		
-            	}
+				((MainActivity)getContext()).getBus().post(new PeekNewDestinationMessage());
             }
         });
     }
@@ -93,8 +95,11 @@ public class RouteOverviewCard extends Card {
         //Retrieve elements
         mText = (TextView) parent.findViewById(R.id.destination_text);
 
-        if (mText != null && destination != null)
+        if (mText != null && destination != null) {
             mText.setText(destination.toString());
+        } else {
+        	mText.setText(R.string.click_to_choose_dest);
+        }
 
     }
 }
