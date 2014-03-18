@@ -21,6 +21,8 @@ import org.biu.ufo.control.events.raw.FuelLevelMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
+import org.biu.ufo.ui.cards.BasicInfoCard;
+import org.biu.ufo.ui.cards.MoreFuelSuggestionsCard;
 import org.biu.ufo.ui.cards.RecommendationCard;
 import org.biu.ufo.ui.cards.RecommendationCardExpandInside;
 import org.biu.ufo.ui.cards.RecommendationCardHeader;
@@ -28,8 +30,10 @@ import org.biu.ufo.ui.cards.RouteOverviewCard;
 import org.biu.ufo.ui.cards.SquareCarDataCard;
 import org.biu.ufo.ui.utils.UnitConverter;
 
+import android.opengl.Visibility;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.View;
 import android.widget.ScrollView;
 
 import com.squareup.otto.Subscribe;
@@ -37,7 +41,10 @@ import com.squareup.otto.Subscribe;
 @EFragment(R.layout.fragment_main)
 public class FragmentMain extends Fragment {
 
-	private static final String FUEL_SUGGESTION_MSG_DEFAULT = "All is good";
+	private static final int FUEL_LEVEL_PER_DAY = 20;
+	private static final String FUEL_SUGGESTION_MSG_DAYS_PART1 = "You can drive for ";
+	private static final String FUEL_SUGGESTION_MSG_DAYS_PART2 = " days.";
+	private static final String FUEL_SUGGESTION_MSG_DEFAULT = "Drive Carefully!";
 	private static final String FUEL_SUGGESTION_MSG_NO_NEAR_STATIONS = "No stations on near path";
 
 	@Bean
@@ -53,6 +60,9 @@ public class FragmentMain extends Fragment {
 	CardView card_fuel_suggestion;
 	
 	@ViewById
+	CardView card_more_fuel_suggestions;
+	
+	@ViewById
 	CardView card_fuel_level;
 	
 	@ViewById
@@ -61,6 +71,7 @@ public class FragmentMain extends Fragment {
 	@ViewById
 	CardView card_vehicle_speed;
 
+	boolean displaysFuelSuggestion = false;
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -73,7 +84,7 @@ public class FragmentMain extends Fragment {
 		super.onPause();
 		bus.unregister(this);
 	}
-	
+
 	@AfterViews
 	void initialize() {
 		RouteOverviewCard routeOverviewCard = new RouteOverviewCard(getActivity());
@@ -82,6 +93,10 @@ public class FragmentMain extends Fragment {
 //		FuelSuggestionCard fuelSuggestionCard = new FuelSuggestionCard(getActivity());
 //		card_fuel_suggestion.setCard(fuelSuggestionCard);
 		initFuelSuggestion(true, FUEL_SUGGESTION_MSG_DEFAULT);
+		
+		MoreFuelSuggestionsCard moreFuelSuggestionsCard = new MoreFuelSuggestionsCard(getActivity());
+		card_more_fuel_suggestions.setCard(moreFuelSuggestionsCard);
+		
 		
 		SquareCarDataCard fuelLevelCard = new SquareCarDataCard(getActivity(), "Fuel", 0);
 		card_fuel_level.setCard(fuelLevelCard);
@@ -94,27 +109,34 @@ public class FragmentMain extends Fragment {
 	}
 	
 	private void initFuelSuggestion(boolean init, String message) {
-
+		displaysFuelSuggestion = false;
+		
+/*		BasicInfoCard card = new BasicInfoCard(getActivity(), message);
+ */
 		//TODO: maybe create a custom card header 
 		//Create a Card
-		Card card = new Card(getActivity());
+		//Create a Card
+        Card card = new Card(getActivity());
 
-		//Create a CardHeader
-		CardHeader header = new CardHeader(getActivity());
+        //Create a CardHeader
+        CardHeader header = new CardHeader(getActivity());
 
-		//Set the header title
-		header.setTitle(message);
-		//Add Header to card
-		card.addCardHeader(header);
+        //Set the header title
+        header.setTitle(message);
+
+        card.addCardHeader(header);
+
 //		card.setExpanded(true);
 //		card_fuel_suggestion.setExpanded(true);
+
 		
 		if (init){
 			card_fuel_suggestion.setCard(card);
 		}else{
 			card_fuel_suggestion.replaceCard(card);
 		}
-
+		
+		card_more_fuel_suggestions.setVisibility(View.GONE);
 	}
 	
 	@Subscribe
@@ -126,6 +148,8 @@ public class FragmentMain extends Fragment {
 		card.setDrivingState(true);
 		card.initialize();		
 		card_route_overview.replaceCard(card);
+		
+
 	}
 	
 	@Subscribe
@@ -152,7 +176,7 @@ public class FragmentMain extends Fragment {
 		Log.d("FragmentMain", "onFuelNextRecommendation");
 		if(message.shouldFuel()) {
 			if(!message.getStations().isEmpty()) {
-				
+				displaysFuelSuggestion = true;
 				Station station = message.getTopStation();
 				//Create a Card
 				RecommendationCard card = new RecommendationCard(getActivity());
@@ -197,6 +221,10 @@ public class FragmentMain extends Fragment {
 				card.setExpanded(true);
 				card_fuel_suggestion.replaceCard(card);
 				
+				if (message.getStations().size()>1){
+					card_more_fuel_suggestions.setVisibility(View.VISIBLE);
+				}
+				
 			}else{
 				initFuelSuggestion(false, FUEL_SUGGESTION_MSG_NO_NEAR_STATIONS);
 			}
@@ -215,6 +243,13 @@ public class FragmentMain extends Fragment {
 //		card.setBackgroundResource(new ColorDrawable(Color.RED));
 		
 		card_fuel_level.refreshCard(card);
+		
+		if (!displaysFuelSuggestion){
+			int fuelDays = (int) (message.getFuelLevelValue()/FUEL_LEVEL_PER_DAY);
+			String daysMessage = FUEL_SUGGESTION_MSG_DAYS_PART1 + String.valueOf(fuelDays)
+					+ FUEL_SUGGESTION_MSG_DAYS_PART2 + " " + FUEL_SUGGESTION_MSG_DEFAULT;
+			initFuelSuggestion(false, daysMessage);
+		}
 		
 		
 //		fuelLevelLayout.setBackgroundResource(message.background);

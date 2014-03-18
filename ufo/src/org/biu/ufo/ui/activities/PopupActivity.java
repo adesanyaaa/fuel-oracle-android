@@ -92,7 +92,7 @@ public class PopupActivity extends FragmentActivity {
 
     @UiThread(delay=10000)
     public void automaticClosing() {
-    	//Danny: isDestroyed NOT working - causing force close
+    	//Danny: isDestroyed NOT working - causing force close (doesn't exist)
     	if(!isFinishing()) {
     		finish();
     	}

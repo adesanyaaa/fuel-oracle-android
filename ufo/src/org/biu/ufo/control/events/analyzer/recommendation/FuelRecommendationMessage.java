@@ -11,7 +11,7 @@ import org.biu.ufo.rest.Station.CapacityUnit;
 import org.biu.ufo.ui.utils.UnitConverter;
 
 public class FuelRecommendationMessage {
-	public static final double STATION_SCORE_ALPHA = 0.3; 
+	public static final double STATION_SCORE_ALPHA = 0.6; 
 
 	
 	private long time;
@@ -63,7 +63,8 @@ public class FuelRecommendationMessage {
 				public int compare(Station lhs, Station rhs) {
 					double score = lhs.getPrice()*STATION_SCORE_ALPHA + lhs.getDistance()*(1-STATION_SCORE_ALPHA);
 					double anotherScore = rhs.getPrice()*STATION_SCORE_ALPHA + rhs.getDistance()*(1-STATION_SCORE_ALPHA);
-					return (int) (score - anotherScore);
+					//the lower the better (lower price, closer...)
+					return (int) ((-1)*(score - anotherScore));
 	
 				}
 			});
