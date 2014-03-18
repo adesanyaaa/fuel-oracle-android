@@ -19,6 +19,8 @@ public class Station {
 	private double distance;
 	private DistanceUnit distanceUnit;
 	
+	private double distanceFromRoute;
+	
 	public Station(Object original) {
 		this.original = original;
 	}
@@ -31,6 +33,15 @@ public class Station {
 		return address;
 	}
 
+	
+	public void setDistanceFromRoute(double distanceFromRoute){
+		this.distanceFromRoute = distance;
+	}
+	
+	public double getDistanceFromRoute(){
+		return this.distanceFromRoute;
+	}
+	
 	public void setAddress(String address) {
 		this.address = address;
 	}

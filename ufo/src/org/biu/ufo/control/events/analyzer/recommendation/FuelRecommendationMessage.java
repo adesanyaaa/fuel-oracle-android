@@ -11,13 +11,15 @@ import org.biu.ufo.rest.Station.CapacityUnit;
 import org.biu.ufo.ui.utils.UnitConverter;
 
 public class FuelRecommendationMessage {
-	public static final double STATION_SCORE_ALPHA = 0.6; 
+	public static final double STATION_SCORE_PRICE = 0.6;
+	public static final double STATION_SCORE_ROUTE_DIS = 0.2; 
 
 	
 	private long time;
 	
 	Double fuelAmount;
 	Double fuelLevelAtRecommendTime;
+
 	Location locationAtRecommendTime;
 	List<Station> stations = new LinkedList<Station>();
 	List<Station> sortedStations;
@@ -61,10 +63,17 @@ public class FuelRecommendationMessage {
 
 				@Override
 				public int compare(Station lhs, Station rhs) {
-					double score = lhs.getPrice()*STATION_SCORE_ALPHA + lhs.getDistance()*(1-STATION_SCORE_ALPHA);
-					double anotherScore = rhs.getPrice()*STATION_SCORE_ALPHA + rhs.getDistance()*(1-STATION_SCORE_ALPHA);
+
+					double lhs_score = lhs.getPrice()*STATION_SCORE_PRICE 
+							+ lhs.getDistance()*(1-STATION_SCORE_PRICE+STATION_SCORE_ROUTE_DIS)
+							+ lhs.getDistanceFromRoute()*(STATION_SCORE_ROUTE_DIS);
+					
+					double rhs_score = rhs.getPrice()*STATION_SCORE_PRICE 
+							+ rhs.getDistance()*(1-STATION_SCORE_PRICE+STATION_SCORE_ROUTE_DIS)
+							+ rhs.getDistanceFromRoute()*(STATION_SCORE_ROUTE_DIS);
+					
 					//the lower the better (lower price, closer...)
-					return (int) ((-1)*(score - anotherScore));
+					return (int) ((-1)*(lhs_score - rhs_score));
 	
 				}
 			});
