@@ -16,7 +16,6 @@ import org.biu.ufo.storage.RouteDataStore;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;

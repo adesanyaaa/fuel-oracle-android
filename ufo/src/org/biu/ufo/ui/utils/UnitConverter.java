@@ -1,10 +1,11 @@
 package org.biu.ufo.ui.utils;
 
+import java.lang.reflect.Field;
+
 import org.biu.ufo.R;
 import org.biu.ufo.rest.Station.CapacityUnit;
 import org.biu.ufo.rest.Station.DistanceUnit;
 import org.biu.ufo.rest.Station.PriceCurrency;
-import java.lang.reflect.Field;
 
 public class UnitConverter {
 	

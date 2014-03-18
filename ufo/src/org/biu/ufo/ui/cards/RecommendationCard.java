@@ -1,10 +1,10 @@
 package org.biu.ufo.ui.cards;
 
+import it.gmariotti.cardslib.library.internal.Card;
+import it.gmariotti.cardslib.library.internal.ViewToClickToExpand;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.internal.ViewToClickToExpand;
 
 public class RecommendationCard extends Card {
 

@@ -6,11 +6,10 @@ import org.androidannotations.annotations.RootContext;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
-import org.biu.ufo.ui.activities.PopupActivity_;
-import org.biu.ufo.ui.activities.PopupActivity_.IntentBuilder_;
+import org.biu.ufo.ui.popups.FuelNextPopup_;
 
+import wei.mark.standout.StandOutWindow;
 import android.content.Context;
-import android.content.Intent;
 
 import com.squareup.otto.Subscribe;
 
@@ -47,17 +46,29 @@ public class PopupNotificationManager {
 	@Subscribe
 	public void onVehicleSpeedMessage(VehicleSpeedMessage message) {
 		currentSpeed = message.getSpeed();
-		showPopupIfNeededAndPossible();			
+		if(recommendation != null) {
+			showPopupIfNeededAndPossible();	
+		}
 	}
 	
 	private void showPopupIfNeededAndPossible() {
-		if(recommendation != null && recommendation.shouldFuel() && recommendation.getTopStation() != null
+		if(recommendation != null 
+				&& recommendation.shouldFuel() && recommendation.getTopStation() != null
 				&& currentSpeed < 50.0) {
-			recommendation = null;
-			IntentBuilder_ builder = PopupActivity_.intent(context).flags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			builder.get().putExtra("type", "fuel_next");
-			builder.start();
+			showPopup();
 		}
 	}
+		
+	private void showPopup() {
+		if(recommendation != null) {
+			recommendation = null;
 
+//			IntentBuilder_ builder = PopupActivity_.intent(context).flags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//			builder.get().putExtra("type", "fuel_next");
+//			builder.start();
+			
+			StandOutWindow.closeAll(context, FuelNextPopup_.class);;
+			StandOutWindow.show(context, FuelNextPopup_.class, StandOutWindow.DEFAULT_ID);			
+		}
+	}
 }

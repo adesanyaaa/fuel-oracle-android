@@ -10,9 +10,9 @@ import org.biu.ufo.control.events.analyzer.fueling.FuelProcessDetailsMessage;
 import org.biu.ufo.control.events.analyzer.fueling.FuellingProcessEndedStatusMessage;
 import org.biu.ufo.control.events.analyzer.fueling.FuellingProcessStartedStatusMessage;
 import org.biu.ufo.control.events.analyzer.fueling.FuellingProcessStatusMessage;
+import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteStopMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteSummaryMessage;
-import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
 
 import android.support.v4.app.Fragment;
 import android.widget.TextView;

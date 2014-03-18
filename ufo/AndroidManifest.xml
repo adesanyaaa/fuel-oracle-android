@@ -20,6 +20,7 @@
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.RECORD_AUDIO" />
+	<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 	
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -47,6 +48,7 @@
         <service android:name="org.biu.ufo.services.CarGatewayService_" />
         <service android:name="org.biu.ufo.services.UfoMainService_" />
         <service android:name="org.biu.ufo.services.AlwaysListeningSpeechRecognizerService_" />
+        <service android:name="org.biu.ufo.ui.popups.FuelNextPopup_"  />
         
         <!-- Receivers -->
 <!--         <receiver android:name="org.biu.ufo.receivers.BootupReceiver" > -->
