@@ -31,12 +31,8 @@ import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
-import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
 import org.biu.ufo.ui.cards.RecommendationCard;
-import org.biu.ufo.ui.cards.RecommendationCardExpandInside;
-import org.biu.ufo.ui.cards.RecommendationCardHeader;
-import org.biu.ufo.ui.utils.UnitConverter;
 
 import android.support.v4.app.Fragment;
 
@@ -83,10 +79,10 @@ public class FragmentRecommendationsList extends Fragment {
             cards.add(card);
         }
         
-//        if(cards.size() > 0) {
-//        	cards.get(0).setExpanded(true);
-//        }
-//        
+        if(cards.size() > 0) {
+        	cards.get(0).setExpanded(true);
+        }
+        
         ((CardArrayAdapter)listView.getAdapter()).notifyDataSetChanged();
     }
 

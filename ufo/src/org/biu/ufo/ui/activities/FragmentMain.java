@@ -23,17 +23,12 @@ import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
-import org.biu.ufo.ui.cards.BasicInfoCard;
-import org.biu.ufo.ui.cards.MoreFuelSuggestionsCard;
 import org.biu.ufo.ui.cards.RecommendationCard;
 import org.biu.ufo.ui.cards.RecommendationCardExpandInside;
-import org.biu.ufo.ui.cards.RecommendationCardHeader;
 import org.biu.ufo.ui.cards.RouteOverviewCard;
 import org.biu.ufo.ui.cards.SquareCarDataCard;
-import org.biu.ufo.ui.utils.UnitConverter;
 
 import android.content.Intent;
-import android.opengl.Visibility;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;

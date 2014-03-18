@@ -26,12 +26,13 @@
         android:glEsVersion="0x00020000"
         android:required="true" />
 
+	<!--     Change theme to android:theme="@style/AppTheme" for previous black action bar -->
     <application
         android:name="org.biu.ufo.MainApplication_"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/Theme.Ufo_default_style" >
 
         <!-- OpenXC services -->
         <service android:name="com.openxc.VehicleManager" />
@@ -70,8 +71,7 @@
                
         <activity
             android:name="org.biu.ufo.ui.activities.MainActivity_"
-            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
-       	    android:launchMode="singleInstance"
+            android:launchMode="singleInstance"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
