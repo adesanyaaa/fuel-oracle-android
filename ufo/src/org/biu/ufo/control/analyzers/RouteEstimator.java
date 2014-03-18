@@ -121,15 +121,16 @@ public class RouteEstimator implements IAnalyzer {
 	
 	public double getMinDistanceFromRoute(Location location){
 		double minDistance = Calculator.distance(location, currentLocation);
-		double distance;
-		for (int i = currentPositionInEstimatedRoute;i < estimatedRoute.size(); ++i){
-			Location routeLocation = new Location(estimatedRoute.get(i));
-			distance = Calculator.distance(location,routeLocation);
-			if (minDistance>distance){
-				minDistance = distance;
-			}
-		}
-		
+		if(estimatedRoute != null) {
+			double distance;
+			for (int i = currentPositionInEstimatedRoute;i < estimatedRoute.size(); ++i){
+				Location routeLocation = new Location(estimatedRoute.get(i));
+				distance = Calculator.distance(location,routeLocation);
+				if (minDistance>distance){
+					minDistance = distance;
+				}
+			}			
+		}		
 		return minDistance;
 	}
 	
