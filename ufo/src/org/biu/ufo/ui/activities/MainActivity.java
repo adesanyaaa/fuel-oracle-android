@@ -23,7 +23,7 @@ import android.util.Log;
 import com.squareup.otto.Subscribe;
 
 
-@EActivity(R.layout.activity_real_main)
+@EActivity(R.layout.activity_main)
 @OptionsMenu(R.menu.main)
 public class MainActivity extends FragmentActivity {
 	public static final String TAG = "RealMainActivity";
@@ -144,7 +144,8 @@ public class MainActivity extends FragmentActivity {
 		setIntent(intent);
 		int screen = intent.getIntExtra("screen", -1);
 		if(screen >= 0) {
-			selectItem(screen, true);
+			boolean addToBackStack = (screen == RECOMMENDATIONS);
+			selectItem(screen, addToBackStack);
 		}
 	}
 

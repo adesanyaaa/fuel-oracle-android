@@ -46,53 +46,7 @@
     <string name="navigate">Navigate</string>
     <string name="separator_arrow">→</string>
     
-    <!-- Demo activity -->
     <string name="fuel_next_msg">FUEL NEXT</string>
     <string name="fuel_level">fuel level left</string>
-    <string name="speed_caption">SPEED</string>
-    <string name="speed">123.2</string>
-    <string name="speed_measurement">kph</string>
-    <string name="fuel_consumed">0.25</string>
-    <string name="fuel_consumed_caption">FUEL CONSUMED</string>
-    <string name="fuel_consumption_measurement">L</string>
-    <string name="drive_cost">25</string>
-    <string name="drive_cost_caption">DRIVE COST</string>
-    <string name="drive_cost_measurement">$</string>
-    <string name="latitude_caption">LAT.</string>
-    <string name="latitude">74.21</string>
-    <string name="longitude_caption">LONG.</string>
-    <string name="longitude">-64.023</string>
-    <string name="engine_speed_caption">ENGINE SPEED</string>
-    <string name="engine_speed">10549</string>
-    <string name="engine_speed_measurement">RPM</string>
-    <string name="activate_obd_service">Please activate OBD service</string>
-    <string name="obd_service">OBD service Activated</string>
-
-    <string name="title_activity_stations_list">Stations List</string>
-    <string name="action_toggle_view">Change view</string>
-    
-    <!-- Car Status Activity -->
-    <string name="status_drive_msg">DRIVING</string>
-    <string name="status_fuel_msg">FUELLING</string>
-    <string name="status_yes_msg">YES</string>
-    <string name="status_no_msg">NO</string>
-    
-    <string name="status_start_drive_time_msg">START DRIVE TIME</string>
-    <string name="status_end_drive_time_msg">END DRIVE TIME</string>
-    
-    <string name="status_start_fuel_time_msg">START Fuel TIME</string>
-    <string name="status_end_fuel_time_msg">END Fuel TIME</string>
-    
-    <string name="status_start_fuel_level_msg">START FUEL LEVEL</string>
-    <string name="status_end_fuel_level_msg">END FUEL LEVEL</string>
-    
-    <string name="status_start_lat_msg">START LAT</string>
-    <string name="status_start_long_msg">START LONG</string>
-    
-    <string name="status_end_lat_msg">END LAT</string>
-    <string name="status_end_long_msg">END LONG</string>
-    
-    <string name="status_duration_msg">DURATION</string>
-    
-    <string name="status_amount_msg">AMOUNT</string>
+        
 </resources>

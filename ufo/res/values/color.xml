@@ -10,7 +10,5 @@
     <color name="default_tile">#00ABA9</color>
     <color name="navy_tile">#1BA1E2</color>
     <color name="green_tile">#339933</color>
-
-    <color name="info_balloon_bg">#ffffff</color>
     
 </resources>

@@ -1,11 +1,4 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-
-<!--     <item -->
-<!--         android:id="@+id/action_start_service" -->
-<!--         android:orderInCategory="101" -->
-<!--         android:showAsAction="always" -->
-<!--         android:icon="@drawable/play" -->
-<!--         android:title="@string/action_start"/> -->
     
     <item
         android:id="@+id/action_stop_service"
