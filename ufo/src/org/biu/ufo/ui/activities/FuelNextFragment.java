@@ -102,6 +102,8 @@ public class FuelNextFragment extends Fragment {
 
 		popup_station_address.setText(station.getAddress());
 		popup_gas_station_logo.setImageResource(UnitConverter.getResourceForStationLogo(station.getCompany()));
+		
+		location = new Location(station.getLat(), station.getLng());
 	}
 
 }

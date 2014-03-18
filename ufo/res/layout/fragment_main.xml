@@ -50,6 +50,17 @@
                 android:layout_marginRight="6dp"
                 card:card_layout_resourceID="@layout/card_with_expand_inside_layout"
                 android:layout_marginTop="6dp"/>
+            
+			<it.gmariotti.cardslib.library.view.CardView
+                android:id="@+id/card_more_fuel_suggestions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:visibility="gone"
+                card:card_layout_resourceID="@layout/card_small_layout"
+                android:layout_marginTop="6dp"/>
+            
 
             <LinearLayout
                 android:layout_width="match_parent"

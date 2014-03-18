@@ -29,20 +29,30 @@ import android.widget.TextView;
 
 public class RecommendationCardHeader extends CardHeader {
 
+	TextView station_name;
+	TextView fuel_cost;
+	TextView cost_currency;
+	
+	protected String mStationName;
     protected String mPrice;
     protected int mPriceCurrencyResId;
 
-    public RecommendationCardHeader(Context context) {
+    public RecommendationCardHeader(Context context, String stationName, String price, int priceCurrencyResId) {
         this(context,R.layout.recommendation_header_layout);
+        this.mStationName = stationName;
+        this.mPrice = price;
+        this.mPriceCurrencyResId = priceCurrencyResId;
     }
 
 
     public void setPrice(String fuelCost){
         this.mPrice = fuelCost;
+        fuel_cost.setText(String.valueOf(mPrice));
     }
 
     public void setPriceCurrencyResId(int currencyResId){
         this.mPriceCurrencyResId = currencyResId;
+        cost_currency.setText(mPriceCurrencyResId);
     }
 
     public RecommendationCardHeader(Context context, int innerLayout) {
@@ -53,14 +63,19 @@ public class RecommendationCardHeader extends CardHeader {
     @Override
     public void setupInnerViewElements(ViewGroup parent,View view){
 
-        TextView station_name = (TextView)view.findViewById(R.id.rec_station_name);
-        station_name.setText(mTitle);
+        station_name = (TextView)view.findViewById(R.id.rec_station_name);
+        station_name.setText(mStationName);
 
-        TextView fuel_cost = (TextView)view.findViewById(R.id.rec_station_price);
-        fuel_cost.setText(String.valueOf(mPrice));
+        fuel_cost = (TextView)view.findViewById(R.id.rec_station_price);
+        fuel_cost.setText(mPrice);
 
-        TextView cost_currency = (TextView)view.findViewById(R.id.rec_station_price_currency);
+        cost_currency = (TextView)view.findViewById(R.id.rec_station_price_currency);
         cost_currency.setText(mPriceCurrencyResId);
+    }
+    
+    public void setStationName(String stationName){
+    	this.mStationName = stationName;
+    	station_name.setText(mStationName);
     }
 
  }

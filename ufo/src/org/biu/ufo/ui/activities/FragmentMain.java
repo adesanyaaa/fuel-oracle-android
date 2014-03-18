@@ -12,15 +12,19 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
+import org.biu.ufo.control.Calculator;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.EstimatedDestinationMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteStopMessage;
 import org.biu.ufo.control.events.raw.EngineSpeedMessage;
 import org.biu.ufo.control.events.raw.FuelLevelMessage;
+import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
+import org.biu.ufo.ui.cards.BasicInfoCard;
+import org.biu.ufo.ui.cards.MoreFuelSuggestionsCard;
 import org.biu.ufo.ui.cards.RecommendationCard;
 import org.biu.ufo.ui.cards.RecommendationCardExpandInside;
 import org.biu.ufo.ui.cards.RecommendationCardHeader;
@@ -28,8 +32,10 @@ import org.biu.ufo.ui.cards.RouteOverviewCard;
 import org.biu.ufo.ui.cards.SquareCarDataCard;
 import org.biu.ufo.ui.utils.UnitConverter;
 
+import android.opengl.Visibility;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.View;
 import android.widget.ScrollView;
 
 import com.squareup.otto.Subscribe;
@@ -37,7 +43,10 @@ import com.squareup.otto.Subscribe;
 @EFragment(R.layout.fragment_main)
 public class FragmentMain extends Fragment {
 
-	private static final String FUEL_SUGGESTION_MSG_DEFAULT = "All is good";
+	private static final int FUEL_LEVEL_PER_DAY = 20;
+	private static final String FUEL_SUGGESTION_MSG_DAYS_PART1 = "You can drive for ";
+	private static final String FUEL_SUGGESTION_MSG_DAYS_PART2 = " days.";
+	private static final String FUEL_SUGGESTION_MSG_DEFAULT = "Drive Carefully!";
 	private static final String FUEL_SUGGESTION_MSG_NO_NEAR_STATIONS = "No stations on near path";
 
 	@Bean
@@ -53,6 +62,9 @@ public class FragmentMain extends Fragment {
 	CardView card_fuel_suggestion;
 	
 	@ViewById
+	CardView card_more_fuel_suggestions;
+	
+	@ViewById
 	CardView card_fuel_level;
 	
 	@ViewById
@@ -60,7 +72,10 @@ public class FragmentMain extends Fragment {
 	
 	@ViewById
 	CardView card_vehicle_speed;
+	
+	RecommendationCard recommendationCard;
 
+	boolean displaysFuelSuggestion = false;
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -73,7 +88,7 @@ public class FragmentMain extends Fragment {
 		super.onPause();
 		bus.unregister(this);
 	}
-	
+
 	@AfterViews
 	void initialize() {
 		RouteOverviewCard routeOverviewCard = new RouteOverviewCard(getActivity());
@@ -82,6 +97,10 @@ public class FragmentMain extends Fragment {
 //		FuelSuggestionCard fuelSuggestionCard = new FuelSuggestionCard(getActivity());
 //		card_fuel_suggestion.setCard(fuelSuggestionCard);
 		initFuelSuggestion(true, FUEL_SUGGESTION_MSG_DEFAULT);
+		
+		MoreFuelSuggestionsCard moreFuelSuggestionsCard = new MoreFuelSuggestionsCard(getActivity());
+		card_more_fuel_suggestions.setCard(moreFuelSuggestionsCard);
+		
 		
 		SquareCarDataCard fuelLevelCard = new SquareCarDataCard(getActivity(), "Fuel", 0);
 		card_fuel_level.setCard(fuelLevelCard);
@@ -94,27 +113,34 @@ public class FragmentMain extends Fragment {
 	}
 	
 	private void initFuelSuggestion(boolean init, String message) {
-
+		displaysFuelSuggestion = false;
+		
+/*		BasicInfoCard card = new BasicInfoCard(getActivity(), message);
+ */
 		//TODO: maybe create a custom card header 
 		//Create a Card
-		Card card = new Card(getActivity());
+		//Create a Card
+        Card card = new Card(getActivity());
 
-		//Create a CardHeader
-		CardHeader header = new CardHeader(getActivity());
+        //Create a CardHeader
+        CardHeader header = new CardHeader(getActivity());
 
-		//Set the header title
-		header.setTitle(message);
-		//Add Header to card
-		card.addCardHeader(header);
+        //Set the header title
+        header.setTitle(message);
+
+        card.addCardHeader(header);
+
 //		card.setExpanded(true);
 //		card_fuel_suggestion.setExpanded(true);
+
 		
 		if (init){
 			card_fuel_suggestion.setCard(card);
 		}else{
 			card_fuel_suggestion.replaceCard(card);
 		}
-
+		
+		card_more_fuel_suggestions.setVisibility(View.GONE);
 	}
 	
 	@Subscribe
@@ -126,6 +152,8 @@ public class FragmentMain extends Fragment {
 		card.setDrivingState(true);
 		card.initialize();		
 		card_route_overview.replaceCard(card);
+		
+
 	}
 	
 	@Subscribe
@@ -152,50 +180,25 @@ public class FragmentMain extends Fragment {
 		Log.d("FragmentMain", "onFuelNextRecommendation");
 		if(message.shouldFuel()) {
 			if(!message.getStations().isEmpty()) {
-				
+				displaysFuelSuggestion = true;
 				Station station = message.getTopStation();
 				//Create a Card
-				RecommendationCard card = new RecommendationCard(getActivity());
-
-				//Create a CardHeader
-				RecommendationCardHeader header = new RecommendationCardHeader(getActivity());
-
-				//Set the header title
-				header.setTitle(station.getAddress());
-		        header.setPrice(String.format("%.2f", station.getPrice()));
-		        header.setPriceCurrencyResId(UnitConverter.getResourceForPriceCurrency(station.getPriceCurrency()));
+				recommendationCard = new RecommendationCard(getActivity(), message, station);
 				
-				//Add Header to card
-				card.addCardHeader(header);
-
-				//This provides a simple (and useless) expand area
-				RecommendationCardExpandInside expand = new RecommendationCardExpandInside(getActivity());
-		        expand.setLocation(new Location(station.getLat(), station.getLng()));
-		        expand.setStationAddress(station.getAddress());
-		        expand.setStationCompany(station.getCompany());
-		        expand.setCompanyLogo(UnitConverter.getResourceForStationLogo(station.getCompany()));
-		        expand.setStationDistance(station.getDistance());
-		        expand.setFuelCostCurrencyResId(UnitConverter.getResourceForPriceCurrency(station.getPriceCurrency()));
-		        expand.setStationDistanceUnitResId(UnitConverter.getResourceForDistanceUnit(station.getDistanceUnit()));
-		        expand.setFuelMeasurementResId(UnitConverter.getResourceForCapacityUnit(station.getCapacityUnit()));        
-				card.addCardExpand(expand);
-				
-//				float fuelAmount = UnitConverter.getAverageGasTankSize(station.getCapacityUnit());
-		        double fuelAmount = message.getFuelAmount(station.getCapacityUnit());
-
-		        expand.setFuelAmount(fuelAmount);
-		        expand.setFuelTotalCost(fuelAmount * station.getPrice());
-
 				//Set card in the cardView
 				ViewToClickToExpand viewToClickToExpand =
 						ViewToClickToExpand.builder()
 						.highlightView(false)
 						.setupView(card_fuel_suggestion);
-				card.setViewToClickToExpand(viewToClickToExpand);
+				recommendationCard.setViewToClickToExpand(viewToClickToExpand);
 
 				card_fuel_suggestion.setExpanded(true);
-				card.setExpanded(true);
-				card_fuel_suggestion.replaceCard(card);
+				recommendationCard.setExpanded(true);
+				card_fuel_suggestion.replaceCard(recommendationCard);
+				
+				if (message.getStations().size()>1){
+					card_more_fuel_suggestions.setVisibility(View.VISIBLE);
+				}
 				
 			}else{
 				initFuelSuggestion(false, FUEL_SUGGESTION_MSG_NO_NEAR_STATIONS);
@@ -216,6 +219,13 @@ public class FragmentMain extends Fragment {
 		
 		card_fuel_level.refreshCard(card);
 		
+		if (!displaysFuelSuggestion){
+			int fuelDays = (int) (message.getFuelLevelValue()/FUEL_LEVEL_PER_DAY);
+			String daysMessage = FUEL_SUGGESTION_MSG_DAYS_PART1 + String.valueOf(fuelDays)
+					+ FUEL_SUGGESTION_MSG_DAYS_PART2 + " " + FUEL_SUGGESTION_MSG_DEFAULT;
+			initFuelSuggestion(false, daysMessage);
+		}
+		
 		
 //		fuelLevelLayout.setBackgroundResource(message.background);
 //		fuelLevelMainMessage.setText(message.mainMessage);
@@ -234,10 +244,26 @@ public class FragmentMain extends Fragment {
 	@UiThread
 	@Subscribe
 	public void onVehicleSpeedUpdate(VehicleSpeedMessage message) {
+
 		SquareCarDataCard card = (SquareCarDataCard)card_vehicle_speed.getCard();
 		card.setLine1Text(message.vehicleSpeed);
 		card.setLine2Text("km/h");
+	}
+	
+	@UiThread
+	@Subscribe
+	public void onLocationUpdate(LocationMessage message) {
 
+		if (recommendationCard != null){
+			double distance = ((RecommendationCardExpandInside)recommendationCard.getCardExpand()).getStationDistance();
+			Location stationLocation = ((RecommendationCardExpandInside)recommendationCard.getCardExpand()).getLocation();
+			double currentDistance = Calculator.distance(stationLocation, message.location);
+			
+			//above than 100 meter - update
+			if (Math.abs(distance - currentDistance) >= 0.1){
+				recommendationCard.setDistance(currentDistance);
+			}
+		}
 	}
 
 }

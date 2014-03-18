@@ -172,7 +172,9 @@ public class FuelRecommendator implements IAnalyzer {
 			// Fix distance
 			for(Station station : lastRecommendation.getStations()) {
 				station.setDistanceUnit(DistanceUnit.KM);
-				station.setDistance(Calculator.distance(currentLocation, new Location(station.getLat(), station.getLng())));
+				Location stationLocation = new Location(station.getLat(), station.getLng());
+				station.setDistance(Calculator.distance(currentLocation, stationLocation));
+				station.setDistanceFromRoute(controller.getRouteEstimator().getMinDistanceFromRoute(stationLocation));
 			}
 			bus.post(lastRecommendation);
 			// TODO: this is a popup test! Should make sure MainActivity is not visible!!!
