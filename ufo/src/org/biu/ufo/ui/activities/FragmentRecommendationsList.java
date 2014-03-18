@@ -96,29 +96,7 @@ public class FragmentRecommendationsList extends Fragment {
      * @param recommendation
      */
     private Card getRecommendationCard(FuelRecommendationMessage recommendation, Station station) {
-        RecommendationCard card = new RecommendationCard(getActivity());
-
-        // Header
-        RecommendationCardHeader header = new RecommendationCardHeader(getActivity());
-        header.setTitle(station.getAddress());
-        header.setPrice(String.format("%.2f", station.getPrice()));
-        header.setPriceCurrencyResId(UnitConverter.getResourceForPriceCurrency(station.getPriceCurrency()));
-        card.addCardHeader(header);
-
-        // Expand area
-        RecommendationCardExpandInside expand = new RecommendationCardExpandInside(getActivity());
-        expand.setLocation(new Location(station.getLat(), station.getLng()));
-        expand.setStationAddress(station.getAddress());
-        expand.setStationDistance(station.getDistance());
-        expand.setStationCompany(station.getCompany());
-        expand.setCompanyLogo(UnitConverter.getResourceForStationLogo(station.getCompany()));
-        expand.setFuelCostCurrencyResId(UnitConverter.getResourceForPriceCurrency(station.getPriceCurrency()));
-        expand.setStationDistanceUnitResId(UnitConverter.getResourceForDistanceUnit(station.getDistanceUnit()));
-        expand.setFuelMeasurementResId(UnitConverter.getResourceForCapacityUnit(station.getCapacityUnit()));        
-        double fuelAmount = recommendation.getFuelAmount(station.getCapacityUnit());
-        expand.setFuelAmount(fuelAmount);
-        expand.setFuelTotalCost(fuelAmount * station.getPrice());
-        card.addCardExpand(expand);
+        RecommendationCard card = new RecommendationCard(getActivity(), recommendation, station);
 
         return card;
     }

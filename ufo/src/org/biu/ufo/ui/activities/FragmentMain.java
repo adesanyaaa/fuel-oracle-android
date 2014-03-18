@@ -12,12 +12,14 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
+import org.biu.ufo.control.Calculator;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.EstimatedDestinationMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteStopMessage;
 import org.biu.ufo.control.events.raw.EngineSpeedMessage;
 import org.biu.ufo.control.events.raw.FuelLevelMessage;
+import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
@@ -70,6 +72,8 @@ public class FragmentMain extends Fragment {
 	
 	@ViewById
 	CardView card_vehicle_speed;
+	
+	RecommendationCard recommendationCard;
 
 	boolean displaysFuelSuggestion = false;
 	@Override
@@ -179,47 +183,18 @@ public class FragmentMain extends Fragment {
 				displaysFuelSuggestion = true;
 				Station station = message.getTopStation();
 				//Create a Card
-				RecommendationCard card = new RecommendationCard(getActivity());
-
-				//Create a CardHeader
-				RecommendationCardHeader header = new RecommendationCardHeader(getActivity());
-
-				//Set the header title
-				header.setTitle(station.getAddress());
-		        header.setPrice(String.format("%.2f", station.getPrice()));
-		        header.setPriceCurrencyResId(UnitConverter.getResourceForPriceCurrency(station.getPriceCurrency()));
+				recommendationCard = new RecommendationCard(getActivity(), message, station);
 				
-				//Add Header to card
-				card.addCardHeader(header);
-
-				//This provides a simple (and useless) expand area
-				RecommendationCardExpandInside expand = new RecommendationCardExpandInside(getActivity());
-		        expand.setLocation(new Location(station.getLat(), station.getLng()));
-		        expand.setStationAddress(station.getAddress());
-		        expand.setStationCompany(station.getCompany());
-		        expand.setCompanyLogo(UnitConverter.getResourceForStationLogo(station.getCompany()));
-		        expand.setStationDistance(station.getDistance());
-		        expand.setFuelCostCurrencyResId(UnitConverter.getResourceForPriceCurrency(station.getPriceCurrency()));
-		        expand.setStationDistanceUnitResId(UnitConverter.getResourceForDistanceUnit(station.getDistanceUnit()));
-		        expand.setFuelMeasurementResId(UnitConverter.getResourceForCapacityUnit(station.getCapacityUnit()));        
-				card.addCardExpand(expand);
-				
-//				float fuelAmount = UnitConverter.getAverageGasTankSize(station.getCapacityUnit());
-		        double fuelAmount = message.getFuelAmount(station.getCapacityUnit());
-
-		        expand.setFuelAmount(fuelAmount);
-		        expand.setFuelTotalCost(fuelAmount * station.getPrice());
-
 				//Set card in the cardView
 				ViewToClickToExpand viewToClickToExpand =
 						ViewToClickToExpand.builder()
 						.highlightView(false)
 						.setupView(card_fuel_suggestion);
-				card.setViewToClickToExpand(viewToClickToExpand);
+				recommendationCard.setViewToClickToExpand(viewToClickToExpand);
 
 				card_fuel_suggestion.setExpanded(true);
-				card.setExpanded(true);
-				card_fuel_suggestion.replaceCard(card);
+				recommendationCard.setExpanded(true);
+				card_fuel_suggestion.replaceCard(recommendationCard);
 				
 				if (message.getStations().size()>1){
 					card_more_fuel_suggestions.setVisibility(View.VISIBLE);
@@ -269,10 +244,25 @@ public class FragmentMain extends Fragment {
 	@UiThread
 	@Subscribe
 	public void onVehicleSpeedUpdate(VehicleSpeedMessage message) {
+
 		SquareCarDataCard card = (SquareCarDataCard)card_vehicle_speed.getCard();
 		card.setLine1Text(message.vehicleSpeed);
 		card.setLine2Text("km/h");
+	}
+	
+	@UiThread
+	@Subscribe
+	public void onLocationUpdate(LocationMessage message) {
 
+		if (recommendationCard != null){
+			double distance = ((RecommendationCardExpandInside)recommendationCard.getCardExpand()).getStationDistance();
+			Location stationLocation = ((RecommendationCardExpandInside)recommendationCard.getCardExpand()).getLocation();
+			double currentDistance = Calculator.distance(stationLocation, message.location);
+			
+			if (distance - currentDistance >= 0.1){
+				recommendationCard.setDistance(currentDistance);
+			}
+		}
 	}
 
 }
