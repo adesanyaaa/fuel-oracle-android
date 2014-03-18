@@ -18,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 
 import com.squareup.otto.Subscribe;
 
@@ -132,7 +133,7 @@ public class MainActivity extends FragmentActivity {
 		if (savedInstanceState == null && screen == -1) {
 			// on first time display view for first nav item
 			selectItem(DEST);
-		} else {
+		} else if(screen >= 0) {
 			selectItem(screen);
 		}
 	}
@@ -140,10 +141,10 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		
+		setIntent(intent);
 		int screen = intent.getIntExtra("screen", -1);
 		if(screen >= 0) {
-			selectItem(screen);
+			selectItem(screen, true);
 		}
 	}
 
@@ -157,6 +158,7 @@ public class MainActivity extends FragmentActivity {
 	
 	private void selectItem(int position, boolean addToBackStack) {
 		boolean animate = false;
+		Log.e(TAG, "selected screen =" + position + ". addToBackStack="+addToBackStack);
 		
 		// update the main content by replacing fragments
 		Fragment fragment;

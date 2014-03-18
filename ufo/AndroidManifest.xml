@@ -48,7 +48,6 @@
         <service android:name="org.biu.ufo.services.CarGatewayService_" />
         <service android:name="org.biu.ufo.services.UfoMainService_" />
         <service android:name="org.biu.ufo.services.AlwaysListeningSpeechRecognizerService_" />
-        <service android:name="org.biu.ufo.ui.popups.FuelNextPopup_"  />
         
         <!-- Receivers -->
 <!--         <receiver android:name="org.biu.ufo.receivers.BootupReceiver" > -->
@@ -72,6 +71,7 @@
         <activity
             android:name="org.biu.ufo.ui.activities.MainActivity_"
             android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
+       	    android:launchMode="singleInstance"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

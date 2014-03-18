@@ -25,10 +25,7 @@ public class Controller {
 	
 	@Bean
 	RouteEstimator routeEstimator;
-	
-	@Bean
-	PopupNotificationManager popupNotificationManager;
-	
+		
 	public void init(){
 		routeAnalyzer.setController(this);
 		routeAnalyzer.start();
@@ -41,8 +38,6 @@ public class Controller {
 		
 		fuelingRecommendator.setController(this);
 		fuelingRecommendator.start();
-		
-		popupNotificationManager.start();
 	}
 	
 	public void close(){		
@@ -50,8 +45,6 @@ public class Controller {
 		fuelAnalyzer.stop();
 		routeEstimator.stop();
 		routeAnalyzer.stop();
-		
-		popupNotificationManager.stop();
 	}
 	
 	public RouteEstimator getRouteEstimator() {

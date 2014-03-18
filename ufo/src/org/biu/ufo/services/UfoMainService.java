@@ -19,9 +19,16 @@ import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
 import org.biu.ufo.services.CarGatewayService.CarGatewayServiceBinder;
 import org.biu.ufo.settings.PreferenceManagerService_;
 import org.biu.ufo.ui.activities.MainActivity;
+import org.biu.ufo.ui.activities.MainActivity_;
+import org.biu.ufo.ui.popups.FuelNextContentView;
+import org.biu.ufo.ui.popups.FuelNextContentView_;
+import org.biu.ufo.ui.popups.PopupNotificationManager;
 
+import wei.mark.standout.StandOutWindow;
+import wei.mark.standout.constants.StandOutFlags;
+import wei.mark.standout.ui.Window;
+import android.app.Notification;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +38,13 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
 
 import com.openxc.measurements.EngineSpeed;
 import com.openxc.measurements.FuelConsumed;
@@ -55,9 +69,10 @@ import com.squareup.otto.Subscribe;
  *
  */
 @EService
-public class UfoMainService extends Service implements VehicleManagerConnectorCallback {
+public class UfoMainService extends StandOutWindow implements VehicleManagerConnectorCallback {
 	private final static String TAG = "UfoMainService";
-	private final static int SERVICE_NOTIFICATION_ID = 1541;
+
+	public final static int SERVICE_FUEL_NEXT_ID = 1541;
 
 	@Bean
 	VehicleManagerConnector mVMmConnector;
@@ -68,18 +83,17 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 	@Bean
 	Controller controller;
 	
+	@Bean
+	PopupNotificationManager popupNotificationManager;
+
 	private CarGatewayServiceBinder mCarGateway;
-	
-	//for sending lat and long together
+
 	private LocationMessage locationMessage = new LocationMessage();
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
-		// Move to foreground
-		moveToForeground();
-
+		
 		// Bind to VM
 		mVMmConnector.bindToVehicleManager(this);
 
@@ -88,11 +102,23 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 
 		// Bind to preferences manager
 		bindService(new Intent(this, PreferenceManagerService_.class), mPreferencesManagerConnection, Context.BIND_AUTO_CREATE);
+		
+		// Initialize controller
+		controller.init();
 
+		// Start popup notification manager
+		popupNotificationManager.start();
+		
 		// Register on bus
 		bus.register(this);
-				
-		controller.init(); 
+		
+		// Make foreground (using StandOut!)
+		show(StandOutWindow.DEFAULT_ID);
+		Window hiddenWindow = getWindow(StandOutWindow.DEFAULT_ID);
+		WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+		mWindowManager.removeView(hiddenWindow);
+		hiddenWindow.visibility = Window.VISIBILITY_GONE;
+
 	}
 
 	@Override
@@ -104,11 +130,15 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 	public void onDestroy() {
 		super.onDestroy();
 
+		// Close controller
 		controller.close();
+
+		// Stop popup notification manager
+		popupNotificationManager.stop();
 		
 		// Unregister from bus
 		bus.unregister(this);
-
+		
 		// Unbind from preferences manager
 		unbindService(mPreferencesManagerConnection);    
 
@@ -117,47 +147,12 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 
 		// Unbind from VM
 		mVMmConnector.unbindFromVehicleManager();
-
-		// Remove from foreground
-		removeFromForeground();
 	}
 
-	private void moveToForeground() {
-		Log.i(TAG, "Moving service to foreground.");
-
-		try {
-			Intent intent = new Intent(this,
-					Class.forName("org.biu.ufo.ui.activities.MainActivity_"));
-			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-					Intent.FLAG_ACTIVITY_SINGLE_TOP);
-			intent.putExtra("screen", MainActivity.MAIN);
-			PendingIntent pendingIntent = PendingIntent.getActivity(
-					this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-			NotificationCompat.Builder notificationBuilder =
-					new NotificationCompat.Builder(this);
-			notificationBuilder.setContentTitle(getString(R.string.app_name))
-			.setContentInfo(getString(R.string.notification_content))
-			.setSmallIcon(R.drawable.gasstation)
-			.setContentIntent(pendingIntent);
-
-			startForeground(SERVICE_NOTIFICATION_ID,
-					notificationBuilder.build());
-		} catch (ClassNotFoundException e) {
-			Log.e(TAG, "Could not find Main Activity class.", e);
-		}
-	}
-
-	private void removeFromForeground(){
-		Log.i(TAG, "Removing service from foreground.");
-		stopForeground(true);
-	}
 	
 	@Override
 	@UiThread
 	public void onVMConnected() {
-		// TODO Auto-generated method stub
-
 		try {
 			mVMmConnector.getVehicleManager().addListener(FuelLevel.class, fuelLevelListener);
 			mVMmConnector.getVehicleManager().addListener(VehicleSpeed.class, vehicleSpeedListener);
@@ -167,10 +162,8 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 			mVMmConnector.getVehicleManager().addListener(Longitude.class, longitudeListener);
 			mVMmConnector.getVehicleManager().addListener(EngineSpeed.class, engineSpeedListener);
 		} catch (VehicleServiceException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (UnrecognizedMeasurementTypeException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -258,9 +251,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		@Override
 		@UiThread
 		public void receive(Measurement measurement) {
-			final Latitude latitude = (Latitude) measurement;
-//			post(new LatitudeMessage(latitude));
-			
+			final Latitude latitude = (Latitude) measurement;			
 			locationMessage.setLatitude(latitude.getValue().doubleValue());
 			if (locationMessage.properLocation()){
 				post(locationMessage);
@@ -273,9 +264,7 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 
 		@Override
 		public void receive(Measurement measurement) {
-			final Longitude longitude = (Longitude) measurement;
-//			post(new LongitudeMessage(longitude));
-			
+			final Longitude longitude = (Longitude) measurement;		
 			locationMessage.setLongitude(longitude.getValue().doubleValue());
 			if (locationMessage.properLocation()){
 				post(locationMessage);
@@ -330,5 +319,136 @@ public class UfoMainService extends Service implements VehicleManagerConnectorCa
 		
 	};
 	
+
+	/* StandOut stuff */
 	
+	@Override
+	public String getAppName() {
+		return getString(R.string.app_name);
+	}
+	
+	@Override
+	public int getAppIcon() {
+		return R.drawable.ic_launcher;
+	}
+		
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		if (intent != null) {
+			String action = intent.getAction();
+			if (ACTION_SHOW.equals(action) || ACTION_RESTORE.equals(action)) {
+				int id = intent.getIntExtra("id", DEFAULT_ID);
+				Window window = getWindow(id);
+				if(window != null && window.visibility == Window.VISIBILITY_VISIBLE) {
+					return START_NOT_STICKY;
+				}
+			}
+		}
+		return super.onStartCommand(intent, flags, startId);
+	}
+	
+	@Override
+	public Notification getPersistentNotification(int id) {
+		if(id == StandOutWindow.DEFAULT_ID) {
+			Intent intent = new Intent(this,MainActivity_.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+					Intent.FLAG_ACTIVITY_SINGLE_TOP);
+			intent.putExtra("screen", MainActivity.MAIN);
+			PendingIntent pendingIntent = PendingIntent.getActivity(
+					this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+			NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
+			notificationBuilder.setContentTitle(getString(R.string.app_name))
+			.setContentInfo(getString(R.string.notification_content))
+			.setSmallIcon(R.drawable.gasstation)
+			.setContentIntent(pendingIntent);
+			
+			return notificationBuilder.build();
+		}
+		return null;
+	}
+			
+	@Override
+	public void createAndAttachView(int id, FrameLayout frame) {
+		if(id == SERVICE_FUEL_NEXT_ID) {
+			final FuelNextContentView view = FuelNextContentView_.build(this);	
+			view.fillContent(popupNotificationManager, popupNotificationManager.getPopupRecommendation());
+			frame.addView(view);
+		}
+//		else if(id == SOME_OTHER_ID) {
+//			
+//		}
+		else {
+			frame.addView(new FrameLayout(this));			
+		}
+	}
+
+	@Override
+	public StandOutLayoutParams getParams(int id, Window window) {
+		int y = StandOutLayoutParams.TOP + (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, getResources().getDisplayMetrics());
+		int x = StandOutLayoutParams.LEFT;
+		int w = StandOutLayoutParams.WRAP_CONTENT;
+		int h = StandOutLayoutParams.WRAP_CONTENT;
+		StandOutLayoutParams params = new StandOutLayoutParams(id, w, h, x, y);
+		params.gravity = Gravity.CENTER_HORIZONTAL|Gravity.TOP;
+		return params;
+	}
+		
+	@Override
+	public boolean onTouchBody(int id, Window window, View view, MotionEvent event) {
+		super.onTouchBody(id, window, view, event);
+		if(id != StandOutWindow.DEFAULT_ID && event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+			popupNotificationManager.closePopup();
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean onKeyEvent(int id, Window window, KeyEvent event) {
+    	if(event.getKeyCode() == KeyEvent.KEYCODE_HOME ||
+    			event.getKeyCode() == KeyEvent.KEYCODE_MENU ||
+    			event.getKeyCode() == KeyEvent.KEYCODE_SEARCH) {
+    		popupNotificationManager.closePopup();
+    	}
+		return super.onKeyEvent(id, window, event);
+	}
+	
+	@Override
+	public boolean onBringToFront(int id, Window window) {
+		if(id != StandOutWindow.DEFAULT_ID) {
+			popupNotificationManager.onPopupClick();
+		}		
+		return true;
+	}
+	
+	@Override
+	public boolean onFocusChange(int id, Window window, boolean focus) {
+		if(id != StandOutWindow.DEFAULT_ID && focus == false) {
+			popupNotificationManager.closePopup();
+		}		
+		return super.onFocusChange(id, window, focus);
+	}
+	
+	@Override
+	public int getFlags(int id) {
+		if(id == SERVICE_FUEL_NEXT_ID) {
+			return super.getFlags(id) |
+					StandOutFlags.FLAG_WINDOW_EDGE_LIMITS_ENABLE |
+					StandOutFlags.FLAG_WINDOW_BRING_TO_FRONT_ON_TAP |
+					StandOutFlags.FLAG_WINDOW_FOCUS_INDICATOR_DISABLE ;
+		}
+//		else if(id == SOME_OTHER_ID) {
+//		
+//		}
+		return super.getFlags(id) | StandOutFlags.FLAG_WINDOW_HIDE_ENABLE;
+	}
+
+	@Override
+	public boolean onShow(int id, Window window) {
+		if(id != StandOutWindow.DEFAULT_ID) {
+			popupNotificationManager.playNotificationSound();			
+			popupNotificationManager.automaticClosing();
+		}
+		return super.onShow(id, window);
+	}
 }
