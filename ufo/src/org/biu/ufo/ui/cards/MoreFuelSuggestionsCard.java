@@ -3,7 +3,6 @@ package org.biu.ufo.ui.cards;
 import it.gmariotti.cardslib.library.internal.Card;
 
 import org.biu.ufo.R;
-import org.biu.ufo.control.events.user.ShowRecommendationsMessage;
 import org.biu.ufo.ui.activities.MainActivity;
 import org.biu.ufo.ui.activities.MainActivity_;
 

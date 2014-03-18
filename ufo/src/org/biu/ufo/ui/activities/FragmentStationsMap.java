@@ -43,8 +43,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 @EFragment(R.layout.fragment_stations_map)
 @OptionsMenu(R.menu.stations_menu)
 public class FragmentStationsMap extends Fragment {
-	private static final String TAG = "StationsMapActivity";	    
-
 	//@FragmentById(R.id.map)
 	SupportMapFragment mapFragment;
 

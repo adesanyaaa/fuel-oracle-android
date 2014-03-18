@@ -28,14 +28,14 @@ public class TroubleCodesObdCommand extends BaseObdQueryCommand {
 	protected final static char[] dtcLetters = { 'P', 'C', 'B', 'U' };
 
 	private StringBuffer codes = null;
-	private int howManyTroubleCodes = 0;
+//	private int howManyTroubleCodes = 0;
 
 	/**
 	 * Default ctor.
 	 */
 	public TroubleCodesObdCommand(int howManyTroubleCodes) {
 		codes = new StringBuffer();
-		this.howManyTroubleCodes = howManyTroubleCodes;
+//		this.howManyTroubleCodes = howManyTroubleCodes;
 	}
 
 	@Override

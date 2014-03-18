@@ -26,7 +26,6 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter;
-import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter.CountDownFormatter;
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter.DeleteItemCallback;
 
 @EFragment(R.layout.destination_chooser) 
@@ -45,21 +44,21 @@ class FragmentDestinationChoose extends Fragment implements DeleteItemCallback, 
 
 	FragmentDestination parent;
 	
-	private class MyFormatCountDownCallback implements CountDownFormatter {
-
-		@Override
-		public String getCountDownString(final long millisUntilFinished) {
-			if(isVisible()) {
-				int seconds = (int) Math.ceil(millisUntilFinished / 1000.0);
-
-				if (seconds > 0) {
-					return getResources().getQuantityString(R.plurals.countdown_seconds, seconds, seconds);
-				}
-				return getString(R.string.countdown_dismissing);				
-			}
-			return "";
-		}
-	}
+//	private class MyFormatCountDownCallback implements CountDownFormatter {
+//
+//		@Override
+//		public String getCountDownString(final long millisUntilFinished) {
+//			if(isVisible()) {
+//				int seconds = (int) Math.ceil(millisUntilFinished / 1000.0);
+//
+//				if (seconds > 0) {
+//					return getResources().getQuantityString(R.plurals.countdown_seconds, seconds, seconds);
+//				}
+//				return getString(R.string.countdown_dismissing);				
+//			}
+//			return "";
+//		}
+//	}
 
 
 	@AfterViews

@@ -10,7 +10,7 @@ import org.biu.ufo.control.events.analyzer.routemonitor.EstimatedDestinationMess
 import org.biu.ufo.control.events.user.DestinationSelectedMessage;
 import org.biu.ufo.control.events.user.PeekNewDestinationMessage;
 import org.biu.ufo.control.events.user.ShowRecommendationsMessage;
-import org.biu.ufo.services.*;
+import org.biu.ufo.services.UfoMainService_;
 
 import android.content.Intent;
 import android.os.Bundle;
