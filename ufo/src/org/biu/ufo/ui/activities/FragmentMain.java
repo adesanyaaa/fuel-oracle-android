@@ -259,7 +259,8 @@ public class FragmentMain extends Fragment {
 			Location stationLocation = ((RecommendationCardExpandInside)recommendationCard.getCardExpand()).getLocation();
 			double currentDistance = Calculator.distance(stationLocation, message.location);
 			
-			if (distance - currentDistance >= 0.1){
+			//above than 100 meter - update
+			if (Math.abs(distance - currentDistance) >= 0.1){
 				recommendationCard.setDistance(currentDistance);
 			}
 		}
