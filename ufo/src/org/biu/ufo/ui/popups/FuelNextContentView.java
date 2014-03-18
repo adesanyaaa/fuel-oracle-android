@@ -6,7 +6,7 @@ import org.biu.ufo.R;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
 import org.biu.ufo.rest.Station;
 import org.biu.ufo.ui.activities.MainActivity;
-import org.biu.ufo.ui.activities.MainActivity_;
+import org.biu.ufo.ui.activities.*;
 import org.biu.ufo.ui.utils.UnitConverter;
 
 import android.content.Context;
