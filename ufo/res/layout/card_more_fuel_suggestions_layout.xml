@@ -27,12 +27,8 @@
         style="@style/card_action_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="5dp"
         android:background="@drawable/action_button_selector"
         android:gravity="center"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
         android:text="@string/more_fuel_suggestions"
         android:textColor="@android:color/white"
         android:textSize="20sp" />

@@ -16,22 +16,22 @@
   ~   See the License for the specific language governing permissions and
   ~   limitations under the License.
   ~  *****************************************************************************
-  -->
+-->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:card="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+    xmlns:card="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
     <ScrollView
         android:id="@+id/card_scrollview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent" >
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
 
             <it.gmariotti.cardslib.library.view.CardView
                 android:id="@+id/card_route_overview"
@@ -39,73 +39,75 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="6dp"
                 android:layout_marginRight="6dp"
-                card:card_layout_resourceID="@layout/card_small_layout"
-                android:layout_marginTop="6dp"/>
-            
+                android:layout_marginTop="6dp"
+                card:card_layout_resourceID="@layout/card_small_layout" />
+
             <it.gmariotti.cardslib.library.view.CardView
                 android:id="@+id/card_fuel_suggestion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="6dp"
                 android:layout_marginRight="6dp"
-                card:card_layout_resourceID="@layout/card_with_expand_inside_layout"
-                android:layout_marginTop="6dp"/>
-            
-			<it.gmariotti.cardslib.library.view.CardView
-                android:id="@+id/card_more_fuel_suggestions"
+                android:layout_marginTop="6dp"
+                card:card_layout_resourceID="@layout/card_with_expand_inside_layout" />
+
+
+
+            <Button
+                android:id="@+id/more_button"
+                style="@style/card_action_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="6dp"
-                android:layout_marginRight="6dp"
-                android:visibility="gone"
-                card:card_layout_resourceID="@layout/card_small_layout"
-                android:layout_marginTop="6dp"/>
-            
+                android:background="@drawable/action_button_selector"
+                android:gravity="center"
+                android:layout_marginLeft="7dp"
+                android:layout_marginRight="7dp"
+                android:text="@string/more_fuel_suggestions"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="6dp"
                 android:layout_marginRight="6dp"
-                android:orientation="horizontal">
-                            
+                android:orientation="horizontal" >
+
                 <it.gmariotti.cardslib.library.view.CardView
                     android:id="@+id/card_fuel_level"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginRight="3dp"
-                    card:card_layout_resourceID="@layout/card_thumbnail_layout"
-                    android:layout_marginTop="6dp"/>
-                
+                    android:layout_marginTop="6dp"
+                    android:layout_weight="1"
+                    card:card_layout_resourceID="@layout/card_thumbnail_layout" />
+
                 <it.gmariotti.cardslib.library.view.CardView
                     android:id="@+id/card_engine_speed"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginRight="3dp"
                     android:layout_marginLeft="3dp"
-                    card:card_layout_resourceID="@layout/card_thumbnail_layout"
-                    android:layout_marginTop="6dp"/>
+                    android:layout_marginRight="3dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_weight="1"
+                    card:card_layout_resourceID="@layout/card_thumbnail_layout" />
 
                 <it.gmariotti.cardslib.library.view.CardView
                     android:id="@+id/card_vehicle_speed"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
+                    android:layout_marginTop="6dp"
                     android:layout_weight="1"
-                    card:card_layout_resourceID="@layout/card_thumbnail_layout"
-                    android:layout_marginTop="6dp"/>
-
+                    card:card_layout_resourceID="@layout/card_thumbnail_layout" />
             </LinearLayout>
 
-            <!-- Empty view-->
+            <!-- Empty view -->
+
             <View
                 android:layout_width="match_parent"
-                android:layout_height="15dp"/>
-
+                android:layout_height="15dp" />
         </LinearLayout>
-
     </ScrollView>
 
 </LinearLayout>

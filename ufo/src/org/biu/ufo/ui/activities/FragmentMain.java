@@ -32,10 +32,13 @@ import org.biu.ufo.ui.cards.RouteOverviewCard;
 import org.biu.ufo.ui.cards.SquareCarDataCard;
 import org.biu.ufo.ui.utils.UnitConverter;
 
+import android.content.Intent;
 import android.opengl.Visibility;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ScrollView;
 
 import com.squareup.otto.Subscribe;
@@ -62,7 +65,7 @@ public class FragmentMain extends Fragment {
 	CardView card_fuel_suggestion;
 	
 	@ViewById
-	CardView card_more_fuel_suggestions;
+	Button more_button;
 	
 	@ViewById
 	CardView card_fuel_level;
@@ -98,8 +101,14 @@ public class FragmentMain extends Fragment {
 //		card_fuel_suggestion.setCard(fuelSuggestionCard);
 		initFuelSuggestion(true, FUEL_SUGGESTION_MSG_DEFAULT);
 		
-		MoreFuelSuggestionsCard moreFuelSuggestionsCard = new MoreFuelSuggestionsCard(getActivity());
-		card_more_fuel_suggestions.setCard(moreFuelSuggestionsCard);
+		more_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(getActivity(), MainActivity_.class).putExtra("screen", MainActivity.RECOMMENDATIONS));
+				
+			}
+		});
 		
 		
 		SquareCarDataCard fuelLevelCard = new SquareCarDataCard(getActivity(), "Fuel", 0);
@@ -140,7 +149,7 @@ public class FragmentMain extends Fragment {
 			card_fuel_suggestion.replaceCard(card);
 		}
 		
-		card_more_fuel_suggestions.setVisibility(View.GONE);
+		more_button.setVisibility(View.GONE);
 	}
 	
 	@Subscribe
@@ -197,7 +206,7 @@ public class FragmentMain extends Fragment {
 				card_fuel_suggestion.replaceCard(recommendationCard);
 				
 				if (message.getStations().size()>1){
-					card_more_fuel_suggestions.setVisibility(View.VISIBLE);
+					more_button.setVisibility(View.VISIBLE);
 				}
 				
 			}else{
