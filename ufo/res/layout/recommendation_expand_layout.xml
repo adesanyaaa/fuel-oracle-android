@@ -155,7 +155,7 @@
                     android:layout_height="28dp"
                     android:layout_marginRight="5dp"
                     android:layout_weight="0"
-                    android:background="@drawable/action_button_selector"
+                    android:background="@drawable/action_button_rounded_selector"
                     android:gravity="center"
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp"

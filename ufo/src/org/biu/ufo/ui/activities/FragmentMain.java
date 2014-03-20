@@ -216,7 +216,7 @@ public class FragmentMain extends Fragment {
 	@Subscribe
 	public void onFuelLevelUpdate(FuelLevelMessage message){
 		SquareCarDataCard card = (SquareCarDataCard)card_fuel_level.getCard();
-		card.setLine1Text(String.valueOf(message.getFuelLevelValue()) + " %");
+		card.setLine1Text(String.format("%.2f", message.getFuelLevelValue()) + " %");
 		card.setLine2Text("");
 		
 //		card.setBackgroundResource(new ColorDrawable(Color.RED));
@@ -241,7 +241,7 @@ public class FragmentMain extends Fragment {
 	@Subscribe
 	public void onEngineSpeedUpdate(EngineSpeedMessage message) {
 		SquareCarDataCard card = (SquareCarDataCard)card_engine_speed.getCard();
-		card.setLine1Text(message.engineSpeed);
+		card.setLine1Text(String.format("%d", message.speed));
 		card.setLine2Text("RPM");
 	}
 
@@ -250,7 +250,7 @@ public class FragmentMain extends Fragment {
 	public void onVehicleSpeedUpdate(VehicleSpeedMessage message) {
 
 		SquareCarDataCard card = (SquareCarDataCard)card_vehicle_speed.getCard();
-		card.setLine1Text(message.vehicleSpeed);
+		card.setLine1Text(String.format("%.2f", message.speed));
 		card.setLine2Text("km/h");
 	}
 	

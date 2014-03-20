@@ -25,5 +25,5 @@
           android:state_focused="true"/>
     <item android:drawable="@drawable/action_button_rounded_pressed"
           android:state_selected="true"/>
-    <item android:drawable="@drawable/action_button_rounded_normal_dark"/>
+    <item android:drawable="@drawable/action_button_rounded_normal"/>
 </selector>

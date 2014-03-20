@@ -58,7 +58,7 @@
                 style="@style/card_action_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/action_button_selector"
+                android:background="@drawable/action_button_rounded_selector"
                 android:gravity="center"
                 android:layout_marginLeft="7dp"
                 android:layout_marginRight="7dp"
