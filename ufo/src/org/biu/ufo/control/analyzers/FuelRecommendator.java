@@ -171,9 +171,9 @@ public class FuelRecommendator implements IAnalyzer {
 		if(pendingRequests == 0) {
 			// Fix distance
 			for(Station station : lastRecommendation.getStations()) {
-				station.setDistanceUnit(DistanceUnit.KM);
+//				station.setDistanceUnit(DistanceUnit.KM);
 				Location stationLocation = new Location(station.getLat(), station.getLng());
-				station.setDistance(Calculator.distance(currentLocation, stationLocation));
+//				station.setDistance(Calculator.distance(currentLocation, stationLocation));
 				station.setDistanceFromRoute(controller.getRouteEstimator().getMinDistanceFromRoute(stationLocation));
 			}
 			bus.post(lastRecommendation);

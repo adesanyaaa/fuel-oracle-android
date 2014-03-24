@@ -73,7 +73,10 @@ public class FragmentMain extends Fragment {
 	
 	RecommendationCard recommendationCard;
 
+	Location currentLocation;
+	
 	boolean displaysFuelSuggestion = false;
+	
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -187,7 +190,7 @@ public class FragmentMain extends Fragment {
 				displaysFuelSuggestion = true;
 				Station station = message.getTopStation();
 				//Create a Card
-				recommendationCard = new RecommendationCard(getActivity(), message, station);
+				recommendationCard = new RecommendationCard(getActivity(), message, station, currentLocation);
 				
 				//Set card in the cardView
 				ViewToClickToExpand viewToClickToExpand =
@@ -257,15 +260,16 @@ public class FragmentMain extends Fragment {
 	@UiThread
 	@Subscribe
 	public void onLocationUpdate(LocationMessage message) {
-
+		currentLocation = message.getLocation();
 		if (recommendationCard != null){
-			double distance = ((RecommendationCardExpandInside)recommendationCard.getCardExpand()).getStationDistance();
-			Location stationLocation = ((RecommendationCardExpandInside)recommendationCard.getCardExpand()).getLocation();
-			double currentDistance = Calculator.distance(stationLocation, message.location);
+			RecommendationCardExpandInside recommendationCardInside = (RecommendationCardExpandInside)recommendationCard.getCardExpand();
+			Station station = recommendationCardInside.getStation();
+			double currentDistance = Calculator.distance(station.getLocation(), message.location);
+			double distance = recommendationCardInside.getStationDistance();
 			
 			//above than 100 meter - update
 			if (Math.abs(distance - currentDistance) >= 0.1){
-				recommendationCard.setDistance(currentDistance);
+				recommendationCard.setCurrentLocation(message.getLocation());
 			}
 		}
 	}

@@ -43,19 +43,19 @@ public class MGFClient implements Client {
 			station.setPriceCurrency(PriceCurrency.DOLLARS);
 			station.setCapacityUnit(CapacityUnit.US_GALONS);
 			
-			String[] distanceText = mgfStation.distance.split(" ");
-			if(distanceText.length == 2) {
-				station.setDistance(Float.valueOf(distanceText[0]));
-				if(mgfStation.distance.toLowerCase().contains("miles")) {
-					station.setDistanceUnit(DistanceUnit.MILES);
-				} else if(mgfStation.distance.toLowerCase().contains("km")){
-					station.setDistanceUnit(DistanceUnit.KM);
-				} else {
-					station.setDistanceUnit(DistanceUnit.MILES);	// TODO
-				}
-			} else {
-				Log.e("MGFClient", mgfStation.distance + " is invalid distance text!");
-			}
+//			String[] distanceText = mgfStation.distance.split(" ");
+//			if(distanceText.length == 2) {
+//				station.setDistance(Float.valueOf(distanceText[0]));
+//				if(mgfStation.distance.toLowerCase().contains("miles")) {
+//					station.setDistanceUnit(DistanceUnit.MILES);
+//				} else if(mgfStation.distance.toLowerCase().contains("km")){
+//					station.setDistanceUnit(DistanceUnit.KM);
+//				} else {
+//					station.setDistanceUnit(DistanceUnit.MILES);	// TODO
+//				}
+//			} else {
+//				Log.e("MGFClient", mgfStation.distance + " is invalid distance text!");
+//			}
 			
 			result.add(station);
 		}

@@ -33,8 +33,8 @@ public class UFOClient implements Client {
 			station.setPriceCurrency(PriceCurrency.NIS);
 			station.setCapacityUnit(CapacityUnit.LITTERS);
 			
-			station.setDistance((float)ufoStation.distance);
-			station.setDistanceUnit(DistanceUnit.KM);
+//			station.setDistance((float)ufoStation.distance);
+//			station.setDistanceUnit(DistanceUnit.KM);
 			
 			result.add(station);
 		}

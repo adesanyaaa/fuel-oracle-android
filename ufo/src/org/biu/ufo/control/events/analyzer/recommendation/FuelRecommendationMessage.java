@@ -65,11 +65,11 @@ public class FuelRecommendationMessage {
 				public int compare(Station lhs, Station rhs) {
 
 					double lhs_score = lhs.getPrice()*STATION_SCORE_PRICE 
-							+ lhs.getDistance()*(1-STATION_SCORE_PRICE+STATION_SCORE_ROUTE_DIS)
+							+ lhs.getDistance(locationAtRecommendTime)*(1-STATION_SCORE_PRICE+STATION_SCORE_ROUTE_DIS)
 							+ lhs.getDistanceFromRoute()*(STATION_SCORE_ROUTE_DIS);
 					
 					double rhs_score = rhs.getPrice()*STATION_SCORE_PRICE 
-							+ rhs.getDistance()*(1-STATION_SCORE_PRICE+STATION_SCORE_ROUTE_DIS)
+							+ rhs.getDistance(locationAtRecommendTime)*(1-STATION_SCORE_PRICE+STATION_SCORE_ROUTE_DIS)
 							+ rhs.getDistanceFromRoute()*(STATION_SCORE_ROUTE_DIS);
 					
 					//the lower the better (lower price, closer...)

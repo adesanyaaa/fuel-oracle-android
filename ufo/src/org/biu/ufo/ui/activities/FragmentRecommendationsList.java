@@ -31,6 +31,7 @@ import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
+import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.rest.Station;
 import org.biu.ufo.ui.cards.RecommendationCard;
 
@@ -47,35 +48,58 @@ public class FragmentRecommendationsList extends Fragment {
 	CardListView listView;
 
 	private final ArrayList<Card> cards = new ArrayList<Card>();
-
+	private FuelRecommendationMessage fuelRecommendationMessage;
+	private LocationMessage locationMessage;
+	private boolean isRegistedOnBus = false;
+	
 	@AfterViews
 	public void initializeList() {
         CardArrayAdapter mCardArrayAdapter = new CardArrayAdapter(getActivity(), cards);
         listView.setAdapter(mCardArrayAdapter);
+        isRegistedOnBus = true;
+        bus.register(this);
 	}
 	
 	@Override
 	public void onResume() {
 		super.onResume();
-		bus.register(this);
 	}
 	
 	@Override
 	public void onPause() {
 		super.onPause();
-		bus.unregister(this);
+		if(isRegistedOnBus) {
+			bus.unregister(this);	
+			isRegistedOnBus = false;
+		}
 	}
 	
 	@Subscribe
 	public void onFuelNextRecommendation(FuelRecommendationMessage message) {
-		loadCards(message);
+		fuelRecommendationMessage = message;
+		loadCards();
 	}
 	
-    private void loadCards(FuelRecommendationMessage message) {
+	@Subscribe
+	public void onLocationMessage(LocationMessage message) {
+		locationMessage = message;
+		loadCards();
+	}
+	
+    private void loadCards() {
+    	if(locationMessage == null || fuelRecommendationMessage == null) {
+    		return;
+    	}
+    	
+		if(isRegistedOnBus) {
+			bus.unregister(this);	
+			isRegistedOnBus = false;
+		}
+
     	cards.clear();
         
-    	for(Station station : message.getStations()) {
-            Card card = getRecommendationCard(message, station);
+    	for(Station station : fuelRecommendationMessage.getStations()) {
+            Card card = getRecommendationCard(station);
             cards.add(card);
         }
         
@@ -91,8 +115,9 @@ public class FragmentRecommendationsList extends Fragment {
      * This method builds a standard header with a custom expand/collpase
      * @param recommendation
      */
-    private Card getRecommendationCard(FuelRecommendationMessage recommendation, Station station) {
-        RecommendationCard card = new RecommendationCard(getActivity(), recommendation, station);
+    private Card getRecommendationCard(Station station) {
+        RecommendationCard card = new RecommendationCard(getActivity(),
+        		fuelRecommendationMessage, station, locationMessage.getLocation());
 
         return card;
     }

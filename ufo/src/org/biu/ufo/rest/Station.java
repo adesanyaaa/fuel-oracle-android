@@ -1,5 +1,8 @@
 package org.biu.ufo.rest;
 
+import org.biu.ufo.control.Calculator;
+import org.biu.ufo.model.Location;
+
 public class Station {
 	public enum PriceCurrency {DOLLARS, CENTS, NIS};
 	public enum DistanceUnit {KM, MILES};
@@ -16,8 +19,8 @@ public class Station {
 	private PriceCurrency priceCurrency;
 	private CapacityUnit capacityUnit;
 	
-	private double distance;
-	private DistanceUnit distanceUnit;
+//	private double distance;
+//	private DistanceUnit distanceUnit;
 	
 	private double distanceFromRoute;
 	
@@ -34,7 +37,7 @@ public class Station {
 	}
 
 	
-	public void setDistanceFromRoute(double distanceFromRoute){
+	public void setDistanceFromRoute(double distance){
 		this.distanceFromRoute = distance;
 	}
 	
@@ -93,21 +96,30 @@ public class Station {
 	public void setCapacityUnit(CapacityUnit capacityUnit) {
 		this.capacityUnit = capacityUnit;
 	}
-
-	public double getDistance() {
-		return distance;
+	
+	public double getDistance(Location reference) {
+		return Calculator.distance(reference, getLocation());
 	}
 
-	public void setDistance(double distance) {
-		this.distance = distance;
-	}
 
+//	public double getDistance() {
+//		return distance;
+//	}
+
+//	public void setDistance(double distance) {
+//		this.distance = distance;
+//	}
+//
+//	public DistanceUnit getDistanceUnit() {
+//		return distanceUnit;
+//	}
+//
+//	public void setDistanceUnit(DistanceUnit distanceUnit) {
+//		this.distanceUnit = distanceUnit;
+//	}
+	
 	public DistanceUnit getDistanceUnit() {
-		return distanceUnit;
-	}
-
-	public void setDistanceUnit(DistanceUnit distanceUnit) {
-		this.distanceUnit = distanceUnit;
+		return DistanceUnit.KM;
 	}
 
 	@Override
@@ -136,6 +148,11 @@ public class Station {
 		if (Double.doubleToLongBits(lng) != Double.doubleToLongBits(other.lng))
 			return false;
 		return true;
+	}
+
+	public Location getLocation() {
+		// TODO Auto-generated method stub
+		return new Location(lat, lng);
 	}
 
 }

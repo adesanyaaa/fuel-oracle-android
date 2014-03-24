@@ -54,7 +54,7 @@ public class FuelNextContentView extends RelativeLayout {
 		Station station = message.getTopStation();
 		popup_fuel_price.setText(String.format("%.2f", station.getPrice()));
 		popup_fuel_price_currency.setText(UnitConverter.getResourceForPriceCurrency(station.getPriceCurrency()));
-		popup_distance.setText(String.format("%.2f", station.getDistance()));
+		popup_distance.setText(String.format("%.2f", station.getDistance(message.getLocationAtRecommendTime())));
 		popup_distance_unit.setText(UnitConverter.getResourceForDistanceUnit(station.getDistanceUnit()));
 		popup_station_address.setText(station.getAddress());
 		popup_gas_station_logo.setImageResource(UnitConverter.getResourceForStationLogo(station.getCompany()));					

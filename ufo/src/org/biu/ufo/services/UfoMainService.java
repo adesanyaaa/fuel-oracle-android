@@ -16,6 +16,7 @@ import org.biu.ufo.control.events.raw.FuelConsumedMessage;
 import org.biu.ufo.control.events.raw.FuelLevelMessage;
 import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
+import org.biu.ufo.model.Location;
 import org.biu.ufo.services.CarGatewayService.CarGatewayServiceBinder;
 import org.biu.ufo.settings.PreferenceManagerService_;
 import org.biu.ufo.ui.activities.MainActivity;
@@ -56,6 +57,7 @@ import com.openxc.measurements.Odometer;
 import com.openxc.measurements.UnrecognizedMeasurementTypeException;
 import com.openxc.measurements.VehicleSpeed;
 import com.openxc.remote.VehicleServiceException;
+import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
 
 /**
@@ -89,6 +91,7 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
 	private CarGatewayServiceBinder mCarGateway;
 
 	private LocationMessage locationMessage = new LocationMessage();
+	private Location lastKnownLocation;
 
 	@Override
 	public void onCreate() {
@@ -119,6 +122,17 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
 		mWindowManager.removeView(hiddenWindow);
 		hiddenWindow.visibility = Window.VISIBILITY_GONE;
 
+	}
+	
+	@Produce
+	public LocationMessage produceLatestKnownLocation() {
+		if(lastKnownLocation != null) {
+			LocationMessage msg = new LocationMessage();
+			msg.setLatitude(lastKnownLocation.getLatitude());
+			msg.setLongitude(lastKnownLocation.getLongitude());
+			return msg;
+		}
+		return null;
 	}
 
 	@Override
@@ -254,6 +268,7 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
 			final Latitude latitude = (Latitude) measurement;			
 			locationMessage.setLatitude(latitude.getValue().doubleValue());
 			if (locationMessage.properLocation()){
+				lastKnownLocation = locationMessage.getLocation();
 				post(locationMessage);
 				locationMessage = new LocationMessage();
 			}
@@ -267,6 +282,7 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
 			final Longitude longitude = (Longitude) measurement;		
 			locationMessage.setLongitude(longitude.getValue().doubleValue());
 			if (locationMessage.properLocation()){
+				lastKnownLocation = locationMessage.getLocation();
 				post(locationMessage);
 				locationMessage = new LocationMessage();
 			}
