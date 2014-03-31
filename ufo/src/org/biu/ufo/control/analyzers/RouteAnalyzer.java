@@ -5,14 +5,13 @@ import org.androidannotations.annotations.EBean;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.control.Calculator;
 import org.biu.ufo.control.Controller;
-import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteStopMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteSummaryMessage;
+import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
 import org.biu.ufo.control.events.raw.EngineSpeedMessage;
 import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
 import org.biu.ufo.model.Location;
-import org.biu.ufo.storage.RouteDataStore;
 
 import android.os.Handler;
 import android.os.Message;
@@ -37,25 +36,36 @@ public class RouteAnalyzer implements IAnalyzer {
 	public static final long MAX_STATIC_DURATION = MAX_STATIC_DURATION_SECONDS*1000;
 	public static final int MIN_ENGINE_SPEED = 7;			//below car is off, maybe used for other stuff such as AC
 	public static final double MIN_VEHICLE_SPEED = 2;		//below car is standing still otherwise, on the move
-
+	
+	public static final double MIN_FAST_VEHICLE_SPEED = 7; 
+	public static final double MIN_MEDIUM_VEHICLE_SPEED = 5;
+	public static final double MIN_SLOW_VEHICLE_SPEED = 3;
+	
+	
 	@Bean
 	OttoBus bus;
-
-	@Bean
-	RouteDataStore routeDataStore;
-
 	Controller controller;
-
+	
 	Location refLocation;
 	Location currentLocation;
 	double vehicleSpeed = 0;
 	int engineSpeed = 0;
-
+	
+	
+	// baruch add
+	VehicleSpeedCategory retSpeed;
+	double engine_countSpeedChanges = 0;
+	double engine_sumSpeed = 0;
+	double vehicle_sumSpeed = 0;
+	double vehicle_avgSpeed = 0;
+	double vehicle_countSpeedChanges = 0;
+	// baruch add	
+	
 	RouteSummaryMessage driveRoute;
 
 	boolean driveStarted = false;
 	boolean firstTimeInit = true;
-
+	
 	Handler durationHandler = new Handler(){
 
 		@Override
@@ -66,9 +76,6 @@ public class RouteAnalyzer implements IAnalyzer {
 				driveRoute.setEndTime(System.currentTimeMillis());
 				bus.post(new RouteStopMessage(driveRoute.getEndLocation()));
 				bus.post(driveRoute);
-				
-				routeDataStore.closeRecord(driveRoute.getEndLocation());
-
 				firstTimeInit = true;
 				driveStarted = false;
 				durationHandler.removeMessages(1);
@@ -76,47 +83,52 @@ public class RouteAnalyzer implements IAnalyzer {
 				restartTimer();
 			}
 		}
-
 	};
 
 
 	@Subscribe
 	public void onLocationUpdate(LocationMessage message){
 		currentLocation = new Location(message.location);
-
+		
 		if (firstTimeInit){
 			firstTimeInit = false;
-
 			refLocation = message.location;
 			driveRoute = new RouteSummaryMessage();
 			driveRoute.setStartTime(System.currentTimeMillis());
 			driveRoute.getRoute().add(new Location(refLocation));
-			
-			routeDataStore.initRecord(refLocation);
-			
+
 		}else{
 			distanceCheck();
+			setSpeedBehavior();
 		}
 	}
 
 	@Subscribe
 	public void onVehicleSpeedUpdate(VehicleSpeedMessage message){
 		if (!firstTimeInit){
+			++vehicle_countSpeedChanges;
 			vehicleSpeed = message.speed;
+			
+			vehicle_sumSpeed +=vehicleSpeed;
+			vehicle_avgSpeed = vehicle_sumSpeed/vehicle_countSpeedChanges;
+			driveRoute.addVehicleSpeedInfo(vehicleSpeed,1);
 			distanceCheck();
 		}
-
 	}
 
 	@Subscribe
 	public void onEngineSpeedUpdate(EngineSpeedMessage message){
 		if (!firstTimeInit){
+			++engine_countSpeedChanges;
 			engineSpeed = message.speed;
+			
+			engine_sumSpeed += engineSpeed;
+			driveRoute.setAvgEngineSpeed(engine_sumSpeed/engine_countSpeedChanges);
 			distanceCheck();
 		}
-
 	}
-
+	
+	
 	@Produce
 	public RouteStartMessage produceStartOfRouteStatusMessage() {
 		if(driveStarted) {
@@ -124,7 +136,8 @@ public class RouteAnalyzer implements IAnalyzer {
 		}
 		return null;
 	}
-
+	
+	
 	@Produce
 	public RouteStopMessage produceEndOfRouteStatusMessage() {
 		if(!driveStarted && driveRoute != null && driveRoute.isEnded()) {
@@ -132,9 +145,11 @@ public class RouteAnalyzer implements IAnalyzer {
 		}
 		return null;
 	}
-
+	
+	
 	private void distanceCheck(){
 		if (Calculator.distance(currentLocation, refLocation) > MIN_DISTANCE_KM) {
+			
 			if (!driveStarted){
 				driveStarted = true;
 				bus.post(new RouteStartMessage(driveRoute.getStartLocation()));
@@ -142,16 +157,26 @@ public class RouteAnalyzer implements IAnalyzer {
 
 			refLocation = new Location(currentLocation);
 			driveRoute.getRoute().add(refLocation);
-			
-//			double distance = Calculator.distance(currentLocation, refLocation);
-//			Log.e("distance", "" + distance + " lat=" + refLocation.getLatitude() + ", lng=" + refLocation.getLongitude());
-			
-			routeDataStore.addLocation(refLocation);
 			restartTimer();
 
 		}
 	}
 
+	private void setSpeedBehavior(){
+		retSpeed = VehicleSpeedCategory.NOTMOVE;
+		
+		if (vehicle_avgSpeed >= MIN_FAST_VEHICLE_SPEED){
+			retSpeed = VehicleSpeedCategory.FAST;
+		}else if (vehicle_avgSpeed >= MIN_MEDIUM_VEHICLE_SPEED){
+			retSpeed = VehicleSpeedCategory.MEDIUM;
+		}else if ( vehicle_avgSpeed >= MIN_SLOW_VEHICLE_SPEED){
+			retSpeed = VehicleSpeedCategory.SLOW;
+		}
+		vehicle_avgSpeed=0;
+		vehicle_sumSpeed=0;
+	}
+	
+	
 	/**
 	 * for ending the route.
 	 * if not called within MAX_STATIC_DURATION - the process ended
@@ -161,24 +186,19 @@ public class RouteAnalyzer implements IAnalyzer {
 		durationHandler.sendEmptyMessageDelayed(1, MAX_STATIC_DURATION);
 	}
 
+	
 	@Override
-	public void start() {
+	public void start(){
 		bus.register(this);
-		routeDataStore.open();
 	}
 
 	@Override
 	public void stop() {
 		bus.unregister(this);		
-		if(driveRoute != null && driveRoute.getEndLocation() != null) {
-			routeDataStore.closeRecord(driveRoute.getEndLocation());			
-		}
-		
-		routeDataStore.close();
 	}
 
 	@Override
-	public void setController(Controller controller) {
+	public void setController(Controller controller){
 		this.controller = controller;
 	}
 

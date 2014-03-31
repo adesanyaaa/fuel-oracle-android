@@ -193,7 +193,7 @@ public class RouteEstimator implements IAnalyzer {
 		isDestLocationEstimated = false;
 		
 		// Get route estimation
-		if(isEstimatedRouteNeeded) {
+		if(isEstimatedRouteNeeded){
 			getNewRouteEstimation();			
 		}
 		
@@ -272,7 +272,6 @@ public class RouteEstimator implements IAnalyzer {
 			if(!onRoute && System.currentTimeMillis() - lastRouteFetchTime > MIN_INTERVAL_BETWEEN_ROUTE_REQUESTS) {
 				getNewRouteEstimation();
 			}
-			
 		}
 	}
 
@@ -281,7 +280,7 @@ public class RouteEstimator implements IAnalyzer {
 		currentPositionInEstimatedRoute = 0;
 	}
 	
-	public void setRouteEstimationNeeded(boolean isNeeded) {
+	public void setRouteEstimationNeeded(boolean isNeeded){
 		if(isEstimatedRouteNeeded == isNeeded) {
 			return;
 		}
@@ -297,7 +296,7 @@ public class RouteEstimator implements IAnalyzer {
 	public void requestRouteEstimation() {
 		if(estimatedRoute != null) {
 			bus.post(new EstimatedRouteMessage(destPoint.place, estimatedRoute));
-		} else {
+		} else{
 			setRouteEstimationNeeded(true);
 		}
 	}
