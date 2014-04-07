@@ -24,8 +24,8 @@ public class UFOClient implements Client {
 			
 			station.setAddress(ufoStation.address);
 			
-			station.setLat(ufoStation.location.latitude);
-			station.setLng(ufoStation.location.longitude);
+			station.setLat(ufoStation.latitude);
+			station.setLng(ufoStation.longitude);
 
 			station.setCompany(ufoStation.company);
 
@@ -33,7 +33,7 @@ public class UFOClient implements Client {
 			station.setPriceCurrency(PriceCurrency.NIS);
 			station.setCapacityUnit(CapacityUnit.LITTERS);
 			
-//			station.setDistance((float)ufoStation.distance);
+//			station.setDistance((float)ufoStation.distance); - USE Calculator.distance
 //			station.setDistanceUnit(DistanceUnit.KM);
 			
 			result.add(station);
