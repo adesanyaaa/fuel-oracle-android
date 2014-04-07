@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-
 import org.biu.ufo.R;
 import org.biu.ufo.settings.BluetoothPreferenceManager;
-
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -27,7 +26,6 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
-
 import com.openxc.sinks.UploaderSink;
 
 /**
@@ -63,13 +61,15 @@ public class SettingsActivity extends PreferenceActivity {
         initializeLegacyLayout();
     }
 
-    /*@Override
+   
+    @SuppressLint("Override") 
     protected boolean isValidFragment(String fragmentName){
     	return true;
-    }*/
-    
+    }
+   
     @SuppressWarnings("deprecation")
 	private void initializeLegacyLayout() {
+    //	Intent in = getIntent();
         String action = getIntent().getAction();
         if(action != null) {
             if(action.equals(DEVELOPERS_PREFERENCE)) {

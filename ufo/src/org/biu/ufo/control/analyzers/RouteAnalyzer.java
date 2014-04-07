@@ -70,7 +70,7 @@ public class RouteAnalyzer implements IAnalyzer {
 
 		@Override
 		public void handleMessage(Message msg) {
-
+	
 			//naive check that the car is off
 			if (engineSpeed<MIN_ENGINE_SPEED && vehicleSpeed <MIN_VEHICLE_SPEED) {
 				driveRoute.setEndTime(System.currentTimeMillis());
@@ -105,6 +105,7 @@ public class RouteAnalyzer implements IAnalyzer {
 
 	@Subscribe
 	public void onVehicleSpeedUpdate(VehicleSpeedMessage message){
+		
 		if (!firstTimeInit){
 			++vehicle_countSpeedChanges;
 			vehicleSpeed = message.speed;
@@ -113,7 +114,7 @@ public class RouteAnalyzer implements IAnalyzer {
 			vehicle_avgSpeed = vehicle_sumSpeed/vehicle_countSpeedChanges;
 			driveRoute.addVehicleSpeedInfo(vehicleSpeed,1);
 			distanceCheck();
-		}
+		}else{bus.post(new TestMessage());}
 	}
 
 	@Subscribe
