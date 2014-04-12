@@ -15,12 +15,14 @@ import org.biu.ufo.R;
 import org.biu.ufo.control.Calculator;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.EstimatedDestinationMessage;
+import org.biu.ufo.control.events.analyzer.routemonitor.RouteCompletedMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteStopMessage;
 import org.biu.ufo.control.events.raw.EngineSpeedMessage;
 import org.biu.ufo.control.events.raw.FuelLevelMessage;
 import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
+import org.biu.ufo.model.Feedback;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
 import org.biu.ufo.ui.cards.RecommendationCard;
@@ -28,13 +30,37 @@ import org.biu.ufo.ui.cards.RecommendationCardExpandInside;
 import org.biu.ufo.ui.cards.RouteOverviewCard;
 import org.biu.ufo.ui.cards.SquareCarDataCard;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -71,6 +97,10 @@ public class FragmentMain extends Fragment {
 	@ViewById
 	CardView card_vehicle_speed;
 	
+	Context context;
+	
+	Feedback driverFeedback;
+	
 	RecommendationCard recommendationCard;
 
 	Location currentLocation;
@@ -89,6 +119,12 @@ public class FragmentMain extends Fragment {
 		super.onPause();
 		bus.unregister(this);
 	}
+	
+	 @Override
+	    public void onAttach(Activity activity) {
+	        super.onAttach(activity);
+	        context = activity.getApplicationContext();
+	    }
 
 	@AfterViews
 	void initialize() {
@@ -159,9 +195,39 @@ public class FragmentMain extends Fragment {
 		card.setDrivingState(true);
 		card.initialize();		
 		card_route_overview.replaceCard(card);
-		
-
+		driverFeedback = new Feedback();
 	}
+	
+	public void showFeedbackDialog() {
+		
+		// Created a new Dialog
+		final Dialog dialog = new Dialog(getActivity());
+		 
+		// Set the title
+		dialog.setTitle("Feedback");
+		 
+		// inflate the layout
+		dialog.setContentView(R.layout.fragment_edit_name);
+		 
+		
+		final TextView comment = (TextView)dialog.findViewById(R.id.editText1);
+		final RatingBar stars = (RatingBar)dialog.findViewById(R.id.ratingBar);
+		 
+	     Button button = (Button) dialog.findViewById(R.id.SubmitButton);
+	     button.setOnClickListener(new OnClickListener() {
+             @Override
+                 public void onClick(View v) {
+            	 driverFeedback.setComment(comment.getEditableText());
+            	 driverFeedback.setRating(stars.getNumStars());
+            	 Toast.makeText(getActivity().getApplicationContext(),"Thank-you :)", Toast.LENGTH_SHORT).show();
+                 dialog.dismiss();
+                 }
+             });
+		// Display the dialog
+		dialog.show();
+	}
+	
+	
 	
 	@Subscribe
 	public void onRouteStopMessage(RouteStopMessage message) {
@@ -170,10 +236,17 @@ public class FragmentMain extends Fragment {
 		RouteOverviewCard card = new RouteOverviewCard(oldCard.getContext());
 		card.setDestination(oldCard.getDestination());
 		card.setDrivingState(false);
+		
 		card.initialize();
 		card_route_overview.replaceCard(card);
 	}
 
+	@Subscribe
+	public void onRouteCompletedMessage(RouteCompletedMessage message){
+		showFeedbackDialog();
+		bus.post(driverFeedback);
+	}
+	
 	@Subscribe
 	public void onEstimatedDestinationMessage(EstimatedDestinationMessage message) {
 		RouteOverviewCard card = (RouteOverviewCard)card_route_overview.getCard();

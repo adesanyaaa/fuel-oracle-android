@@ -11,7 +11,9 @@ import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
 import org.biu.ufo.control.events.raw.EngineSpeedMessage;
 import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
+import org.biu.ufo.model.Feedback;
 import org.biu.ufo.model.Location;
+import org.biu.ufo.storage.RouteDataStore;
 
 import android.os.Handler;
 import android.os.Message;
@@ -45,6 +47,7 @@ public class RouteAnalyzer implements IAnalyzer {
 	@Bean
 	OttoBus bus;
 	Controller controller;
+	RouteDataStore routeDataStore = new RouteDataStore();
 	
 	Location refLocation;
 	Location currentLocation;
@@ -74,6 +77,7 @@ public class RouteAnalyzer implements IAnalyzer {
 			//naive check that the car is off
 			if (engineSpeed<MIN_ENGINE_SPEED && vehicleSpeed <MIN_VEHICLE_SPEED) {
 				driveRoute.setEndTime(System.currentTimeMillis());
+				//routeDataStore.addLocation(driveRoute.getEndLocation(), true);
 				bus.post(new RouteStopMessage(driveRoute.getEndLocation()));
 				bus.post(driveRoute);
 				firstTimeInit = true;
@@ -85,7 +89,12 @@ public class RouteAnalyzer implements IAnalyzer {
 		}
 	};
 
-
+	
+	@Subscribe
+	public void onFeedbackInserted(Feedback fb){
+		routeDataStore.close();
+	}
+	
 	@Subscribe
 	public void onLocationUpdate(LocationMessage message){
 		currentLocation = new Location(message.location);
@@ -153,11 +162,14 @@ public class RouteAnalyzer implements IAnalyzer {
 			
 			if (!driveStarted){
 				driveStarted = true;
+				//routeDataStore.open();
+				//routeDataStore.initRecord(driveRoute.getStartLocation());
 				bus.post(new RouteStartMessage(driveRoute.getStartLocation()));
 			}
 
 			refLocation = new Location(currentLocation);
 			driveRoute.getRoute().add(refLocation);
+			//routeDataStore.addLocation(refLocation, false);
 			restartTimer();
 
 		}
