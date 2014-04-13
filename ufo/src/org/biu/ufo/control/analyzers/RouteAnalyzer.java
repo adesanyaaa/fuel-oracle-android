@@ -47,7 +47,9 @@ public class RouteAnalyzer implements IAnalyzer {
 	@Bean
 	OttoBus bus;
 	Controller controller;
-	RouteDataStore routeDataStore = new RouteDataStore();
+	
+	@Bean
+	RouteDataStore routeDataStore;
 	
 	Location refLocation;
 	Location currentLocation;
@@ -196,13 +198,13 @@ public class RouteAnalyzer implements IAnalyzer {
 	
 	@Override
 	public void start(){
-	//	routeDataStore.open();
+		routeDataStore.open();
 		bus.register(this);
 	}
 
 	@Override
 	public void stop() {
-		//routeDataStore.close();
+		routeDataStore.close();
 		bus.unregister(this);		
 	}
 

@@ -146,7 +146,7 @@ public class RouteEstimator implements IAnalyzer {
 		point.location = message.getEndLocation();
 		
 		// Trip completed?
-		boolean reachedDestination = true;
+		boolean reachedDestination = false;
 		if(destPoint != null && Calculator.distance(destPoint.location, point.location) < CLOSE_ENOUGH_DISTANCE) {
 			point.place = destPoint.place;
 			reachedDestination = true;
@@ -173,9 +173,9 @@ public class RouteEstimator implements IAnalyzer {
 	}
 
 	private void routeCompleted() {
-		//if(routeParts.size() > 0) {
+		if(routeParts.size() > 0) {
 			bus.post(new RouteCompletedMessage(routeParts));			
-	//	}
+		}
 		initializeRoute();
 	}
 

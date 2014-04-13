@@ -1,17 +1,13 @@
 package org.biu.ufo.storage;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.EBean.Scope;
 import org.androidannotations.annotations.RootContext;
-import org.androidannotations.annotations.Trace;
 import org.biu.ufo.OttoBus;
-import org.biu.ufo.control.analyzers.TestMessage;
-import org.biu.ufo.control.events.analyzer.routemonitor.RouteSummaryMessage;
 import org.biu.ufo.model.DriveHistory;
 import org.biu.ufo.model.DriveRoute;
 import org.biu.ufo.model.Location;
@@ -22,13 +18,11 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.openxc.sources.DataSourceException;
 import com.openxc.util.AndroidFileOpener;
-import com.squareup.otto.Subscribe;
 
 
-@EBean
+@EBean(scope = Scope.Singleton)
 public class RouteDataStore {
 	private static final String DIRECTORY_NAME = "UfoRoutes";
 
@@ -36,6 +30,7 @@ public class RouteDataStore {
 	private Location endLocation;
 	private FileRecorder recorder;
 	private String fileName;
+	int counter=0;
 	
 	//TODO 
 	private boolean firstTime = true;
@@ -64,13 +59,17 @@ public class RouteDataStore {
 
 	
 	public void open() throws SQLException{
-		bus.register(this);
-		database = dbHelper.getWritableDatabase();
+		if (++counter == 1){
+			bus.register(this);
+			database = dbHelper.getWritableDatabase();
+		}
 	}
 	
 	public void close() {
-		bus.unregister(this);
-		dbHelper.close();
+		if (--counter == 0){
+			bus.unregister(this);
+			dbHelper.close();
+		}
 	}
 	
 	public boolean initRecord(Location startLocation){
