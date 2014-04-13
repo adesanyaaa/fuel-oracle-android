@@ -77,7 +77,7 @@ public class RouteAnalyzer implements IAnalyzer {
 			//naive check that the car is off
 			if (engineSpeed<MIN_ENGINE_SPEED && vehicleSpeed <MIN_VEHICLE_SPEED) {
 				driveRoute.setEndTime(System.currentTimeMillis());
-				//routeDataStore.addLocation(driveRoute.getEndLocation(), true);
+				routeDataStore.addLocation(driveRoute.getEndLocation(), true);
 				bus.post(new RouteStopMessage(driveRoute.getEndLocation()));
 				bus.post(driveRoute);
 				firstTimeInit = true;
@@ -89,11 +89,6 @@ public class RouteAnalyzer implements IAnalyzer {
 		}
 	};
 
-	
-	@Subscribe
-	public void onFeedbackInserted(Feedback fb){
-		routeDataStore.close();
-	}
 	
 	@Subscribe
 	public void onLocationUpdate(LocationMessage message){
@@ -162,14 +157,13 @@ public class RouteAnalyzer implements IAnalyzer {
 			
 			if (!driveStarted){
 				driveStarted = true;
-				//routeDataStore.open();
-				//routeDataStore.initRecord(driveRoute.getStartLocation());
+				routeDataStore.initRecord(driveRoute.getStartLocation());
 				bus.post(new RouteStartMessage(driveRoute.getStartLocation()));
 			}
 
 			refLocation = new Location(currentLocation);
 			driveRoute.getRoute().add(refLocation);
-			//routeDataStore.addLocation(refLocation, false);
+			routeDataStore.addLocation(refLocation, false);
 			restartTimer();
 
 		}
@@ -202,11 +196,13 @@ public class RouteAnalyzer implements IAnalyzer {
 	
 	@Override
 	public void start(){
+	//	routeDataStore.open();
 		bus.register(this);
 	}
 
 	@Override
 	public void stop() {
+		//routeDataStore.close();
 		bus.unregister(this);		
 	}
 

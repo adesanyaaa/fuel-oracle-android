@@ -50,6 +50,7 @@ public class RouteEstimator implements IAnalyzer {
 	
 	@RootContext
 	Context context;
+	
 
 	@Bean
 	OttoBus bus;
@@ -145,7 +146,7 @@ public class RouteEstimator implements IAnalyzer {
 		point.location = message.getEndLocation();
 		
 		// Trip completed?
-		boolean reachedDestination = false;
+		boolean reachedDestination = true;
 		if(destPoint != null && Calculator.distance(destPoint.location, point.location) < CLOSE_ENOUGH_DISTANCE) {
 			point.place = destPoint.place;
 			reachedDestination = true;
@@ -172,9 +173,9 @@ public class RouteEstimator implements IAnalyzer {
 	}
 
 	private void routeCompleted() {
-		if(routeParts.size() > 0) {
+		//if(routeParts.size() > 0) {
 			bus.post(new RouteCompletedMessage(routeParts));			
-		}
+	//	}
 		initializeRoute();
 	}
 

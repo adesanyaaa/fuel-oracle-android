@@ -12,4 +12,12 @@ public class Feedback {
 		this.starsCount = numStars;
 	}
 
+	public String getComment() {
+		return comment;
+	}
+
+	public int getStarsCount() {
+		return starsCount;
+	}
+
 }

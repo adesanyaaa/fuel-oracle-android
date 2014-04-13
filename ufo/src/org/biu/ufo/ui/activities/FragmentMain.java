@@ -43,6 +43,8 @@ import org.biu.ufo.ui.cards.SquareCarDataCard;
 
 
 
+
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -50,6 +52,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -72,6 +75,7 @@ public class FragmentMain extends Fragment {
 	private static final String FUEL_SUGGESTION_MSG_DAYS_PART2 = " days.";
 	private static final String FUEL_SUGGESTION_MSG_DEFAULT = "Drive Carefully!";
 	private static final String FUEL_SUGGESTION_MSG_NO_NEAR_STATIONS = "No stations on near path";
+	protected static final String EMAIL_ADDRESS = "baruchnoah@gmail.com";
 
 	@Bean
 	OttoBus bus;
@@ -220,6 +224,7 @@ public class FragmentMain extends Fragment {
             	 driverFeedback.setComment(comment.getEditableText());
             	 driverFeedback.setRating(stars.getNumStars());
             	 Toast.makeText(getActivity().getApplicationContext(),"Thank-you :)", Toast.LENGTH_SHORT).show();
+            	 email(getActivity(),EMAIL_ADDRESS,"Feedback",driverFeedback.getComment()+ " " +driverFeedback.getStarsCount());
                  dialog.dismiss();
                  }
              });
@@ -229,6 +234,22 @@ public class FragmentMain extends Fragment {
 	
 	
 	
+
+	public void email(Context context, String to, String subject, String body) {
+		    StringBuilder builder = new StringBuilder("mailto:" + Uri.encode(to));
+		    if (subject != null) {
+		        builder.append("?subject=" + Uri.encode(Uri.encode(subject)));
+		        if (body != null) {
+		            builder.append("&body=" + Uri.encode(Uri.encode(body)));
+		        }
+		    }
+		    String uri = builder.toString();
+		    Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse(uri));
+		    context.startActivity(intent);
+	}
+	
+
+
 	@Subscribe
 	public void onRouteStopMessage(RouteStopMessage message) {
 		RouteOverviewCard oldCard = (RouteOverviewCard)card_route_overview.getCard();
@@ -240,11 +261,11 @@ public class FragmentMain extends Fragment {
 		card.initialize();
 		card_route_overview.replaceCard(card);
 	}
-
+	
+	
 	@Subscribe
 	public void onRouteCompletedMessage(RouteCompletedMessage message){
 		showFeedbackDialog();
-		bus.post(driverFeedback);
 	}
 	
 	@Subscribe
@@ -279,7 +300,6 @@ public class FragmentMain extends Fragment {
 				if (message.getStations().size()>1){
 					more_button.setVisibility(View.VISIBLE);
 				}
-				
 			}else{
 				initFuelSuggestion(false, FUEL_SUGGESTION_MSG_NO_NEAR_STATIONS);
 			}
