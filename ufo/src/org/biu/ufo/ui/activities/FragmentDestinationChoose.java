@@ -6,10 +6,16 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.R;
 import org.biu.ufo.model.Place;
+import org.biu.ufo.storage.PlacesDBHelper;
+import org.biu.ufo.storage.PlacesDataStore;
 import org.biu.ufo.ui.adapters.PlacesCursorAdapter;
 import org.biu.ufo.ui.utils.SimpleCursorLoader;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.database.MatrixCursor.RowBuilder;
+import android.database.MergeCursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -28,6 +34,7 @@ import android.widget.ListView;
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter;
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter.DeleteItemCallback;
 
+@SuppressLint("ValidFragment")
 @EFragment(R.layout.destination_chooser) 
 class FragmentDestinationChoose extends Fragment implements DeleteItemCallback, LoaderManager.LoaderCallbacks<Cursor> {
 	@ViewById
@@ -120,8 +127,14 @@ class FragmentDestinationChoose extends Fragment implements DeleteItemCallback, 
 		SimpleCursorLoader cursorLoader = new SimpleCursorLoader(getActivity()) {
 			@Override
 			public Cursor loadInBackground() {
-				// TODO Auto-generated method stub
-				return parent.placesDataStore.getAllPlacesCursor();
+				
+				MatrixCursor estimatedCursor = new MatrixCursor(PlacesDataStore.allColumns);
+				estimatedCursor.newRow().add(Integer.valueOf(0)).add("Address").add("Label")
+				.add(Double.valueOf(32.1233)).add(Double.valueOf(32.1111)); 
+				Cursor historyCursor = parent.placesDataStore.getAllPlacesCursor(); 		
+				
+				MergeCursor mergedCursor = new MergeCursor(new Cursor[]{estimatedCursor, historyCursor});
+				return mergedCursor;
 			}
 		};
 		return cursorLoader;	
