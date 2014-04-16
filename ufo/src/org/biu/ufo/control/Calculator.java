@@ -62,6 +62,6 @@ public class Calculator {
 		for (int i = 0; i< size; ++i){
 			distance += (Math.pow(point1.get(i)-point2.get(i),2));
 		}
-		return distance;
+		return Math.sqrt(distance);
 	}
 }
