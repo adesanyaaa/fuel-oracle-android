@@ -1,5 +1,7 @@
 package org.biu.ufo.control;
 
+import java.util.ArrayList;
+
 import org.biu.ufo.model.Location;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -51,4 +53,15 @@ public class Calculator {
 		return (rad * 180.0 / Math.PI);
 	}
 
+	public static double distance(ArrayList<Double> point1, ArrayList<Double> point2){
+		double distance = 0;
+		if (point1.size() != point2.size()){
+			return -1;
+		}
+		int size = point1.size();
+		for (int i = 0; i< size; ++i){
+			distance += (Math.pow(point1.get(i)-point2.get(i),2));
+		}
+		return distance;
+	}
 }
