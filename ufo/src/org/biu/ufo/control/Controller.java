@@ -3,7 +3,7 @@ package org.biu.ufo.control;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.biu.ufo.OttoBus;
-import org.biu.ufo.control.analyzers.FuelAnalyzer;
+import org.biu.ufo.control.analyzers.FuelMonitor;
 import org.biu.ufo.control.analyzers.FuelRecommendator;
 import org.biu.ufo.control.analyzers.RouteAnalyzer;
 import org.biu.ufo.control.analyzers.RouteEstimator;
@@ -15,7 +15,7 @@ public class Controller {
 	OttoBus bus;
 	
 	@Bean
-	FuelAnalyzer fuelAnalyzer;
+	FuelMonitor fuelMonitor;
 	
 	@Bean
 	RouteAnalyzer routeAnalyzer;
@@ -33,8 +33,8 @@ public class Controller {
 		routeEstimator.setController(this);
 		routeEstimator.start();
 		
-		fuelAnalyzer.setController(this);
-		fuelAnalyzer.start();
+//		fuelAnalyzer.setController(this);
+		fuelMonitor.start();
 		
 		fuelingRecommendator.setController(this);
 		fuelingRecommendator.start();
@@ -42,7 +42,7 @@ public class Controller {
 	
 	public void close(){		
 		fuelingRecommendator.stop();
-		fuelAnalyzer.stop();
+		fuelMonitor.stop();
 		routeEstimator.stop();
 		routeAnalyzer.stop();
 	}

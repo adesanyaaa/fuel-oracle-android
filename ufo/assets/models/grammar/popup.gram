@@ -1,0 +1,5 @@
+#JSGF V1.0;
+
+grammar popup;
+
+public <item> = close | nose | navigate | no | ok | yes | oil | noise | crap | garbage | none | gate | more;

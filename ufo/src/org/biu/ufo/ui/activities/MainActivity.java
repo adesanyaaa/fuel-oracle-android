@@ -1,5 +1,11 @@
 package org.biu.ufo.ui.activities;
 
+import static edu.cmu.pocketsphinx.Assets.syncAssets;
+import static edu.cmu.pocketsphinx.SpeechRecognizerSetup.defaultSetup;
+
+import java.io.File;
+import java.io.IOException;
+
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.OptionsItem;
@@ -22,26 +28,96 @@ import android.util.Log;
 
 import com.squareup.otto.Subscribe;
 
+import edu.cmu.pocketsphinx.Hypothesis;
+import edu.cmu.pocketsphinx.RecognitionListener;
+import edu.cmu.pocketsphinx.SpeechRecognizer;
 
 @EActivity(R.layout.activity_main)
 @OptionsMenu(R.menu.main)
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity /* implements RecognitionListener */{
 	public static final String TAG = "RealMainActivity";
 	
 	public static final int DEST = 0;
 	public static final int MAIN = 1;
 	public static final int RECOMMENDATIONS = 101;
 
+//    private static final String KWS_SEARCH_NAME = "wakeup";
+//    private static final String KEYPHRASE = "navigate";
+//    private static final String POPUP_SEARCH = "popup";
+    
 	@Bean
 	OttoBus bus;
 	
+//    private SpeechRecognizer recognizer;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		// TODO: make sure not opening the same shit twice!
 		UfoMainService_.intent(this).start();
+		
+//		// PocketPhinix test
+//		loadPocketPhinx();
 	}
+	
+//    void loadPocketPhinx() {
+//        File appDir;
+//
+//        try {
+//            appDir = syncAssets(getApplicationContext());
+//        } catch (IOException e) {
+//            throw new RuntimeException("failed to synchronize assets", e);
+//        }
+//
+//        recognizer = defaultSetup()
+//                .setAcousticModel(new File(appDir, "models/hmm/en-us-semi"))
+//                .setDictionary(new File(appDir, "models/lm/cmu07a.dic"))
+//                .setRawLogDir(appDir)
+//                .setKeywordThreshold(1e-5f)
+//                .getRecognizer();
+//
+//        recognizer.addListener(this);
+//        
+////        recognizer.addKeywordSearch(POPUP_SEARCH, KEYPHRASE);
+//        File popupGrammar = new File(appDir, "models/grammar/popup.gram");
+//        recognizer.addGrammarSearch(POPUP_SEARCH, popupGrammar);
+//        switchSearch(POPUP_SEARCH);
+//
+//    }
+//    
+//    private void switchSearch(String searchName) {
+//        recognizer.stop();
+//        recognizer.startListening(searchName);
+//    }
+//
+//	@Override
+//	public void onBeginningOfSpeech() {
+//        Log.e(getClass().getSimpleName(), "onBeginningOfSpeech");
+//	}
+//
+//	@Override
+//	public void onEndOfSpeech() {
+//        Log.e(getClass().getSimpleName(), "onEndOfSpeech");
+//
+//		switchSearch(POPUP_SEARCH);
+//	}
+//
+//	@Override
+//	public void onPartialResult(Hypothesis hypothesis) {
+//        String text = hypothesis.getHypstr();
+//        //Log.e(getClass().getSimpleName(), "on partial: " + text);
+//		
+//	}
+//
+//	@Override
+//	public void onResult(Hypothesis hypothesis) {
+//		
+//        String text = hypothesis.getHypstr();
+//        Log.e(getClass().getSimpleName(), "on result: " + text + ", " + hypothesis.getBestScore());
+//		
+//	}
+//
 
 	@Override
 	protected void onPause() {

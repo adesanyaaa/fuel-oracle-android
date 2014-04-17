@@ -5,12 +5,9 @@ import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.R;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
 import org.biu.ufo.rest.Station;
-import org.biu.ufo.ui.activities.MainActivity;
-import org.biu.ufo.ui.activities.*;
 import org.biu.ufo.ui.utils.UnitConverter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
@@ -61,10 +58,7 @@ public class FuelNextContentView extends RelativeLayout {
 		popup_more_button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				getContext().startActivity(new Intent(getContext(), MainActivity_.class)
-				 .putExtra("screen", MainActivity.RECOMMENDATIONS)
-				 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-				manager.closePopup();
+				manager.showMore();
 			}
 		});
 	}

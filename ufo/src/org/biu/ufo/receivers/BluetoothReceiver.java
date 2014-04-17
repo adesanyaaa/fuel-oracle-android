@@ -1,6 +1,6 @@
 package org.biu.ufo.receivers;
 
-import org.biu.ufo.services.UfoMainService_;
+import org.biu.ufo.services.*;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;

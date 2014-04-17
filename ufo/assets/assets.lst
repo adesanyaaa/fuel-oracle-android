@@ -1,0 +1,15 @@
+models/grammar/popup.gram
+models/hmm/en-us-semi/README
+models/hmm/en-us-semi/feat.params
+models/hmm/en-us-semi/mdef
+models/hmm/en-us-semi/means
+models/hmm/en-us-semi/noisedict
+models/hmm/en-us-semi/sendump
+models/hmm/en-us-semi/transition_matrices
+models/hmm/en-us-semi/variances
+models/lm/6827.dic
+models/lm/6827.lm
+models/lm/6827.log_pronounce
+models/lm/6827.sent
+models/lm/6827.vocab
+models/lm/cmu07a.dic

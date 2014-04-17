@@ -462,7 +462,7 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
 	@Override
 	public boolean onShow(int id, Window window) {
 		if(id != StandOutWindow.DEFAULT_ID) {
-			popupNotificationManager.playNotificationSound();			
+			popupNotificationManager.onShown();			
 			popupNotificationManager.automaticClosing();
 		}
 		return super.onShow(id, window);
