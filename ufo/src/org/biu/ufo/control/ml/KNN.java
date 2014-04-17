@@ -44,7 +44,7 @@ public class KNN {
 	/**
 	 * @return estimation using 1-nearest neighbour 
 	 */
-	public Object getEstatimation(){
+	public Object getEstimation(){
 		return sortedTraining.get(0);
 	}
 	

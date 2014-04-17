@@ -21,17 +21,16 @@ import android.location.Address;
  * Estimates the destination using KNN algorithm 
  * based on routes history (Source location and hour)
  */
-public class KNNRouteEstimator {
+public class KNNRouteEstimator extends KNN{
 	
-	KNN knn;
 	Location currentLocation = null;
 	int hour;
 	
-	
 	public KNNRouteEstimator(Location location, int hour){
+		super(getTrainingSet());
 		this.currentLocation = location;
 		this.hour = hour;
-		setInstances();
+		
 	}
 
 	public void setCurrentInstance(Location location, int hour){
@@ -39,9 +38,8 @@ public class KNNRouteEstimator {
 		this.hour = hour;
 	}
 	
-	private void setInstances(){
+	private static ArrayList<DataInstance> getTrainingSet(){
 		//TODO:load route history - currently static
-		
 		ArrayList<DataInstance> trainningSet = new ArrayList<DataInstance>();
 		ArrayList<Double> attributes;
 		for (int i = 0; i < 10; ++ i){
@@ -62,27 +60,14 @@ public class KNNRouteEstimator {
 			trainningSet.add(new DataInstance(attributes, new Place(address)));
 			
 		}
-		knn = new KNN(trainningSet);
+		return trainningSet;
 	}
 	
-	public List<Place> getDestinationEstimation(){
+	/**
+	 * @return training instances sorted by similarity to test details.
+	 */
+	public List<Place> getInstancesSortedBySimilarity(){
 	
-		List<Place> places = new ArrayList<Place>();
-//		HashMap<Place, Double> placesMap = new HashMap<Place, Double>();
-//		ArrayList<Double> testData = new ArrayList<Double>();
-//
-//		if (currentLocation == null || trainningData.size() <= 0){
-//			return null;
-//		}
-//		testData.add(currentLocation.getLatitude());
-//		testData.add(currentLocation.getLongitude());
-//		testData.add(Double.valueOf(hour));
-//
-//		for (TrainingInstance instance: trainningData){
-//			placesMap.put(instance.destination, Calculator.distance(instance.attributes, testData));
-//		}
-//		places = Ordering.natural().onResultOf(Functions.forMap(placesMap))
-//				.sortedCopy(placesMap.keySet());
 		ArrayList<Double> testData = new ArrayList<Double>();
 		if (currentLocation == null){
 			return null;
@@ -91,16 +76,24 @@ public class KNNRouteEstimator {
 		testData.add(currentLocation.getLatitude());
 		testData.add(currentLocation.getLongitude());
 		
+		evaluate(testData);
+		//Place place= (Place) getEstimation(5);
 		
-		
-		knn.evaluate(testData);
-		Place place= (Place) knn.getEstimation(5);
-		List<Object> sorted = knn.getTrainingListSorted();
+		List<Place> places = new ArrayList<Place>();
+		List<Object> sorted = getTrainingListSorted();
 		for (Object item : sorted){
 			places.add((Place) item);
 		}
 		return places;
 		
+	}
+	
+	public Place getEstimation(){
+		return (Place) super.getEstimation();
+	}
+	
+	public Place getEstimation(int k){
+		return (Place) super.getEstimation(k);
 	}
 	
 }
