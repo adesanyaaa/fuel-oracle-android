@@ -26,6 +26,7 @@ import org.biu.ufo.ui.utils.NavigationIntent;
 import wei.mark.standout.StandOutWindow;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.speech.tts.TextToSpeech;
@@ -46,6 +47,7 @@ public class PopupNotificationManager implements RecognitionListener {
 	private FuelRecommendationMessage recommendation;
 	private FuelRecommendationMessage popupRecommendation;
 	private boolean popupShown;
+    private Handler handler = new Handler();
 
 	@Bean
 	OttoBus bus;
@@ -74,7 +76,9 @@ public class PopupNotificationManager implements RecognitionListener {
 
 	public void stop() {
 		bus.unregister(this);
-		
+		handler.removeCallbacks(automaticClosingTask);
+
+		closePopup();
 		destroyTextToSpeech();
 		destroyPocketPhinx();
 		
@@ -156,17 +160,23 @@ public class PopupNotificationManager implements RecognitionListener {
 		return popupRecommendation;
 	}
 	
-	@UiThread(delay=10000)
 	public void automaticClosing() {
-		closePopup();
+        handler.postDelayed(automaticClosingTask, 10000);
 	}
+
+	private Runnable automaticClosingTask = new Runnable() {
+        @Override
+        public void run() {
+    		closePopup();
+        }
+    };
 
 
 	public void onShown() {
-		startTextToSpeech();
+		startTextToSpeech("Fuel next");
 		startListening();
-		wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
-	    wl.acquire();
+//		wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
+//	    wl.acquire();
 
 		/*
 		AssetFileDescriptor afd;
@@ -203,9 +213,9 @@ public class PopupNotificationManager implements RecognitionListener {
 		}
 	}
 	
-	private void startTextToSpeech() {
+	private void startTextToSpeech(String text) {
 		if(ttobj.isLanguageAvailable(Locale.ENGLISH) != TextToSpeech.LANG_NOT_SUPPORTED) {
-		    ttobj.speak("Fuel next", TextToSpeech.QUEUE_FLUSH, null);
+		    ttobj.speak(text, TextToSpeech.QUEUE_FLUSH, null);
 		}
 	}
 	
@@ -270,6 +280,16 @@ public class PopupNotificationManager implements RecognitionListener {
 		
 	}
 
+	@UiThread
+	public void speakAddress() {
+		handler.removeCallbacks(automaticClosingTask);
+
+		Station top = getPopupRecommendation().getTopStation();
+    	startTextToSpeech(top.getAddress());
+    	
+    	automaticClosing();
+	}
+
 	@Override
 	public void onResult(Hypothesis hypothesis) {
         String text = hypothesis.getHypstr();
@@ -278,6 +298,8 @@ public class PopupNotificationManager implements RecognitionListener {
         	onPopupClick();
         } else if(text.equals("more")) {
         	showMore();
+        } else if(text.equals("where")) {
+        	speakAddress();
         }
 	}	
 

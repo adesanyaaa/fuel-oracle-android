@@ -2,4 +2,4 @@
 
 grammar popup;
 
-public <item> = close | nose | navigate | no | ok | yes | oil | noise | crap | garbage | none | gate | more;
+public <item> = close | nose | navigate | no | ok | yes | oil | noise | crap | garbage | none | gate | more | where | when;

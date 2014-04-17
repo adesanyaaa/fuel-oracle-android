@@ -1,11 +1,5 @@
 package org.biu.ufo.ui.activities;
 
-import static edu.cmu.pocketsphinx.Assets.syncAssets;
-import static edu.cmu.pocketsphinx.SpeechRecognizerSetup.defaultSetup;
-
-import java.io.File;
-import java.io.IOException;
-
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.OptionsItem;
@@ -16,7 +10,7 @@ import org.biu.ufo.control.events.analyzer.routemonitor.EstimatedDestinationMess
 import org.biu.ufo.control.events.user.DestinationSelectedMessage;
 import org.biu.ufo.control.events.user.PeekNewDestinationMessage;
 import org.biu.ufo.control.events.user.ShowRecommendationsMessage;
-import org.biu.ufo.services.*;
+import org.biu.ufo.services.UfoMainService_;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,12 +19,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.squareup.otto.Subscribe;
-
-import edu.cmu.pocketsphinx.Hypothesis;
-import edu.cmu.pocketsphinx.RecognitionListener;
-import edu.cmu.pocketsphinx.SpeechRecognizer;
 
 @EActivity(R.layout.activity_main)
 @OptionsMenu(R.menu.main)
@@ -53,7 +44,8 @@ public class MainActivity extends FragmentActivity /* implements RecognitionList
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 		// TODO: make sure not opening the same shit twice!
 		UfoMainService_.intent(this).start();
 		
