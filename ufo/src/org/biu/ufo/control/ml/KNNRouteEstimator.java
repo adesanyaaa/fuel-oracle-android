@@ -23,21 +23,7 @@ import android.location.Address;
  */
 public class KNNRouteEstimator {
 	
-	public class TrainingInstance{
-		ArrayList<Double> attributes;
-		Place destination;
-		
-		public TrainingInstance(double longitude, double latitude, int hour){
-			attributes = new ArrayList<Double>();
-			attributes.add(longitude);
-			attributes.add(latitude);
-			attributes.add(Double.valueOf(hour));
-			
-		}
-	
-	}
-	
-	ArrayList<TrainingInstance> trainningData;
+	KNN knn;
 	Location currentLocation = null;
 	int hour;
 	
@@ -55,44 +41,64 @@ public class KNNRouteEstimator {
 	
 	private void setInstances(){
 		//TODO:load route history - currently static
-		Random random = new Random();
-		trainningData = new ArrayList<TrainingInstance>();
+		
+		ArrayList<DataInstance> trainningSet = new ArrayList<DataInstance>();
+		ArrayList<Double> attributes;
 		for (int i = 0; i < 10; ++ i){
+			attributes = new ArrayList<Double>();
 			int hour = (i+5)%24;
-			double latitude = 31.03118 + (random.nextInt()/100);
-			double longitude = 32.03118 + (random.nextInt()/100);
-			TrainingInstance instance = new TrainingInstance(latitude,longitude,hour);
-
+			double latitude = 42.291595 + (Math.random() * (3));
+			double longitude = -83.237617 + (Math.random() * (3));
+			
+			attributes.add(Double.valueOf(hour));
+			attributes.add(latitude);
+			attributes.add(longitude);
+			
 			Address address = new Address(Locale.getDefault());
-			address.setAddressLine(0, "Location" + i);
+			address.setAddressLine(0, "Location" + i%4);
 			address.setLatitude(31.03118 - (i/100));
 			address.setLongitude(32.03118 + (i/100));
-			instance.destination = new Place(address);
 
-			trainningData.add(instance);
+			trainningSet.add(new DataInstance(attributes, new Place(address)));
 			
 		}
+		knn = new KNN(trainningSet);
 	}
 	
 	public List<Place> getDestinationEstimation(){
 	
-		List<Place> places;
-		HashMap<Place, Double> placesMap = new HashMap<Place, Double>();
+		List<Place> places = new ArrayList<Place>();
+//		HashMap<Place, Double> placesMap = new HashMap<Place, Double>();
+//		ArrayList<Double> testData = new ArrayList<Double>();
+//
+//		if (currentLocation == null || trainningData.size() <= 0){
+//			return null;
+//		}
+//		testData.add(currentLocation.getLatitude());
+//		testData.add(currentLocation.getLongitude());
+//		testData.add(Double.valueOf(hour));
+//
+//		for (TrainingInstance instance: trainningData){
+//			placesMap.put(instance.destination, Calculator.distance(instance.attributes, testData));
+//		}
+//		places = Ordering.natural().onResultOf(Functions.forMap(placesMap))
+//				.sortedCopy(placesMap.keySet());
 		ArrayList<Double> testData = new ArrayList<Double>();
-		
-		if (currentLocation == null || trainningData.size() <= 0){
+		if (currentLocation == null){
 			return null;
 		}
+		testData.add(Double.valueOf(hour));
 		testData.add(currentLocation.getLatitude());
 		testData.add(currentLocation.getLongitude());
-		testData.add(Double.valueOf(hour));
 		
-		for (TrainingInstance instance: trainningData){
-			placesMap.put(instance.destination, Calculator.distance(instance.attributes, testData));
+		
+		
+		knn.evaluate(testData);
+		Place place= (Place) knn.getEstimation(5);
+		List<Object> sorted = knn.getTrainingListSorted();
+		for (Object item : sorted){
+			places.add((Place) item);
 		}
-		places = Ordering.natural().onResultOf(Functions.forMap(placesMap))
-				   .sortedCopy(placesMap.keySet());
-		
 		return places;
 		
 	}

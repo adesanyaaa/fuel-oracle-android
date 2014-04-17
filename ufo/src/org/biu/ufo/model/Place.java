@@ -17,6 +17,15 @@ public class Place {
 		this.isFavorite = isFavorite;
 	}
 	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Place)){
+			return super.equals(o);
+		}
+		Place other = (Place)o;
+		return this.address.getAddressLine(0).equals(other.getAddress().getAddressLine(0));
+	}
+
 	public Address getAddress() {
 		return address;
 	}
