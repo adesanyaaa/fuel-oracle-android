@@ -2,7 +2,6 @@ package org.biu.ufo.storage;
 
 
 import java.io.BufferedWriter;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,6 +13,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import org.biu.ufo.model.DrivePoint;
 import org.biu.ufo.model.Location;
 
 import android.os.Environment;
@@ -56,14 +56,14 @@ public class FileRecorder {
     	return openTimestampedFile();
     }
 
-    public synchronized boolean writeRecord(String type, Object value,boolean lastRecord) {
+    public synchronized boolean writeRecord(String type, Object value,String label, boolean lastRecord) {
         if(mWriter == null) {
         	Log.e(TAG, "no file!");
         	return false;
         }
 
         try {
-        	mWriter.write(JsonSerializer.serialize(type, value, null, System.currentTimeMillis()));
+        	mWriter.write(JsonSerializer.serialize(type,value,label, System.currentTimeMillis()));
             if(!lastRecord){
             	mWriter.write(',');
             }
@@ -117,8 +117,8 @@ public class FileRecorder {
     
     
     
-    public ArrayList<Location> readTraceLocations(String filename)throws DataSourceException {
-    	ArrayList<Location> route = new ArrayList<Location>();
+    public ArrayList<DrivePoint> readTraceLocations(String filename)throws DataSourceException {
+    	ArrayList<DrivePoint> route = new ArrayList<DrivePoint>();
     	JsonReader reader = null;
     	 try {
     		 reader = openForReading(filename);
@@ -134,8 +134,10 @@ public class FileRecorder {
 		}
 		
 
-    private Location readLocation(JsonReader reader) {
+    private DrivePoint readLocation(JsonReader reader) {
+    	DrivePoint dp = new DrivePoint();
     	String str_latlng = "";
+    	String str_label = "";
     	double longitude = 0;
     	double latitude = 0;
     	long out_timestamp =0;
@@ -153,7 +155,9 @@ public class FileRecorder {
         	   int sprt = str_latlng.indexOf(',');
         	   latitude = Double.parseDouble(str_latlng.substring(0,sprt++));
         	   longitude = Double.parseDouble(str_latlng.substring(sprt));
-           } else if (name.equals("timestamp")) {
+           }else if (name.equals("event")) {
+        	   str_label = reader.nextString();
+           }else if (name.equals("timestamp")) {
         	   out_timestamp = new Double(reader.nextDouble()).longValue();
            }else {
 				reader.skipValue();
@@ -167,7 +171,9 @@ public class FileRecorder {
     	
     	Location loc = new Location(new LatLng(latitude, longitude));
     	loc.setTimestamp(out_timestamp);
-        return loc;
+    	dp.setLocation(loc);
+    	dp.setLabel(str_label);
+        return dp;
        }
     
 	

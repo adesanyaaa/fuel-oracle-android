@@ -1,31 +1,34 @@
 package org.biu.ufo.model;
 
 import java.util.ArrayList;
+import org.androidannotations.annotations.EBean;
 
+@EBean
 public class DriveRoute{
 	// Members
-	private ArrayList<Location> route;
+	private ArrayList<DrivePoint> route;
 	private long startTime;
 	private long endTime;
-	private String feedback = "";
-	private boolean hasFeedback = false;
 	
 	
 	public DriveRoute(){
-		this.route = new ArrayList<Location>();
+		this.route = new ArrayList<DrivePoint>();
 
 	}
 		
-	public ArrayList<Location> getRoute(){
+	public ArrayList<DrivePoint> getRoute(){
 		return route;
 	}
 
+	
+	
+	
 	public Location getStartLocation() {
-		return route.get(0);
+		return route.get(0).getLocation();
 	}
 
 	public Location getEndLocation() {
-		return getRoute().get(getRoute().size() - 1);
+		return getRoute().get(getRoute().size() - 1).getLocation();
 	}
 
 	public long getStartTime() {
@@ -33,7 +36,7 @@ public class DriveRoute{
 	}
 
 	public void setStartTime() {
-		this.startTime = route.get(0).getTimestamp();
+		this.startTime = route.get(0).getLocation().getTimestamp();
 	}
 
 	public long getEndTime() {
@@ -41,7 +44,7 @@ public class DriveRoute{
 	}
 
 	public void setEndTime() {
-		this.endTime = getRoute().get(getRoute().size() - 1).getTimestamp();
+		this.endTime = getRoute().get(getRoute().size() - 1).getLocation().getTimestamp();
 	}
 
 	public long getDuration() {

@@ -17,9 +17,11 @@ import org.biu.ufo.control.events.analyzer.routemonitor.RouteCompletedMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteSummaryMessage;
 import org.biu.ufo.control.events.raw.LocationMessage;
+import org.biu.ufo.control.events.raw.PickLocationMessage;
 import org.biu.ufo.control.events.user.DestinationSelectedMessage;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.model.Place;
+import org.biu.ufo.storage.RouteDataStore;
 
 import android.content.Context;
 
@@ -51,6 +53,8 @@ public class RouteEstimator implements IAnalyzer {
 	@RootContext
 	Context context;
 	
+	@Bean
+	RouteDataStore routeDataStore;
 
 	@Bean
 	OttoBus bus;
@@ -102,18 +106,19 @@ public class RouteEstimator implements IAnalyzer {
 	 * @param message
 	 */
 	@Subscribe
-	public void onRouteStarted(RouteStartMessage message) {		
+	public void onRouteStarted(RouteStartMessage message) {	
 		final WayPoint point = new WayPoint();
 		point.location = message.getLocation(); 		
 		placeResolver.resolvePlace(point.location, new OnPlaceResolved() {
 			@Override
 			public void onResult(Location location, Place place) {
 				point.place = place;
+				routeDataStore.initRecord(point.location,place.toString());
 			}
 
 			@Override
 			public void onFailure(Location location) {
-				// TODO Auto-generated method stub
+			
 			}
 		});
 		
@@ -135,6 +140,10 @@ public class RouteEstimator implements IAnalyzer {
 		return minDistance;
 	}
 	
+	@Subscribe
+	public void onPickLocation(PickLocationMessage message){
+		routeDataStore.addLocation(message.getRefLocation(),"",false);
+	}
 	
 	/**
 	 * User stopped driving
@@ -150,11 +159,13 @@ public class RouteEstimator implements IAnalyzer {
 		if(destPoint != null && Calculator.distance(destPoint.location, point.location) < CLOSE_ENOUGH_DISTANCE) {
 			point.place = destPoint.place;
 			reachedDestination = true;
+			routeDataStore.closeRecord(point.location,destPoint.place.toString());
 		} else {
 			placeResolver.resolvePlace(point.location, new OnPlaceResolved() {
 				@Override
 				public void onResult(Location location, Place place) {
 					point.place = place;
+					routeDataStore.closeRecord(point.location,place.toString());
 				}
 
 				@Override
@@ -312,11 +323,13 @@ public class RouteEstimator implements IAnalyzer {
 
 	@Override
 	public void start() {
+		routeDataStore.open();
 		bus.register(this);
 	}
 
 	@Override
 	public void stop() {
+		routeDataStore.close();
 		routeCompleted();
 		bus.unregister(this);
 	}
