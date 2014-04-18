@@ -4,7 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.biu.ufo.model.DriveHistory;
+import org.biu.ufo.model.DriveRoute;
+import org.biu.ufo.model.Location;
 import org.biu.ufo.model.Place;
+import org.biu.ufo.storage.RouteDataStore;
+
+import com.google.common.annotations.Beta;
 
 import android.location.Address;
 
@@ -13,6 +19,9 @@ import android.location.Address;
  * based on routes history (Source location and hour)
  */
 public class KNNRouteEstimator extends KNN{
+	
+	@Beta
+	RouteDataStore routeDataStore;
 	
 	public KNNRouteEstimator(ArrayList<DataInstance> trainingSet){
 		super(trainingSet);
@@ -44,6 +53,21 @@ public class KNNRouteEstimator extends KNN{
 		}
 		return trainningSet;
 	}
+	
+	/*public ArrayList<DataInstance> getHistoryTrainingSet(){
+		ArrayList<DataInstance> trainningSet = new ArrayList<DataInstance>();
+		ArrayList<Double> attributes;
+		routeDataStore.open();
+		DriveHistory history = routeDataStore.getRoutesHistory(-1);
+		for  (int i = 0; i < history.getTotalRoutes(); ++i){
+			DriveRoute route = history.getRouteByIndex(i);
+			Location location = route.getStartLocation();
+			
+		}
+		
+		routeDataStore.close();
+	}*/
+	
 	
 	/**
 	 * @return training instances sorted by similarity to test details.
