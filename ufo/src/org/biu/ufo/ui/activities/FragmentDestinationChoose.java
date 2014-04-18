@@ -154,4 +154,4 @@ class FragmentDestinationChoose extends Fragment {
 			}
 		});
 	}
-	}
+}

@@ -35,12 +35,10 @@ public class KNNRouteEstimator extends KNN{
 			attributes.add(Double.valueOf(hour));
 			attributes.add(latitude);
 			attributes.add(longitude);
-			
 			Address address = new Address(Locale.getDefault());
-			address.setAddressLine(0, "Location" + i%4);
+			address.setAddressLine(0, "Location " + i);
 			address.setLatitude(31.03118 - (i/100));
 			address.setLongitude(32.03118 + (i/100));
-
 			trainningSet.add(new DataInstance(attributes, new Place(address)));
 			
 		}
