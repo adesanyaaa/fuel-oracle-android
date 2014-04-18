@@ -10,6 +10,8 @@ public class RouteSummaryMessage extends StatusMessage {
 	private ArrayList<Location> route;
 	private long startTime;
 	private long endTime;
+	private double sum_vehicleSpeed =0;
+	private double count_vehicleSpeedChanges =0;
 	
 	public RouteSummaryMessage(){
 		this.route = new ArrayList<Location>();
@@ -58,5 +60,24 @@ public class RouteSummaryMessage extends StatusMessage {
 			return endTime;
 		}
 		return startTime;
+	}
+
+	public void addVehicleSpeedInfo(double speed,double add) {
+		sum_vehicleSpeed += speed;
+		count_vehicleSpeedChanges += add;
+		
+	}
+	
+	
+	public double getAvgVehicleSpeed() {
+		if (count_vehicleSpeedChanges>0){
+			return sum_vehicleSpeed/count_vehicleSpeedChanges;
+		}else
+			return 0;
+	}
+	
+	public void setAvgEngineSpeed(double d) {
+		// TODO Auto-generated method stub
+		
 	}
 }

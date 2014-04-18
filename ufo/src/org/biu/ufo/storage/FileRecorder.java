@@ -1,15 +1,28 @@
 package org.biu.ufo.storage;
 
+
 import java.io.BufferedWriter;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import org.biu.ufo.model.Location;
+
+import android.os.Environment;
+import android.util.JsonReader;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.openxc.measurements.serializers.JsonSerializer;
+import com.openxc.sources.DataSourceException;
 import com.openxc.util.FileOpener;
 
 /**
@@ -31,16 +44,19 @@ public class FileRecorder {
 
     private FileOpener mFileOpener;
     private BufferedWriter mWriter;
+	private JsonReader m_jsReader;
+	String mDirectory;
 
-    public FileRecorder(FileOpener fileOpener) {
+    public FileRecorder(String directory, FileOpener fileOpener) {
         mFileOpener = fileOpener;
+        mDirectory = directory;
     }
     
     public String openNewFile() throws IOException {
     	return openTimestampedFile();
     }
 
-    public synchronized boolean writeRecord(String type, Object value) {
+    public synchronized boolean writeRecord(String type, Object value,boolean lastRecord) {
         if(mWriter == null) {
         	Log.e(TAG, "no file!");
         	return false;
@@ -48,7 +64,9 @@ public class FileRecorder {
 
         try {
         	mWriter.write(JsonSerializer.serialize(type, value, null, System.currentTimeMillis()));
-//            mWriter.write(value);
+            if(!lastRecord){
+            	mWriter.write(',');
+            }
             mWriter.newLine();
         } catch(IOException e) {
             Log.w(TAG, "Unable to write measurement to file", e);
@@ -75,6 +93,7 @@ public class FileRecorder {
     private synchronized void close() {
         if(mWriter != null) {
             try {
+            	mWriter.write(']');
                 mWriter.close();
             } catch(IOException e) {
                 Log.w(TAG, "Unable to close output file", e);
@@ -91,7 +110,88 @@ public class FileRecorder {
             close();
         }
         mWriter = mFileOpener.openForWriting(filename);
+        mWriter.write('[');
         Log.i(TAG, "Opened trace file " + filename + " for writing");
         return filename;
     }
+    
+    
+    
+    public ArrayList<Location> readTraceLocations(String filename)throws DataSourceException {
+    	ArrayList<Location> route = new ArrayList<Location>();
+    	JsonReader reader = null;
+    	 try {
+    		 reader = openForReading(filename);
+    		 reader.beginArray();
+    	     while (reader.hasNext()) {
+    	    	 route.add(readLocation(reader));
+    	     }
+    	     reader.endArray();
+    	     reader.close();
+		} catch (IOException e) {
+			}
+			return route;
+		}
+		
+
+    private Location readLocation(JsonReader reader) {
+    	String str_latlng = "";
+    	double longitude = 0;
+    	double latitude = 0;
+    	long out_timestamp =0;
+    	String type = "";
+    	
+    	try {
+
+    	reader.beginObject();
+         while (reader.hasNext()) {
+        	 String name = reader.nextName();
+           if (name.equals("name")) {
+        	   type = reader.nextString();
+           }else if (name.equals("value")) {
+        	   str_latlng = reader.nextString();
+        	   int sprt = str_latlng.indexOf(',');
+        	   latitude = Double.parseDouble(str_latlng.substring(0,sprt++));
+        	   longitude = Double.parseDouble(str_latlng.substring(sprt));
+           } else if (name.equals("timestamp")) {
+        	   out_timestamp = new Double(reader.nextDouble()).longValue();
+           }else {
+				reader.skipValue();
+           }
+         }
+         reader.endObject();
+         
+    	} catch (IOException e) {
+			e.printStackTrace();
+		}
+    	
+    	Location loc = new Location(new LatLng(latitude, longitude));
+    	loc.setTimestamp(out_timestamp);
+        return loc;
+       }
+    
+	
+
+	
+    public JsonReader openForReading(String filename) throws IOException {
+        Log.i(TAG, "Opening " + mDirectory + "/" + filename
+                + " for writing on external storage");
+
+        File externalStoragePath = Environment.getExternalStorageDirectory();
+        File directory = new File(externalStoragePath.getAbsolutePath() +
+                "/" + mDirectory);
+        
+      
+        File file = new File(directory, filename);
+        try {
+            //directory.mkdirs();
+            InputStream inputStream=new FileInputStream(file);
+            return new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            //new BufferedReader(new InputStreamReader(inputStream));
+        } catch(IOException e) {
+            Log.w(TAG, "Unable to open " + file + " for writing", e);
+            throw e;
+        }
+    }
+   
 }
