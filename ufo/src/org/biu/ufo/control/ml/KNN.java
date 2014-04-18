@@ -75,9 +75,10 @@ public class KNN {
 	/**
 	 * @return list of the target objects sorted by similarity
 	 */
-	public List<Object> getTrainingListSorted(){
+	public List<?> getTrainingListSorted(){
 		return sortedTraining;
 	}
+
 	
 	
 	

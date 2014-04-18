@@ -1,19 +1,10 @@
 package org.biu.ufo.control.ml;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
-
-import org.biu.ufo.control.Calculator;
-import org.biu.ufo.model.Location;
-
 
 import org.biu.ufo.model.Place;
-
-import com.google.common.base.Functions;
-import com.google.common.collect.Ordering;
 
 import android.location.Address;
 
@@ -23,22 +14,11 @@ import android.location.Address;
  */
 public class KNNRouteEstimator extends KNN{
 	
-	Location currentLocation = null;
-	int hour;
-	
-	public KNNRouteEstimator(Location location, int hour){
-		super(getTrainingSet());
-		this.currentLocation = location;
-		this.hour = hour;
-		
+	public KNNRouteEstimator(ArrayList<DataInstance> trainingSet){
+		super(trainingSet);
 	}
 
-	public void setCurrentInstance(Location location, int hour){
-		this.currentLocation = location;
-		this.hour = hour;
-	}
-	
-	private static ArrayList<DataInstance> getTrainingSet(){
+	public static ArrayList<DataInstance> getStaticTrainingSet(){
 		//TODO:load route history - currently static
 		ArrayList<DataInstance> trainningSet = new ArrayList<DataInstance>();
 		ArrayList<Double> attributes;
@@ -66,25 +46,9 @@ public class KNNRouteEstimator extends KNN{
 	/**
 	 * @return training instances sorted by similarity to test details.
 	 */
-	public List<Place> getInstancesSortedBySimilarity(){
-	
-		ArrayList<Double> testData = new ArrayList<Double>();
-		if (currentLocation == null){
-			return null;
-		}
-		testData.add(Double.valueOf(hour));
-		testData.add(currentLocation.getLatitude());
-		testData.add(currentLocation.getLongitude());
-		
-		evaluate(testData);
+	public List<Place> getTrainingListSorted(){
 		//Place place= (Place) getEstimation(5);
-		
-		List<Place> places = new ArrayList<Place>();
-		List<Object> sorted = getTrainingListSorted();
-		for (Object item : sorted){
-			places.add((Place) item);
-		}
-		return places;
+		return (List<Place>) super.getTrainingListSorted();
 		
 	}
 	

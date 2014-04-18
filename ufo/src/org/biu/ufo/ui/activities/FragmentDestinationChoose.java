@@ -82,8 +82,15 @@ class FragmentDestinationChoose extends Fragment {
 			currentLocation = locationMessage.location;
 			hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 			
-			KNNRouteEstimator estimator = new KNNRouteEstimator(currentLocation, hour);
-			List<Place> estimatedDestination = estimator.getInstancesSortedBySimilarity();
+			KNNRouteEstimator estimator = new KNNRouteEstimator(KNNRouteEstimator.getStaticTrainingSet());			
+			ArrayList<Double> testData = new ArrayList<Double>();
+
+			testData.add(Double.valueOf(hour));
+			testData.add(currentLocation.getLatitude());
+			testData.add(currentLocation.getLongitude());
+			estimator.evaluate(testData);
+			
+			List<Place> estimatedDestination = estimator.getTrainingListSorted();
 			ArrayList<Place> places = new ArrayList<Place>();
 			places.addAll(estimatedDestination);
 			places.addAll(parent.placesDataStore.getAllPlaces());
