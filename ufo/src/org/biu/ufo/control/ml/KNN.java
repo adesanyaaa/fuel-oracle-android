@@ -32,10 +32,13 @@ public class KNN {
 	public void evaluate(DataInstance testData){
 		this.testData = testData;
 		
+		//Calculate the euclidean distance for each trainning distance		
 		HashMap<Object, Double> evaluateMap = new HashMap<Object, Double>();
 		for (DataInstance instance: trainingSet){
 			evaluateMap.put(instance.target, Calculator.distance(instance.attributes, this.testData.attributes));
 		}
+		
+		//list holds the target class sorted by similarity
 		sortedTraining = Ordering.natural().onResultOf(Functions.forMap(evaluateMap))
 				   .sortedCopy(evaluateMap.keySet());
 	}
@@ -60,6 +63,7 @@ public class KNN {
 		int current_frequency;
 		Object estimation = null;
 		
+		//locate the target class that appears the most
 		for (Object item : kNeighboursLst){
 			current_frequency = Collections.frequency(kNeighboursLst, item);
 			if (max_times < current_frequency){

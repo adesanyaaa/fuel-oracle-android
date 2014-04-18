@@ -82,7 +82,7 @@ class FragmentDestinationChoose extends Fragment {
 			currentLocation = locationMessage.location;
 			hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 			
-			KNNRouteEstimator estimator = new KNNRouteEstimator(KNNRouteEstimator.getStaticTrainingSet());			
+			KNNRouteEstimator estimator = new KNNRouteEstimator();			
 			ArrayList<Double> testData = new ArrayList<Double>();
 
 			testData.add(Double.valueOf(hour));
@@ -153,53 +153,5 @@ class FragmentDestinationChoose extends Fragment {
 				parent.onPlaceSelected(place);
 			}
 		});
-		
-//		ContextualUndoAdapter undoAdapter = new ContextualUndoAdapter(historyAdapter,
-//				R.layout.undo_row, R.id.undo_row_undobutton, 3000, R.id.undo_row_texttv, this, new MyFormatCountDownCallback());
-//        ContextualUndoAdapter undoAdapter = new ContextualUndoAdapter(historyAdapter, R.layout.undo_row, R.id.undo_row_undobutton, 3000, this);
-//
-//		undoAdapter.setAbsListView(listView);
-//		listView.setAdapter(undoAdapter);			
-		
-		// Load data
-		//getLoaderManager().initLoader(0, null, this);
 	}
-	
-//	@Override
-//	public void deleteItem(int position) {
-//		long itemId = historyAdapter.getItemId(position);
-//		parent.placesDataStore.deletePlace(itemId);
-//        getLoaderManager().restartLoader(0, null, this);
-//	}
-//
-//	@Override
-//	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-//		SimpleCursorLoader cursorLoader = new SimpleCursorLoader(getActivity()) {
-//			@Override
-//			public Cursor loadInBackground() {
-//				Cursor historyCursor = parent.placesDataStore.getAllPlacesCursor(); 		
-//				Cursor estimatedCursor = getEstimatedDestination();
-//				if (estimatedCursor!=null){
-//					MergeCursor mergedCursor = new MergeCursor(new Cursor[]{estimatedCursor, historyCursor});
-//					return mergedCursor;
-//				}
-//				
-//				return historyCursor;
-//			}
-//		};
-//		return cursorLoader;	
-//	}
-//
-//
-//	@Override
-//	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-//		historyAdapter.swapCursor(data);
-//	}
-//
-//	@Override
-//	public void onLoaderReset(Loader<Cursor> loader) {
-//		historyAdapter.swapCursor(null);
-//	}
-
-
-}
+	}

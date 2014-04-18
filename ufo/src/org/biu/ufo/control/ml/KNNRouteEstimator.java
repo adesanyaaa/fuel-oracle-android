@@ -18,6 +18,10 @@ public class KNNRouteEstimator extends KNN{
 		super(trainingSet);
 	}
 
+	public KNNRouteEstimator(){
+		super(getStaticTrainingSet());
+	}
+	
 	public static ArrayList<DataInstance> getStaticTrainingSet(){
 		//TODO:load route history - currently static
 		ArrayList<DataInstance> trainningSet = new ArrayList<DataInstance>();
@@ -46,16 +50,17 @@ public class KNNRouteEstimator extends KNN{
 	/**
 	 * @return training instances sorted by similarity to test details.
 	 */
+	@Override
 	public List<Place> getTrainingListSorted(){
-		//Place place= (Place) getEstimation(5);
 		return (List<Place>) super.getTrainingListSorted();
-		
 	}
 	
+	@Override
 	public Place getEstimation(){
 		return (Place) super.getEstimation();
 	}
 	
+	@Override
 	public Place getEstimation(int k){
 		return (Place) super.getEstimation(k);
 	}
