@@ -8,7 +8,9 @@ import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.EBean.Scope;
 import org.androidannotations.annotations.RootContext;
 import org.biu.ufo.OttoBus;
+import org.biu.ufo.control.analyzers.TestMessage;
 import org.biu.ufo.model.DriveHistory;
+import org.biu.ufo.model.DrivePoint;
 import org.biu.ufo.model.DriveRoute;
 import org.biu.ufo.model.Location;
 
@@ -18,8 +20,10 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.openxc.sources.DataSourceException;
 import com.openxc.util.AndroidFileOpener;
+import com.squareup.otto.Subscribe;
 
 
 @EBean(scope = Scope.Singleton)
@@ -72,7 +76,7 @@ public class RouteDataStore {
 		}
 	}
 	
-	public boolean initRecord(Location startLocation){
+	public boolean initRecord(Location startLocation, String label){
 		// close old file
 		if(this.recorder != null) {
 			this.recorder.stop();			
@@ -89,23 +93,23 @@ public class RouteDataStore {
 			return false;
 		}
 		this.startLocation = startLocation;
-		return addLocation(startLocation,false);
+		return addLocation(startLocation,label,false);
 	}
 	
 	public String formatLocation(Location location) {
 		return String.valueOf(location.getLatitude()) + "," +String.valueOf(location.getLongitude());
 	}
 	
-	public boolean addLocation(Location location,boolean isEndLocation){
+	public boolean addLocation(Location location,String label, boolean isEndLocation){
 		if(recorder != null)
-			return recorder.writeRecord("location", formatLocation(location),isEndLocation);
+			return recorder.writeRecord("location",formatLocation(location),label,isEndLocation);
 		return false;
 	}
 	
-	public boolean closeRecord(Location endlocation){
+	public boolean closeRecord(Location endlocation, String label){
 		if(this.recorder != null) {
 			this.endLocation = endlocation;
-			addLocation(this.endLocation,true);		
+			addLocation(this.endLocation,label,true);		
 			storeRoute();
 		
 			this.recorder.stop();	
@@ -136,33 +140,32 @@ public class RouteDataStore {
 	}
 	
 	
-	/*@Subscribe 
-	public void onTest(TestMessage message){
+	
+	
+	 /* @Subscribe 
+	  public void onTest(TestMessage message){
 		if (firstTime){
-			deleteRoute(0);
+			//deleteRoute(0);
 			firstTime = false;
-			insertRoute(10);
-			insertRoute(20);
-			insertRoute(30);
-			insertRoute(40);
-			insertRoute(50);
+			//insertRoute(10);
 		}
 		
-		getRoutesHistory(3);
+		getRoutesHistory(1);
 		//convertDataToRoute("2014-03-30-23-05-07.json");
 		//getRoutesData(0);
-	}
-	*/
+	}*/
+	
 	// TODO remove this function
 	/*private void insertRoute(int sum){
-		initRecord(new Location(new LatLng(sum,sum--)));
-		addLocation(new Location(new LatLng(sum,sum--)),false);
-		addLocation(new Location(new LatLng(sum,sum--)),false);
-		addLocation(new Location(new LatLng(sum,sum--)),false);
-		addLocation(new Location(new LatLng(sum,sum--)),false);
-		addLocation(new Location(new LatLng(sum,sum--)),false);
-		addLocation(new Location(new LatLng(sum,sum--)),false);
-		closeRecord(new Location(new LatLng(sum,sum--)));
+		String fileName2 = "mylabel";
+		initRecord(new Location(new LatLng(sum,sum--)), fileName2);
+		addLocation(new Location(new LatLng(sum,sum--)),fileName2,false);
+		addLocation(new Location(new LatLng(sum,sum--)),fileName2,false);
+		addLocation(new Location(new LatLng(sum,sum--)),fileName2,false);
+		addLocation(new Location(new LatLng(sum,sum--)),fileName2,false);
+		addLocation(new Location(new LatLng(sum,sum--)),fileName2,false);
+		addLocation(new Location(new LatLng(sum,sum--)),fileName2, false);
+		closeRecord(new Location(new LatLng(sum,sum--)), fileName2);
 	}*/
 	
 	
@@ -174,9 +177,9 @@ public class RouteDataStore {
 		        null, null, null);
 
 		//if we want all the history ( insert -1)
-		/*if (qnty==-1){
-			qnty = 5;
-		}*/
+		if (qnty==-1){
+			qnty = c.getColumnCount();
+		}
 		if (c != null ) {
 		    if  (c.moveToFirst()) {
 		        do {
@@ -187,6 +190,7 @@ public class RouteDataStore {
 		    }
 		    c.close();
 		}
+	
 		return driveHistory;
 	}
 
@@ -194,7 +198,7 @@ public class RouteDataStore {
 	//Get into database and return driveRoute.
 	private DriveRoute convertDataToRoute(String filename){
 		DriveRoute driveRoute = new DriveRoute();
-		ArrayList<Location> trace = null ;
+		ArrayList<DrivePoint> trace = null ;
 		
 		// close old recorder
 		if(this.recorder != null) {

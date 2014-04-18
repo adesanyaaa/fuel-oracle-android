@@ -10,6 +10,7 @@ import org.biu.ufo.control.events.analyzer.routemonitor.RouteSummaryMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
 import org.biu.ufo.control.events.raw.EngineSpeedMessage;
 import org.biu.ufo.control.events.raw.LocationMessage;
+import org.biu.ufo.control.events.raw.PickLocationMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
 import org.biu.ufo.model.Feedback;
 import org.biu.ufo.model.Location;
@@ -48,8 +49,8 @@ public class RouteAnalyzer implements IAnalyzer {
 	OttoBus bus;
 	Controller controller;
 	
-	@Bean
-	RouteDataStore routeDataStore;
+	//@Bean
+	//RouteDataStore routeDataStore;
 	
 	Location refLocation;
 	Location currentLocation;
@@ -79,7 +80,7 @@ public class RouteAnalyzer implements IAnalyzer {
 			//naive check that the car is off
 			if (engineSpeed<MIN_ENGINE_SPEED && vehicleSpeed <MIN_VEHICLE_SPEED) {
 				driveRoute.setEndTime(System.currentTimeMillis());
-				routeDataStore.addLocation(driveRoute.getEndLocation(), true);
+				//routeDataStore.addLocation(driveRoute.getEndLocation(), true);
 				bus.post(new RouteStopMessage(driveRoute.getEndLocation()));
 				bus.post(driveRoute);
 				firstTimeInit = true;
@@ -159,15 +160,12 @@ public class RouteAnalyzer implements IAnalyzer {
 			
 			if (!driveStarted){
 				driveStarted = true;
-				routeDataStore.initRecord(driveRoute.getStartLocation());
 				bus.post(new RouteStartMessage(driveRoute.getStartLocation()));
 			}
-
 			refLocation = new Location(currentLocation);
 			driveRoute.getRoute().add(refLocation);
-			routeDataStore.addLocation(refLocation, false);
+			bus.post(new PickLocationMessage(refLocation));
 			restartTimer();
-
 		}
 	}
 
@@ -198,16 +196,18 @@ public class RouteAnalyzer implements IAnalyzer {
 	
 	@Override
 	public void start(){
-		routeDataStore.open();
+		//routeDataStore.open();
 		bus.register(this);
 	}
 
+	
 	@Override
 	public void stop() {
-		routeDataStore.close();
+		//routeDataStore.close();
 		bus.unregister(this);		
 	}
 
+	
 	@Override
 	public void setController(Controller controller){
 		this.controller = controller;
