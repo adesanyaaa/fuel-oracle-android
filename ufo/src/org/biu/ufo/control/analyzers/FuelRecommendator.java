@@ -39,7 +39,6 @@ import com.squareup.otto.Subscribe;
 @EBean
 public class FuelRecommendator implements IAnalyzer {
 	public static final String TAG = "FuelRecommendator";
-	
 	public static final boolean ONLY_NEARBY = false;	// Set to false on final release
 	
 	public static final long MAX_STATIONS_REQUESTS = 10;

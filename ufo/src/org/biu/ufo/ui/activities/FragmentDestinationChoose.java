@@ -3,6 +3,7 @@ package org.biu.ufo.ui.activities;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -13,11 +14,14 @@ import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
 import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.control.ml.KNNRouteEstimator;
+import org.biu.ufo.control.ml.KNNRouteEstimator_;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.model.Place;
 import org.biu.ufo.ui.adapters.PlacesAdapter;
 
 import android.annotation.SuppressLint;
+import android.location.Address;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
 import android.view.MotionEvent;
@@ -47,6 +51,9 @@ class FragmentDestinationChoose extends Fragment {
 
 	@ViewById(android.R.id.list)
 	ListView listView;
+	
+	@Bean
+	KNNRouteEstimator estimator;
 	
 //	@Bean
 //	PlacesCursorAdapter historyAdapter;
@@ -81,8 +88,7 @@ class FragmentDestinationChoose extends Fragment {
 			updateNeeded = false;
 			currentLocation = locationMessage.location;
 			hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-			
-			KNNRouteEstimator estimator = new KNNRouteEstimator();			
+				
 			ArrayList<Double> testData = new ArrayList<Double>();
 
 			testData.add(Double.valueOf(hour));
@@ -94,6 +100,15 @@ class FragmentDestinationChoose extends Fragment {
 			ArrayList<Place> places = new ArrayList<Place>();
 			places.addAll(estimatedDestination);
 			places.addAll(parent.placesDataStore.getAllPlaces());
+			
+			//FOR TESTING
+			Address address = new Address(Locale.getDefault());
+			address.setAddressLine(0, "איפשהו בישראל");
+			address.setLatitude(32.03118);
+			address.setLongitude(34.79946);
+			places.add(new Place(address));
+			//////
+		
 			placesAdapter.setPlaces(places);
 			listView.setAdapter(placesAdapter);
 
@@ -116,6 +131,12 @@ class FragmentDestinationChoose extends Fragment {
 //		}
 //	}
 
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		estimator.setTrainingSet();
+	}
 
 	@AfterViews
 	protected void setupContent() {

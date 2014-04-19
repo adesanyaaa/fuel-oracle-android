@@ -26,11 +26,6 @@ public class KNNRouteEstimator extends KNN{
 	
 	@Bean
 	RouteDataStore routeDataStore;
-
-	public KNNRouteEstimator(){
-		super();
-		setTrainingSet(getHistoryTrainingSet());
-	}
 	
 	public static ArrayList<DataInstance> getStaticTrainingSet(){
 		//TODO:load route history - currently static
@@ -59,9 +54,8 @@ public class KNNRouteEstimator extends KNN{
 		ArrayList<DataInstance> trainningSet = new ArrayList<DataInstance>();
 		ArrayList<Double> attributes;
 		
-		///routeDataStore NULL EXCEPTION!!
 		routeDataStore.open();
-		DriveHistory history = routeDataStore.getRoutesHistory(-1);
+		DriveHistory history = routeDataStore.getRoutesHistory(100);
 		for  (int i = 0; i < history.getTotalRoutes(); ++i){
 			DriveRoute route = history.getRouteByIndex(i);
 			Location startLocation = route.getStartLocation();
@@ -103,6 +97,11 @@ public class KNNRouteEstimator extends KNN{
 	@Override
 	public Place getEstimation(int k){
 		return (Place) super.getEstimation(k);
+	}
+
+	
+	public void setTrainingSet() {
+		super.setTrainingSet(getHistoryTrainingSet());
 	}
 	
 }
