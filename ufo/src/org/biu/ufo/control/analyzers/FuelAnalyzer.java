@@ -124,6 +124,7 @@ public class FuelAnalyzer implements IAnalyzer {
 		}
 		//update reference fuel level
 		refFuelLevel = currentFuelLevel;
+		
 	}
 
 	private void initFuelDetails(){

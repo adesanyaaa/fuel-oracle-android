@@ -101,13 +101,13 @@ class FragmentDestinationChoose extends Fragment {
 			places.addAll(estimatedDestination);
 			places.addAll(parent.placesDataStore.getAllPlaces());
 			
-			//FOR TESTING
-			Address address = new Address(Locale.getDefault());
-			address.setAddressLine(0, "איפשהו בישראל");
-			address.setLatitude(32.03118);
-			address.setLongitude(34.79946);
-			places.add(new Place(address));
-			//////
+//			//FOR TESTING
+//			Address address = new Address(Locale.getDefault());
+//			address.setAddressLine(0, "איפשהו בישראל");
+//			address.setLatitude(32.03118);
+//			address.setLongitude(34.79946);
+//			places.add(new Place(address));
+//			//////
 		
 			placesAdapter.setPlaces(places);
 			listView.setAdapter(placesAdapter);
