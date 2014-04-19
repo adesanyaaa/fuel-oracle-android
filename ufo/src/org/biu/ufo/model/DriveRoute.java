@@ -1,7 +1,11 @@
 package org.biu.ufo.model;
 
 import java.util.ArrayList;
+import java.util.Locale;
+
 import org.androidannotations.annotations.EBean;
+
+import android.location.Address;
 
 @EBean
 public class DriveRoute{
@@ -55,4 +59,15 @@ public class DriveRoute{
 		return getEndTime() != 0;
 	}
 
+	public Place getDestination(){
+		
+		DrivePoint finalPoint = route.get(route.size()-1);
+		Address address = new Address(Locale.getDefault());
+		address.setAddressLine(0, finalPoint.getLabel());
+		address.setLatitude(finalPoint.getLocation().getLatitude());
+		address.setLongitude(finalPoint.getLocation().getLongitude());
+		Place destination = new Place(address);
+		
+		return destination;
+	}
 }

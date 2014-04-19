@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import org.androidannotations.annotations.EBean;
 import org.biu.ufo.control.Calculator;
 
 import com.google.common.base.Functions;
@@ -15,13 +16,15 @@ import com.google.common.collect.Ordering;
  * @author Danny Karmon
  *
  */
+@EBean
 public class KNN {
 
 	ArrayList<DataInstance> trainingSet;
 	DataInstance testData;
 	List<Object> sortedTraining;
 	
-	public KNN(ArrayList<DataInstance> trainingSet){
+	
+	public void setTrainingSet(ArrayList<DataInstance> trainingSet){
 		this.trainingSet = trainingSet;
 	}
 	
