@@ -26,7 +26,7 @@ import com.squareup.otto.Subscribe;
 @EActivity(R.layout.activity_main)
 @OptionsMenu(R.menu.main)
 public class MainActivity extends FragmentActivity /* implements RecognitionListener */{
-	public static final String TAG = "RealMainActivity";
+	public static final String TAG = "MainActivity";
 	
 	public static final int DEST = 0;
 	public static final int MAIN = 1;
@@ -200,7 +200,7 @@ public class MainActivity extends FragmentActivity /* implements RecognitionList
 		
 		if (savedInstanceState == null && screen == -1) {
 			// on first time display view for first nav item
-			selectItem(DEST);
+			selectItem(DEST, false, true);
 		} else if(screen >= 0) {
 			selectItem(screen);
 		}
@@ -222,10 +222,14 @@ public class MainActivity extends FragmentActivity /* implements RecognitionList
 	}
 	
 	private void selectItem(int position) {
-		selectItem(position, false);
+		selectItem(position, false, false);
 	}
 	
 	private void selectItem(int position, boolean addToBackStack) {
+		selectItem(position, addToBackStack, false);
+	}
+	
+	private void selectItem(int position, boolean addToBackStack, boolean initialOpening) {
 		boolean animate = false;
 		Log.e(TAG, "selected screen =" + position + ". addToBackStack="+addToBackStack);
 		
@@ -237,7 +241,7 @@ public class MainActivity extends FragmentActivity /* implements RecognitionList
 			animate = true;
 			break;
 		case DEST:
-			fragment = new FragmentDestination_();
+			fragment = FragmentDestination_.builder().initialOpening(initialOpening).build();
 			break;	
 		case RECOMMENDATIONS:
 			fragment = new FragmentRecommendationsList_();

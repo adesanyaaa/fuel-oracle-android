@@ -7,6 +7,7 @@ models/hmm/en-us-semi/noisedict
 models/hmm/en-us-semi/sendump
 models/hmm/en-us-semi/transition_matrices
 models/hmm/en-us-semi/variances
+models/keywords/keywords.txt
 models/lm/6827.dic
 models/lm/6827.lm
 models/lm/6827.log_pronounce

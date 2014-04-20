@@ -1,17 +1,12 @@
 package org.biu.ufo.ui.popups;
 
-import static edu.cmu.pocketsphinx.Assets.syncAssets;
-import static edu.cmu.pocketsphinx.SpeechRecognizerSetup.defaultSetup;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Locale;
-
+import org.androidannotations.annotations.App;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
 import org.androidannotations.annotations.SystemService;
 import org.androidannotations.annotations.UiThread;
+import org.biu.ufo.MainApplication;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
@@ -28,21 +23,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
-import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
 import com.squareup.otto.Subscribe;
 
 import edu.cmu.pocketsphinx.Hypothesis;
 import edu.cmu.pocketsphinx.RecognitionListener;
-import edu.cmu.pocketsphinx.SpeechRecognizer;
 
 @EBean
 public class PopupNotificationManager implements RecognitionListener {
 	private static final double START_SPEED = 100;
-    private static final String POPUP_SEARCH = "popup";
 
+    @App
+    MainApplication application;
+    
 	private double currentSpeed;
 	private FuelRecommendationMessage recommendation;
 	private FuelRecommendationMessage popupRecommendation;
@@ -58,20 +52,11 @@ public class PopupNotificationManager implements RecognitionListener {
     @SystemService
     PowerManager pm;
 
-	private TextToSpeech ttobj;
-    private SpeechRecognizer recognizer;
-    private WakeLock wl;
-
 	public void start() {
 		currentSpeed = START_SPEED;
 		recommendation = null;
 		popupShown = false;
 		bus.register(this);
-		
-		
-		loadTextToSpeech();
-		loadPocketPhinx();
-
 	}
 
 	public void stop() {
@@ -79,14 +64,10 @@ public class PopupNotificationManager implements RecognitionListener {
 		handler.removeCallbacks(automaticClosingTask);
 
 		closePopup();
-		destroyTextToSpeech();
-		destroyPocketPhinx();
 		
-		if(wl != null) {
-			wl.release();
-			wl = null;
-		}
-
+		application.stopTextToSpeech();
+		application.stopListening(MainApplication.VOICE_POPUP);
+		
 	}
 	
 	@Subscribe
@@ -118,20 +99,18 @@ public class PopupNotificationManager implements RecognitionListener {
 	private void showPopup() {
 		popupRecommendation = recommendation;
 		popupShown = true;
+		application.getRecognizer().addListener(this);
 		StandOutWindow.show(context, UfoMainService_.class, UfoMainService.SERVICE_FUEL_NEXT_ID);
 	}
 
 	public void closePopup() {
-		if(wl != null) {
-			wl.release();
-			wl = null;
-		}
+		application.getRecognizer().removeListener(this);
 		
 		if(popupShown) {
 			popupShown = false;
 			
-			stopTextToSpeech();
-			stopListening();
+			application.stopTextToSpeech();
+			application.stopListening(MainApplication.VOICE_POPUP);
 			
 			StandOutWindow.close(context, UfoMainService_.class, UfoMainService.SERVICE_FUEL_NEXT_ID);
 			popupRecommendation = null;
@@ -173,93 +152,10 @@ public class PopupNotificationManager implements RecognitionListener {
 
 
 	public void onShown() {
-		startTextToSpeech("Fuel next");
-		startListening();
-//		wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
-//	    wl.acquire();
-
-		/*
-		AssetFileDescriptor afd;
-		try {
-			afd = context.getAssets().openFd("popup_notification.mp3");
-			MediaPlayer player = new MediaPlayer();
-			player.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
-		    player.prepare();
-		    player.start();
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		 */
+		application.startTextToSpeech("Fuel next");
+		application.startListening(MainApplication.VOICE_POPUP);
 	}
 	
-	private void loadTextToSpeech() {
-		ttobj = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-			@Override
-			public void onInit(int status) {
-				if(status != TextToSpeech.ERROR){
-					ttobj.setLanguage(Locale.US);
-				}				
-			}
-		});
-	}
-	
-	private void destroyTextToSpeech() {
-		if(ttobj !=null ){
-			ttobj.stop();
-			ttobj.shutdown();
-			ttobj = null;
-		}
-	}
-	
-	private void startTextToSpeech(String text) {
-		if(ttobj.isLanguageAvailable(Locale.ENGLISH) != TextToSpeech.LANG_NOT_SUPPORTED) {
-		    ttobj.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-		}
-	}
-	
-	private void stopTextToSpeech() {
-		if(ttobj !=null ){
-			ttobj.stop();
-		}
-	}
-		
-    void loadPocketPhinx() {
-        File appDir;
-        try {
-            appDir = syncAssets(context);
-        } catch (IOException e) {
-            throw new RuntimeException("failed to synchronize assets", e);
-        }
-        recognizer = defaultSetup()
-                .setAcousticModel(new File(appDir, "models/hmm/en-us-semi"))
-                .setDictionary(new File(appDir, "models/lm/cmu07a.dic"))
-                .setRawLogDir(appDir)
-                .setKeywordThreshold(1e-5f)
-                .getRecognizer();
-        recognizer.addListener(this);
-        File popupGrammar = new File(appDir, "models/grammar/popup.gram");
-        recognizer.addGrammarSearch(POPUP_SEARCH, popupGrammar);
-    }
-    
-	private void destroyPocketPhinx() {
-		if(recognizer != null) {
-			recognizer.stop();
-			recognizer.removeListener(this);
-			recognizer = null;
-		}
-	}
-
-	public void startListening() {
-		stopListening();
-        recognizer.startListening(POPUP_SEARCH);
-	}
-	
-	public void stopListening() {
-        recognizer.stop();
-	}
-
 	@Override
 	public void onBeginningOfSpeech() {
 		// TODO Auto-generated method stub
@@ -270,7 +166,7 @@ public class PopupNotificationManager implements RecognitionListener {
 	public void onEndOfSpeech() {
         Log.e(getClass().getSimpleName(), "onEndOfSpeech");
         if(popupShown) {
-        	startListening();
+        	application.startListening(MainApplication.VOICE_POPUP);
         }
 	}
 
@@ -285,7 +181,7 @@ public class PopupNotificationManager implements RecognitionListener {
 		handler.removeCallbacks(automaticClosingTask);
 
 		Station top = getPopupRecommendation().getTopStation();
-    	startTextToSpeech(top.getAddress());
+    	application.startTextToSpeech(top.getAddress());
     	
     	automaticClosing();
 	}
@@ -301,6 +197,6 @@ public class PopupNotificationManager implements RecognitionListener {
         } else if(text.equals("where")) {
         	speakAddress();
         }
-	}	
+	}
 
 }
