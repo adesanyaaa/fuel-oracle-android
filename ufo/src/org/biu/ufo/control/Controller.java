@@ -7,6 +7,7 @@ import org.biu.ufo.control.analyzers.FuelMonitor;
 import org.biu.ufo.control.analyzers.FuelRecommendator;
 import org.biu.ufo.control.analyzers.RouteAnalyzer;
 import org.biu.ufo.control.analyzers.RouteEstimator;
+import org.biu.ufo.storage.RouteDataStore;
 
 @EBean
 public class Controller {
@@ -25,8 +26,12 @@ public class Controller {
 	
 	@Bean
 	RouteEstimator routeEstimator;
-		
+	
+	@Bean
+	RouteDataStore routeDataStore;
+
 	public void init(){
+		
 		routeAnalyzer.setController(this);
 		routeAnalyzer.start();
 		

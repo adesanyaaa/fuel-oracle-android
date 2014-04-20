@@ -18,6 +18,7 @@ import org.biu.ufo.rest.Client;
 import org.biu.ufo.rest.MGFClient;
 import org.biu.ufo.rest.Station;
 import org.biu.ufo.rest.Station.DistanceUnit;
+import org.biu.ufo.rest.UFOClient;
 
 import android.content.Context;
 import android.os.Handler;
@@ -39,7 +40,6 @@ import com.squareup.otto.Subscribe;
 @EBean
 public class FuelRecommendator implements IAnalyzer {
 	public static final String TAG = "FuelRecommendator";
-	
 	public static final boolean ONLY_NEARBY = false;	// Set to false on final release
 	
 	public static final long MAX_STATIONS_REQUESTS = 10;
@@ -54,7 +54,7 @@ public class FuelRecommendator implements IAnalyzer {
 	@Bean
 	OttoBus bus;
 	
-	@Bean(MGFClient.class)
+	@Bean(UFOClient.class)
 	Client stationsClient;
 
 	Controller controller;
@@ -183,6 +183,7 @@ public class FuelRecommendator implements IAnalyzer {
 	}
 	
 	private boolean isLowFuelLevel() {
+		currentFuelLevel = 7.1;
 		return currentFuelLevel != null && currentFuelLevel < 30;
 	}
 	

@@ -48,5 +48,7 @@
     
     <string name="fuel_next_msg">FUEL NEXT</string>
     <string name="fuel_level">fuel level left</string>
+    <string name="fbtext">Leave feedback here...</string>
+    <string name="fb_button">Submit</string>
         
 </resources>

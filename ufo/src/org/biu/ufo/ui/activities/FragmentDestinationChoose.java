@@ -1,19 +1,25 @@
 package org.biu.ufo.ui.activities;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
+import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
+import org.biu.ufo.control.events.raw.LocationMessage;
+import org.biu.ufo.control.ml.KNNRouteEstimator;
+import org.biu.ufo.model.Location;
 import org.biu.ufo.model.Place;
-import org.biu.ufo.ui.adapters.PlacesCursorAdapter;
-import org.biu.ufo.ui.utils.SimpleCursorLoader;
+import org.biu.ufo.ui.adapters.PlacesAdapter;
 
-import android.database.Cursor;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,11 +31,15 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
-import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter;
-import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter.DeleteItemCallback;
+import com.squareup.otto.Subscribe;
 
+@SuppressLint("ValidFragment")
 @EFragment(R.layout.destination_chooser) 
-class FragmentDestinationChoose extends Fragment implements DeleteItemCallback, LoaderManager.LoaderCallbacks<Cursor> {
+class FragmentDestinationChoose extends Fragment {
+	
+	@Bean
+	OttoBus bus;
+	
 	@ViewById
 	EditText searchView;
 	
@@ -40,9 +50,67 @@ class FragmentDestinationChoose extends Fragment implements DeleteItemCallback, 
 	ListView listView;
 	
 	@Bean
-	PlacesCursorAdapter historyAdapter;
+	KNNRouteEstimator estimator;
+	
+//	@Bean
+//	PlacesCursorAdapter historyAdapter;
 
 	FragmentDestination parent;
+	
+	@Bean
+	PlacesAdapter placesAdapter;
+	
+	Location currentLocation = null;
+	int hour = 0;
+	boolean updateNeeded = true;
+	
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		bus.register(this);
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		bus.unregister(this);
+		updateNeeded = true;
+	}
+	
+	@UiThread
+	@Subscribe
+	public void onLocationMessage(LocationMessage locationMessage){
+		if (updateNeeded){
+			updateNeeded = false;
+			currentLocation = locationMessage.location;
+			hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+				
+			ArrayList<Double> testData = new ArrayList<Double>();
+
+			testData.add(Double.valueOf(hour));
+			testData.add(currentLocation.getLatitude());
+			testData.add(currentLocation.getLongitude());
+			estimator.evaluate(testData);
+			
+			List<Place> estimatedDestination = estimator.getTrainingListSorted();
+			ArrayList<Place> places = new ArrayList<Place>();
+			places.addAll(estimatedDestination);
+			places.addAll(parent.placesDataStore.getAllPlaces());
+			
+//			//FOR TESTING
+//			Address address = new Address(Locale.getDefault());
+//			address.setAddressLine(0, "איפשהו בישראל");
+//			address.setLatitude(32.03118);
+//			address.setLongitude(34.79946);
+//			places.add(new Place(address));
+//			//////
+		
+			placesAdapter.setPlaces(places);
+			listView.setAdapter(placesAdapter);
+
+		}
+	}
 	
 //	private class MyFormatCountDownCallback implements CountDownFormatter {
 //
@@ -60,6 +128,12 @@ class FragmentDestinationChoose extends Fragment implements DeleteItemCallback, 
 //		}
 //	}
 
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		estimator.setTrainingSet();
+	}
 
 	@AfterViews
 	protected void setupContent() {
@@ -86,7 +160,8 @@ class FragmentDestinationChoose extends Fragment implements DeleteItemCallback, 
 		        return false;
 		    }
 		});
-
+		
+		
 		// Initialize list view
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -96,45 +171,5 @@ class FragmentDestinationChoose extends Fragment implements DeleteItemCallback, 
 				parent.onPlaceSelected(place);
 			}
 		});
-		
-//		ContextualUndoAdapter undoAdapter = new ContextualUndoAdapter(historyAdapter,
-//				R.layout.undo_row, R.id.undo_row_undobutton, 3000, R.id.undo_row_texttv, this, new MyFormatCountDownCallback());
-        ContextualUndoAdapter undoAdapter = new ContextualUndoAdapter(historyAdapter, R.layout.undo_row, R.id.undo_row_undobutton, 3000, this);
-
-		undoAdapter.setAbsListView(listView);
-		listView.setAdapter(undoAdapter);			
-		
-		// Load data
-		getLoaderManager().initLoader(0, null, this);
 	}
-	
-	@Override
-	public void deleteItem(int position) {
-		long itemId = historyAdapter.getItemId(position);
-		parent.placesDataStore.deletePlace(itemId);
-        getLoaderManager().restartLoader(0, null, this);
-	}
-
-	@Override
-	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		SimpleCursorLoader cursorLoader = new SimpleCursorLoader(getActivity()) {
-			@Override
-			public Cursor loadInBackground() {
-				// TODO Auto-generated method stub
-				return parent.placesDataStore.getAllPlacesCursor();
-			}
-		};
-		return cursorLoader;	
-	}
-
-	@Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		historyAdapter.swapCursor(data);
-	}
-
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-		historyAdapter.swapCursor(null);
-	}
-
 }
