@@ -106,7 +106,7 @@ public class PopupNotificationManager implements RecognitionListener {
 	}
 
 	private boolean isNear() {
-		Station top = getPopupRecommendation().getTopStation();
+		Station top = recommendation.getTopStation();
 		double distance = Calculator.distance(currentLocation, top.getLocation());
 		if(distance < 3)
 			return true;
