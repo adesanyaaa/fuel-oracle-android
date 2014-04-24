@@ -134,6 +134,11 @@ public class FuelRecommendator implements IAnalyzer {
 		int numberOfRequests = 0;
 		LatLng lastPoint = new LatLng(0, 0);
 		int testCounted = 0;
+		
+		long maxRequests = MAX_STATIONS_REQUESTS;
+		if(currentFuelLevel <= 15) {
+			maxRequests = 2;
+		}
 		for(LatLng point : message.getEstimatedRoute()) {
 			++testCounted;
 			if(Calculator.distance(lastPoint, point) > MIN_DISTANCE_BETWEEN_STATIONS_REQUEST_POINTS) {
@@ -142,7 +147,7 @@ public class FuelRecommendator implements IAnalyzer {
 				lastPoint = point;
 			}
 			
-			if(numberOfRequests >= MAX_STATIONS_REQUESTS) {
+			if(numberOfRequests >= maxRequests) {
 				break;
 			}
 		}
@@ -195,7 +200,7 @@ public class FuelRecommendator implements IAnalyzer {
 	}
 	
 	private boolean isLowFuelLevel() {
-		currentFuelLevel = 7.1;
+		//currentFuelLevel = 7.1;
 		return currentFuelLevel != null && currentFuelLevel < 30;
 	}
 	
