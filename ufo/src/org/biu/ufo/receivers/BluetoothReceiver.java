@@ -38,7 +38,7 @@ public class BluetoothReceiver extends BroadcastReceiver {
     
     private boolean isVehicleDevice(String name) {
     	return name.contains(BluetoothVehicleInterface.DEVICE_NAME_PREFIX) ||
-    			name.toLowerCase().contains("OBD");
+    			name.toLowerCase().contains("obd");
     			
     }
 }

@@ -96,7 +96,7 @@ class FragmentDestinationChoose extends Fragment {
 			List<Place> estimatedDestination = estimator.getTrainingListSorted();
 			ArrayList<Place> places = new ArrayList<Place>();
 			places.addAll(estimatedDestination);
-			//places.addAll(parent.placesDataStore.getAllPlaces());
+			places.addAll(parent.placesDataStore.getAllPlaces());
 			
 //			//FOR TESTING
 //			Address address = new Address(Locale.getDefault());

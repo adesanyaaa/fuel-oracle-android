@@ -8,6 +8,7 @@ import org.biu.ufo.rest.Station;
 import org.biu.ufo.ui.utils.UnitConverter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
@@ -61,5 +62,9 @@ public class FuelNextContentView extends RelativeLayout {
 				manager.showMore();
 			}
 		});
+		
+		if(message.getFuelLevelAtRecommendTime() < 15) {
+			setBackgroundColor(Color.RED);
+		}
 	}
 }

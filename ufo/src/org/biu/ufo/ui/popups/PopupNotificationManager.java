@@ -8,7 +8,9 @@ import org.androidannotations.annotations.SystemService;
 import org.androidannotations.annotations.UiThread;
 import org.biu.ufo.MainApplication;
 import org.biu.ufo.OttoBus;
+import org.biu.ufo.control.Calculator;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
+import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
@@ -37,6 +39,7 @@ public class PopupNotificationManager implements RecognitionListener {
     @App
     MainApplication application;
     
+    private Location currentLocation;
 	private double currentSpeed;
 	private FuelRecommendationMessage recommendation;
 	private FuelRecommendationMessage popupRecommendation;
@@ -77,6 +80,12 @@ public class PopupNotificationManager implements RecognitionListener {
 	}
 
 	@Subscribe
+	public void onLocationMessage(LocationMessage message) {
+		currentLocation = message.getLocation();
+		showPopupIfNeededAndPossible();	
+	}
+
+	@Subscribe
 	public void onVehicleSpeedMessage(VehicleSpeedMessage message) {
 		currentSpeed = message.getSpeed();
 		showPopupIfNeededAndPossible();	
@@ -91,9 +100,17 @@ public class PopupNotificationManager implements RecognitionListener {
 	}
 
 	private void showPopupIfNeededAndPossible() {
-		if(!popupShown && hasGoodRecommendation() && hasLowSpeed()) {
+		if(!popupShown && hasGoodRecommendation() && hasLowSpeed() && isNear()) {
 			showPopup();
 		}
+	}
+
+	private boolean isNear() {
+		Station top = getPopupRecommendation().getTopStation();
+		double distance = Calculator.distance(currentLocation, top.getLocation());
+		if(distance < 3)
+			return true;
+		return false;
 	}
 
 	private void showPopup() {
