@@ -153,6 +153,7 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 	@Override
 	public void sourceConnected(Connection source) {
 		if(source == connection && shouldBeActive.get()) {
+			Log.e(TAG, "Connected to  " + source.toString());
 			initializeDevice();
 			runOnBackground(mQueueCommands);
 		}
@@ -163,10 +164,10 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 	public void sourceDisconnected(Connection source) {
 		if(source == connection) {
 			Log.e(TAG, "Connection lost to " + source.toString());
-			if(shouldBeActive.get()) {
-				stop();
-				bus.post(new ObdConnectionLostMessage());
-			}
+//			if(shouldBeActive.get()) {
+//				stop();
+//				bus.post(new ObdConnectionLostMessage());
+//			}
 		}
 	}
 
@@ -182,7 +183,7 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 		isActive.set(true);
 		
 		// Just for getting some data
-		addQuery(new FuelLevelObdCommand());
+		addQuery(new EngineRPMObdCommand());
 	}
 
 	public void addQuery(BaseObdQueryCommand cmd) {
@@ -235,7 +236,7 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 
 	private static boolean write(Connection connection, IObdCommand job) throws IOException, InterruptedException {
 		boolean success = connection.write((job.getCommand() + "\r").getBytes());
-		Thread.sleep(200);
+		Thread.sleep(500);
 		return success;
 	}
 
@@ -263,7 +264,7 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 					addQuery(new FuelLevelObdCommand());
 					addQuery(new EngineRPMObdCommand());
 					addQuery(new SpeedObdCommand(false));
-					addQuery(new DistanceTraveledSinceCodesClearedObdCommand());
+//					addQuery(new DistanceTraveledSinceCodesClearedObdCommand());
 
 					// run again in 5s
 					runOnBackgroundDelayed(mQueueCommands, 5000);				

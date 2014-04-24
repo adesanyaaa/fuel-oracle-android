@@ -63,7 +63,7 @@ public class BluetoothPreferenceManager extends VehiclePreferenceManager {
                 getVehicleManager().removeVehicleInterface(BluetoothVehicleInterface.class);
                 
                 // But use OBD connection
-                bus.post(new ObdDeviceAddressChangedMessage(deviceAddress));                	
+                //bus.post(new ObdDeviceAddressChangedMessage(deviceAddress));                	
 
         	} else {
         		// Stop the OBD connection
