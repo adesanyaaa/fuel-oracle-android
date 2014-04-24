@@ -11,6 +11,7 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
+import org.biu.ufo.control.Calculator;
 import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.control.ml.KNNRouteEstimator;
 import org.biu.ufo.model.Location;
@@ -36,6 +37,8 @@ import com.squareup.otto.Subscribe;
 @SuppressLint("ValidFragment")
 @EFragment(R.layout.destination_chooser) 
 class FragmentDestinationChoose extends Fragment {
+	public static final double radiusDistance = 0.02; 	//in KM 
+	
 	
 	@Bean
 	OttoBus bus;
@@ -106,7 +109,7 @@ class FragmentDestinationChoose extends Fragment {
 //			places.add(new Place(address));
 //			//////
 		
-			placesAdapter.setPlaces(places);
+			placesAdapter.setPlaces(getUniqueList(places));
 			listView.setAdapter(placesAdapter);
 
 		}
@@ -172,4 +175,31 @@ class FragmentDestinationChoose extends Fragment {
 			}
 		});
 	}
+	
+	
+	private static boolean isUniquePlace(Place place, List<Place> places){
+		
+		Location first = new Location(place.getAddress().getLatitude(), place.getAddress().getLongitude());
+		for (Place existingPlace: places){
+			Location second = new Location(existingPlace.getAddress().getLatitude(), existingPlace.getAddress().getLongitude());
+			if (Calculator.distance(first, second) <= radiusDistance){
+				return false;
+			}
+		}
+		return true;
+		
+	}
+	
+	private static ArrayList<Place> getUniqueList(List<Place> places){
+		ArrayList<Place> uniquePlaces = new ArrayList<Place>();
+		
+		for (Place place : places){
+			if (isUniquePlace(place, uniquePlaces)){
+				uniquePlaces.add(place);
+			}
+		}
+		
+		return uniquePlaces;
+	}
+	
 }
