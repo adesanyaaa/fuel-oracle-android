@@ -57,27 +57,31 @@ public class FuelRecommendationMessage {
 		}
 	}
 	
+	public void sortStations() {
+		Collections.sort(stations, new Comparator<Station>() {
+
+			@Override
+			public int compare(Station lhs, Station rhs) {
+
+				double lhs_score = lhs.getPrice()*STATION_SCORE_PRICE 
+						+ lhs.getDistance(locationAtRecommendTime)*(1-STATION_SCORE_PRICE+STATION_SCORE_ROUTE_DIS)
+						+ lhs.getDistanceFromRoute()*(STATION_SCORE_ROUTE_DIS);
+
+				double rhs_score = rhs.getPrice()*STATION_SCORE_PRICE 
+						+ rhs.getDistance(locationAtRecommendTime)*(1-STATION_SCORE_PRICE+STATION_SCORE_ROUTE_DIS)
+						+ rhs.getDistanceFromRoute()*(STATION_SCORE_ROUTE_DIS);
+
+				//the lower the better (lower price, closer...)
+				return (int) ((-1)*(lhs_score - rhs_score));
+
+			}
+		});
+		sortedStations = stations;
+	}
+
 	public List<Station> getStations() {
 		if (sortedStations == null){
-			 Collections.sort(stations, new Comparator<Station>() {
-
-				@Override
-				public int compare(Station lhs, Station rhs) {
-
-					double lhs_score = lhs.getPrice()*STATION_SCORE_PRICE 
-							+ lhs.getDistance(locationAtRecommendTime)*(1-STATION_SCORE_PRICE+STATION_SCORE_ROUTE_DIS)
-							+ lhs.getDistanceFromRoute()*(STATION_SCORE_ROUTE_DIS);
-					
-					double rhs_score = rhs.getPrice()*STATION_SCORE_PRICE 
-							+ rhs.getDistance(locationAtRecommendTime)*(1-STATION_SCORE_PRICE+STATION_SCORE_ROUTE_DIS)
-							+ rhs.getDistanceFromRoute()*(STATION_SCORE_ROUTE_DIS);
-					
-					//the lower the better (lower price, closer...)
-					return (int) ((-1)*(lhs_score - rhs_score));
-	
-				}
-			});
-			 sortedStations = stations;
+			sortStations();
 		}
 		return sortedStations;
 	}

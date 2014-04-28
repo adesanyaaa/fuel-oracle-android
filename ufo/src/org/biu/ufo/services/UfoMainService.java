@@ -157,6 +157,7 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
 		unbindService(mPreferencesManagerConnection);    
 
 		// Unbind from CarGateway
+		mCarGateway.stop();
 		unbindService(mCarGatewayConnection);    	
 
 		// Unbind from VM

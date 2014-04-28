@@ -1,6 +1,7 @@
 package org.biu.ufo.receivers;
 
 import org.biu.ufo.services.*;
+import org.biu.ufo.ui.activities.MainActivity_;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -29,7 +30,8 @@ public class BluetoothReceiver extends BroadcastReceiver {
                 Log.i(TAG, "Starting vehicle service on bluetooth connection " +
                         "to " + bluetoothDevice.getName());
                 
-                UfoMainService_.intent(context.getApplicationContext()).start();
+//                UfoMainService_.intent(context.getApplicationContext()).start();
+                MainActivity_.intent(context).start();
             }
         } else if(intent.getAction().compareTo(BluetoothDevice.ACTION_ACL_DISCONNECTED) == 0) {
         	// TODO: stop it!!!!!!

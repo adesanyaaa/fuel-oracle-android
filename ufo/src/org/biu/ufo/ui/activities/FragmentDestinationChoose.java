@@ -187,11 +187,10 @@ class FragmentDestinationChoose extends Fragment {
 			}
 		}
 		return true;
-		
 	}
 	
 	private static ArrayList<Place> getUniqueList(List<Place> places){
-		ArrayList<Place> uniquePlaces = new ArrayList<Place>();
+  		ArrayList<Place> uniquePlaces = new ArrayList<Place>();
 		
 		for (Place place : places){
 			if (isUniquePlace(place, uniquePlaces)){

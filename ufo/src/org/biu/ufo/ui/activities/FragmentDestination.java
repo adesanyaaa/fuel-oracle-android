@@ -104,7 +104,7 @@ public class FragmentDestination extends Fragment /*implements RecognitionListen
 	public void initializeVoice() {
 		if(initialOpening && isVisible() && !isInSearchMode()) {
 			Log.e(TAG, "initializeVoice");
-			application.startTextToSpeech("What's your destination?");
+//			application.startTextToSpeech("What's your destination?");
 //			shouldListen = true;
 //			application.getRecognizer().addListener(this);
 //			application.startListening(MainApplication.VOICE_DESTINATION);
