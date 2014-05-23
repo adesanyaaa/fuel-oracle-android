@@ -4,9 +4,11 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
+import org.biu.ufo.MainApplication;
 import org.biu.ufo.R;
 import org.biu.ufo.model.Place;
 import org.biu.ufo.ui.adapters.PlacesCursorAdapter;
+import org.biu.ufo.ui.utils.AnalyticsDictionary;
 import org.biu.ufo.ui.utils.SimpleCursorLoader;
 
 import android.database.Cursor;
@@ -25,11 +27,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter;
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter.DeleteItemCallback;
 
 @EFragment(R.layout.destination_chooser) 
-class FragmentDestinationChoose extends Fragment implements DeleteItemCallback, LoaderManager.LoaderCallbacks<Cursor> {
+public class FragmentDestinationChoose extends Fragment implements DeleteItemCallback, LoaderManager.LoaderCallbacks<Cursor> {
 	@ViewById
 	EditText searchView;
 	
@@ -43,6 +47,8 @@ class FragmentDestinationChoose extends Fragment implements DeleteItemCallback, 
 	PlacesCursorAdapter historyAdapter;
 
 	FragmentDestination parent;
+	
+	Tracker tracker;
 	
 //	private class MyFormatCountDownCallback implements CountDownFormatter {
 //
@@ -64,6 +70,7 @@ class FragmentDestinationChoose extends Fragment implements DeleteItemCallback, 
 	@AfterViews
 	protected void setupContent() {
 		parent = (FragmentDestination) getParentFragment();
+		tracker = ((MainApplication)getActivity().getApplication()).getTracker();
 		searchVoiceButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -94,6 +101,14 @@ class FragmentDestinationChoose extends Fragment implements DeleteItemCallback, 
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 				Place place = (Place) adapterView.getItemAtPosition(position);
 				parent.onPlaceSelected(place);
+				
+				tracker.send(new HitBuilders.EventBuilder()
+				.setCategory(AnalyticsDictionary.Navigation.CATEGORY)
+				.setAction(AnalyticsDictionary.Navigation.Action.RECOMMENDATION_OPTION)
+				.setLabel(AnalyticsDictionary.Navigation.POSITION)
+				.setValue(position)
+				.build());
+				
 			}
 		});
 		
