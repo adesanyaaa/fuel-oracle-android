@@ -6,6 +6,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
 import org.androidannotations.annotations.UiThread;
+import org.biu.ufo.MainApplication;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
@@ -13,6 +14,7 @@ import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
 import org.biu.ufo.services.UfoMainService;
 import org.biu.ufo.services.UfoMainService_;
+import org.biu.ufo.ui.utils.AnalyticsDictionary;
 import org.biu.ufo.ui.utils.NavigationIntent;
 
 import wei.mark.standout.StandOutWindow;
@@ -20,6 +22,8 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.otto.Subscribe;
 
 @EBean
@@ -37,11 +41,13 @@ public class PopupNotificationManager {
 	@RootContext
 	Context context;
 	
+	Tracker tracker;
 	public void start() {
 		currentSpeed = START_SPEED;
 		recommendation = null;
 		popupShown = false;
 		bus.register(this);
+		tracker = ((MainApplication)context.getApplicationContext()).getTracker();
 	}
 	
 	public void stop() {
@@ -71,9 +77,12 @@ public class PopupNotificationManager {
 	private void showPopupIfNeededAndPossible() {
 		if(!popupShown && hasGoodRecommendation() && hasLowSpeed()) {
 			showPopup();
+			
+			tracker.setScreenName(AnalyticsDictionary.Screen.FUEL_NEXT);
+			tracker.send(new HitBuilders.AppViewBuilder().build());
 		}
 	}
-		
+	
 	private void showPopup() {
 		popupRecommendation = recommendation;
 		popupShown = true;
@@ -94,9 +103,26 @@ public class PopupNotificationManager {
 			Station top = getPopupRecommendation().getTopStation();
 			context.startActivity(NavigationIntent.getNavigationIntent(new Location(top.getLat(), top.getLng())));
 			closePopup();
+			sendPopupInteractionAnalytic(true);
+			
 		}
 	}
 	
+	private void sendPopupInteractionAnalytic(boolean accepted){
+		
+		String label = AnalyticsDictionary.Recommendation.ACCEPTED;
+		
+		if (!accepted){
+			label = AnalyticsDictionary.Recommendation.IGNORED;
+		}
+		
+		tracker.send(new HitBuilders.EventBuilder()
+		.setCategory(AnalyticsDictionary.Recommendation.CATEGORTY)
+		.setAction(AnalyticsDictionary.Recommendation.Action.RECOMMENDATION_INTERACTION)
+		.setLabel(label)
+		.build());
+		
+	}
 	public FuelRecommendationMessage getPopupRecommendation() {
 		return popupRecommendation;
 	}
@@ -119,6 +145,7 @@ public class PopupNotificationManager {
 	@UiThread(delay=10000)
 	public void automaticClosing() {
 		closePopup();
+		sendPopupInteractionAnalytic(false);
 	}	
 
 }

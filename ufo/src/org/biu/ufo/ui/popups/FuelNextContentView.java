@@ -2,12 +2,16 @@ package org.biu.ufo.ui.popups;
 
 import org.androidannotations.annotations.EViewGroup;
 import org.androidannotations.annotations.ViewById;
+import org.biu.ufo.MainApplication;
 import org.biu.ufo.R;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
 import org.biu.ufo.rest.Station;
-import org.biu.ufo.ui.activities.MainActivity;
 import org.biu.ufo.ui.activities.*;
+import org.biu.ufo.ui.utils.AnalyticsDictionary;
 import org.biu.ufo.ui.utils.UnitConverter;
+
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import android.content.Context;
 import android.content.Intent;
@@ -42,8 +46,11 @@ public class FuelNextContentView extends RelativeLayout {
 	@ViewById
 	Button popup_more_button;
 	
+	Tracker tracker;
+	
 	public FuelNextContentView(Context context) {
 		this(context, null);
+		tracker = ((MainApplication)context.getApplicationContext()).getTracker();
 	}
 
 	public FuelNextContentView(Context context, AttributeSet attrs) {
@@ -61,6 +68,9 @@ public class FuelNextContentView extends RelativeLayout {
 		popup_more_button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				
+				tracker.setScreenName(AnalyticsDictionary.Screen.MORE_RECOMMENDATIONS);
+				tracker.send(new HitBuilders.AppViewBuilder().build());
 				getContext().startActivity(new Intent(getContext(), MainActivity_.class)
 				 .putExtra("screen", MainActivity.RECOMMENDATIONS)
 				 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
