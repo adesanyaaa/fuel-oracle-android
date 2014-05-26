@@ -18,6 +18,7 @@ import org.biu.ufo.services.UfoMainService;
 import org.biu.ufo.services.UfoMainService_;
 import org.biu.ufo.ui.activities.MainActivity;
 import org.biu.ufo.ui.activities.MainActivity_;
+import org.biu.ufo.ui.utils.AnalyticsDictionary;
 import org.biu.ufo.ui.utils.NavigationIntent;
 
 import wei.mark.standout.StandOutWindow;
@@ -27,6 +28,8 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.util.Log;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.otto.Subscribe;
 
 import edu.cmu.pocketsphinx.Hypothesis;
@@ -45,7 +48,9 @@ public class PopupNotificationManager implements RecognitionListener {
 	private FuelRecommendationMessage popupRecommendation;
 	private boolean popupShown;
     private Handler handler = new Handler();
-
+	
+	private Tracker tracker;
+	
 	@Bean
 	OttoBus bus;
 
@@ -60,6 +65,7 @@ public class PopupNotificationManager implements RecognitionListener {
 		recommendation = null;
 		popupShown = false;
 		bus.register(this);
+		tracker = ((MainApplication)context.getApplicationContext()).getTracker();
 	}
 
 	public void stop() {
@@ -118,6 +124,10 @@ public class PopupNotificationManager implements RecognitionListener {
 		popupShown = true;
 		application.getRecognizer().addListener(this);
 		StandOutWindow.show(context, UfoMainService_.class, UfoMainService.SERVICE_FUEL_NEXT_ID);
+		
+		tracker.setScreenName(AnalyticsDictionary.Screen.FUEL_NEXT);
+		tracker.send(new HitBuilders.AppViewBuilder().build());
+
 	}
 
 	public void closePopup() {
@@ -140,15 +150,35 @@ public class PopupNotificationManager implements RecognitionListener {
 			Station top = getPopupRecommendation().getTopStation();
 			context.startActivity(NavigationIntent.getNavigationIntent(new Location(top.getLat(), top.getLng())));
 			closePopup();
+			sendPopupInteractionAnalytic(true);
 		}
 	}
 	
+	private void sendPopupInteractionAnalytic(boolean accepted){
+		
+		String label = AnalyticsDictionary.Recommendation.ACCEPTED;
+		
+		if (!accepted){
+			label = AnalyticsDictionary.Recommendation.IGNORED;
+		}
+		
+		tracker.send(new HitBuilders.EventBuilder()
+		.setCategory(AnalyticsDictionary.Recommendation.CATEGORTY)
+		.setAction(AnalyticsDictionary.Recommendation.Action.RECOMMENDATION_INTERACTION)
+		.setLabel(label)
+		.build());
+	
+	}
+
 	public void showMore() {
 		if(popupShown) {
 			context.startActivity(new Intent(context, MainActivity_.class)
 				 .putExtra("screen", MainActivity.RECOMMENDATIONS)
 				 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 			closePopup();
+			
+			tracker.setScreenName(AnalyticsDictionary.Screen.MORE_RECOMMENDATIONS);
+			tracker.send(new HitBuilders.AppViewBuilder().build());
 		}
 	}
 

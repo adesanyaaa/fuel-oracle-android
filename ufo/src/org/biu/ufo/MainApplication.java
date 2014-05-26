@@ -9,6 +9,9 @@ import java.util.Locale;
 
 import org.androidannotations.annotations.EApplication;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
+
 import edu.cmu.pocketsphinx.SpeechRecognizer;
 import android.app.Application;
 import android.speech.tts.TextToSpeech;
@@ -22,6 +25,7 @@ public class MainApplication extends Application {
 	
 	private TextToSpeech ttobj;
     private SpeechRecognizer recognizer;
+	private Tracker appTracker;
     private Locale locale = new Locale("iw");//Locale.US
 
 	@Override
@@ -92,6 +96,18 @@ public class MainApplication extends Application {
 		if(TextUtils.equals(recognizer.getSearchName(), searchType)) {
 	        recognizer.stop();			
 		}
+	}
+	
+	/**
+	 * return app's associated tracker 
+	 * @return app's tracker
+	 */
+	public synchronized Tracker getTracker() {
+		if (appTracker == null) {
+			GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+			appTracker = analytics.newTracker("UA-50658697-2");;
+		}
+		return appTracker;
 	}
 
 }

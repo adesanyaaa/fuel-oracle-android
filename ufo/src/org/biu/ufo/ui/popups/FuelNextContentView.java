@@ -2,10 +2,13 @@ package org.biu.ufo.ui.popups;
 
 import org.androidannotations.annotations.EViewGroup;
 import org.androidannotations.annotations.ViewById;
+import org.biu.ufo.MainApplication;
 import org.biu.ufo.R;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
 import org.biu.ufo.rest.Station;
 import org.biu.ufo.ui.utils.UnitConverter;
+
+import com.google.android.gms.analytics.Tracker;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -39,6 +42,7 @@ public class FuelNextContentView extends RelativeLayout {
 
 	@ViewById
 	Button popup_more_button;
+
 	
 	public FuelNextContentView(Context context) {
 		this(context, null);
@@ -60,6 +64,7 @@ public class FuelNextContentView extends RelativeLayout {
 			@Override
 			public void onClick(View v) {
 				manager.showMore();
+				
 			}
 		});
 		

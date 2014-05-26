@@ -9,6 +9,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
+import org.biu.ufo.MainApplication;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
 import org.biu.ufo.control.Calculator;
@@ -17,6 +18,7 @@ import org.biu.ufo.control.ml.KNNRouteEstimator;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.model.Place;
 import org.biu.ufo.ui.adapters.PlacesAdapter;
+import org.biu.ufo.ui.utils.AnalyticsDictionary;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -32,6 +34,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.otto.Subscribe;
 
 @SuppressLint("ValidFragment")
@@ -66,12 +70,14 @@ class FragmentDestinationChoose extends Fragment {
 	Location currentLocation = null;
 	int hour = 0;
 	boolean updateNeeded = true;
+	Tracker tracker;
 	
 	
 	@Override
 	public void onResume() {
 		super.onResume();
 		bus.register(this);
+		tracker = ((MainApplication)getActivity().getApplicationContext()).getTracker();
 	}
 	
 	@Override
@@ -172,6 +178,13 @@ class FragmentDestinationChoose extends Fragment {
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 				Place place = (Place) adapterView.getItemAtPosition(position);
 				parent.onPlaceSelected(place);
+				
+				tracker.send(new HitBuilders.EventBuilder()
+				.setCategory(AnalyticsDictionary.Navigation.CATEGORY)
+				.setAction(AnalyticsDictionary.Navigation.Action.RECOMMENDATION_OPTION)
+				.setLabel(AnalyticsDictionary.Navigation.POSITION)
+				.setValue(position)
+				.build());
 			}
 		});
 	}
