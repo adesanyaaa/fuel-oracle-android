@@ -58,6 +58,7 @@ public class FuelRecommendationMessage {
 	}
 	
 	public void sortStations() {
+		// TODO: use duration!
 		Collections.sort(stations, new Comparator<Station>() {
 
 			@Override

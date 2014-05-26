@@ -8,7 +8,6 @@ import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.EBean.Scope;
 import org.androidannotations.annotations.RootContext;
 import org.biu.ufo.OttoBus;
-import org.biu.ufo.control.analyzers.TestMessage;
 import org.biu.ufo.model.DriveHistory;
 import org.biu.ufo.model.DrivePoint;
 import org.biu.ufo.model.DriveRoute;
@@ -20,10 +19,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.openxc.sources.DataSourceException;
 import com.openxc.util.AndroidFileOpener;
-import com.squareup.otto.Subscribe;
 
 
 @EBean(scope = Scope.Singleton)

@@ -25,6 +25,7 @@ import org.biu.ufo.storage.RouteDataStore;
 
 import android.content.Context;
 
+import com.directions.route.Route;
 import com.directions.route.Routing;
 import com.directions.route.Routing.TravelMode;
 import com.directions.route.RoutingListener;
@@ -225,7 +226,7 @@ public class RouteEstimator implements IAnalyzer {
 		routing.registerListener(new RoutingListener() {
 			
 			@Override
-			public void onRoutingSuccess(PolylineOptions mPolyOptions) {
+			public void onRoutingSuccess(Route route, PolylineOptions mPolyOptions) {
 				onEstimatedRouteChanged(mPolyOptions.getPoints());
 			}
 			

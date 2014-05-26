@@ -6,6 +6,7 @@ import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
+import org.androidannotations.annotations.UiThread;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.control.Calculator;
 import org.biu.ufo.control.Controller;
@@ -23,7 +24,12 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
+import com.directions.route.Route;
+import com.directions.route.Routing;
+import com.directions.route.Routing.TravelMode;
+import com.directions.route.RoutingListener;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
 
@@ -61,6 +67,7 @@ public class FuelRecommendator implements IAnalyzer {
 	Handler handler = new Handler();
 	private volatile long currentRequestId;
 	private volatile int pendingRequests;
+	private volatile int pendingRouteRequests;
 	
 	private Location currentLocation;
 	private Double currentFuelLevel;	
@@ -184,7 +191,6 @@ public class FuelRecommendator implements IAnalyzer {
 			lastRecommendation.addStations(stations);			
 		}
 		
-
 		if(pendingRequests == 0) {
 			// Fix distance
 			for(Station station : lastRecommendation.getStations()) {
@@ -194,11 +200,83 @@ public class FuelRecommendator implements IAnalyzer {
 				station.setDistanceFromRoute(controller.getRouteEstimator().getMinDistanceFromRoute(stationLocation));
 			}
 			lastRecommendation.sortStations();
+			
 			bus.post(lastRecommendation);
-			// TODO: this is a popup test! Should make sure MainActivity is not visible!!!
-//			PopupActivity_.intent(context.getApplicationContext()).flags(Intent.FLAG_ACTIVITY_NEW_TASK).start();	
 		}
 	}
+	
+	@Background
+	void prepareRecommendation(FuelRecommendationMessage msg) {
+		List<Station> stations = msg.getStations();
+		int count = 3;
+		while(!stations.isEmpty() && --count > 0) {
+			final Station station = stations.remove(0);
+			
+	 		Routing routing = new Routing(TravelMode.DRIVING);
+			routing.registerListener(new RoutingListener() {
+				
+				@Override
+				public void onRoutingSuccess(Route route, PolylineOptions mPolyOptions) {
+					--pendingRouteRequests;
+					station.setDuration(route.getDuration());
+					
+					if(pendingRouteRequests == 0) {
+						delieverRecommendation();
+					}
+				}
+				
+				@Override
+				public void onRoutingStart() {
+					// TODO Auto-generated method stub
+				}
+				
+				@Override
+				public void onRoutingFailure() {
+					--pendingRouteRequests;
+				}
+			});
+			
+			++pendingRouteRequests;
+			routing.execute(station.getLocation().getLatLng());
+		}
+		
+	}
+
+	@UiThread
+	void delieverRecommendation() {
+		if(lastRecommendation == null)
+			return;
+		
+		lastRecommendation.sortStations();
+		bus.post(lastRecommendation);
+	}
+
+	/*
+ 		Routing routing = new Routing(TravelMode.DRIVING);
+		routing.registerListener(new RoutingListener() {
+			
+			@Override
+			public void onRoutingSuccess(PolylineOptions mPolyOptions) {
+				onEstimatedRouteChanged(mPolyOptions.getPoints());
+			}
+			
+			@Override
+			public void onRoutingStart() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onRoutingFailure() {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		lastRouteFetchTime = System.currentTimeMillis();
+		routing.execute(currentLocation.getLatLng(), destPoint.location.getLatLng());
+
+	 */
 	
 	private boolean isLowFuelLevel() {
 		//currentFuelLevel = 7.1;
