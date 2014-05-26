@@ -55,7 +55,7 @@ public class FuelNextContentView extends RelativeLayout {
 		popup_distance.setText(String.format("%.2f", station.getDistance(message.getLocationAtRecommendTime())));
 		popup_distance_unit.setText(UnitConverter.getResourceForDistanceUnit(station.getDistanceUnit()));
 		popup_station_address.setText(station.getAddress());
-		popup_gas_station_logo.setImageResource(UnitConverter.getResourceForStationLogo(station.getCompany()));					
+		popup_gas_station_logo.setImageResource(UnitConverter.getResourceForStationLogo(station.getCompanyEnglish()));					
 		popup_more_button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

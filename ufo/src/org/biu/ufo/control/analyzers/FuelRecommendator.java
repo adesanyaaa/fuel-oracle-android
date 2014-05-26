@@ -43,8 +43,8 @@ public class FuelRecommendator implements IAnalyzer {
 	
 	public static final long MAX_STATIONS_REQUESTS = 50;//10;
 	public static final float MIN_DISTANCE_BETWEEN_STATIONS_REQUEST_POINTS = 1.5f;	// 1.5 KM
-	public static final long MIN_DURATION_BETWEEN_RECOMMENDATIONS = 5*60*1000;	// 5 Minutes
-	public static final long MIN_DISTANCE_BETWEEN_RECOMMENDATIONS = 1;	// 1 KM
+	public static final long MIN_DURATION_BETWEEN_RECOMMENDATIONS = 2*60*1000;	// 5 Minutes
+	public static final float MIN_DISTANCE_BETWEEN_RECOMMENDATIONS = 0.2f;	// 1 KM
 	
 	
 	@RootContext
@@ -101,7 +101,7 @@ public class FuelRecommendator implements IAnalyzer {
 		
 		if(ONLY_NEARBY || controller.getRouteEstimator().getDestinationLocation() == null) {
 			generateStationsRequestId();
-			requestNearbyStations(currentLocation.getLatitude(), currentLocation.getLongitude());			
+			requestNearbyStations(currentLocation.getLatitude(), currentLocation.getLongitude());
 		} else {
 			controller.getRouteEstimator().requestRouteEstimation();
 		}
@@ -136,9 +136,9 @@ public class FuelRecommendator implements IAnalyzer {
 		int testCounted = 0;
 		
 		long maxRequests = MAX_STATIONS_REQUESTS;
-		if(currentFuelLevel <= 15) {
-			maxRequests = 2;
-		}
+//		if(currentFuelLevel <= 15) {
+//			maxRequests = 2;
+//		}
 		for(LatLng point : message.getEstimatedRoute()) {
 			++testCounted;
 			if(Calculator.distance(lastPoint, point) > MIN_DISTANCE_BETWEEN_STATIONS_REQUEST_POINTS) {
@@ -161,7 +161,7 @@ public class FuelRecommendator implements IAnalyzer {
 	protected void fetchStations(final long requestId, double lat, double lng) {
 		Log.d(TAG, "fetchStations");
 
-		final float distance = 1; // in KM
+		final float distance = 0.5f; // in KM
 		final List<Station> stations = stationsClient.getStations(String.valueOf(lat), String.valueOf(lng), distance);
 		handler.post(new Runnable() {
 			@Override

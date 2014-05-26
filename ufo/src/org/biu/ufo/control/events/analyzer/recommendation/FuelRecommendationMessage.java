@@ -11,7 +11,7 @@ import org.biu.ufo.rest.Station.CapacityUnit;
 import org.biu.ufo.ui.utils.UnitConverter;
 
 public class FuelRecommendationMessage {
-	public static final double STATION_SCORE_PRICE = 0.6;
+	public static final double STATION_SCORE_PRICE = 10.0;//0.8;
 	public static final double STATION_SCORE_ROUTE_DIS = 0.2; 
 
 	
@@ -62,17 +62,21 @@ public class FuelRecommendationMessage {
 
 			@Override
 			public int compare(Station lhs, Station rhs) {
-
+				
+				//return Double.compare(lhs.getDistance(locationAtRecommendTime), rhs.getDistance(locationAtRecommendTime));
+				
 				double lhs_score = lhs.getPrice()*STATION_SCORE_PRICE 
-						+ lhs.getDistance(locationAtRecommendTime)*(1-STATION_SCORE_PRICE+STATION_SCORE_ROUTE_DIS)
-						+ lhs.getDistanceFromRoute()*(STATION_SCORE_ROUTE_DIS);
+						//+ lhs.getDistance(locationAtRecommendTime)*(1-(STATION_SCORE_PRICE))
+						+ lhs.getDistanceFromRoute()*(STATION_SCORE_ROUTE_DIS)
+						;
 
 				double rhs_score = rhs.getPrice()*STATION_SCORE_PRICE 
-						+ rhs.getDistance(locationAtRecommendTime)*(1-STATION_SCORE_PRICE+STATION_SCORE_ROUTE_DIS)
-						+ rhs.getDistanceFromRoute()*(STATION_SCORE_ROUTE_DIS);
+						//+ rhs.getDistance(locationAtRecommendTime)*(1-(STATION_SCORE_PRICE))
+						+ rhs.getDistanceFromRoute()*(STATION_SCORE_ROUTE_DIS)
+						;
 
 				//the lower the better (lower price, closer...)
-				return (int) ((-1)*(lhs_score - rhs_score));
+				return Double.compare(lhs_score, rhs_score);
 
 			}
 		});

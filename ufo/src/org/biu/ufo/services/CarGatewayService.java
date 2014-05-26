@@ -240,7 +240,9 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 		return success;
 	}
 
-	private static boolean receive(Connection connection, IObdCommand job) throws IOException {
+	private static boolean receive(Connection connection, IObdCommand job) throws IOException, InterruptedException {
+		if(connection == null)
+			return false;
 		// Read from connection
 		byte[] bytes = new byte[256];
 		int byteCount = connection.read(bytes);
@@ -249,6 +251,9 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 		String[] rawResults = new String(bytes, 0, byteCount).split(">");
 		for(String rawResult : rawResults) {
 			if(job.handleResult(rawResult)) {
+				if(rawResult.contains("SEARCHING")) {
+					Thread.sleep(5000);
+				}
 				return true;
 			}
 		}

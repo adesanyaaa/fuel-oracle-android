@@ -69,6 +69,13 @@ public class Station {
 		return company;
 	}
 
+	public String getCompanyEnglish() {
+		String comp = org.biu.ufo.rest.internal.ufoserver.Station.getEnglishCompanyName(company);
+		if(!comp.equals("default"))
+			return comp;
+		return getCompany();
+	}
+
 	public void setCompany(String company) {
 		this.company = company;
 	}

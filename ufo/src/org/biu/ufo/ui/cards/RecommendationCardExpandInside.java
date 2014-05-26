@@ -109,7 +109,7 @@ public class RecommendationCardExpandInside extends CardExpand {
 		station_distance_measurement.setText(UnitConverter.getResourceForDistanceUnit(station.getDistanceUnit()));
 
 		company_logo = (ImageView)view.findViewById(R.id.rec_company_logo);
-		company_logo.setImageResource(UnitConverter.getResourceForStationLogo(station.getCompany()));
+		company_logo.setImageResource(UnitConverter.getResourceForStationLogo(station.getCompanyEnglish()));
 		
 		navigateButton = (Button)view.findViewById(R.id.rec_navigate_button);
 		navigateButton.setOnClickListener(new OnClickListener() {

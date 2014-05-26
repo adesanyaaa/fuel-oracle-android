@@ -22,7 +22,6 @@ public class MainApplication extends Application {
 	
 	private TextToSpeech ttobj;
     private SpeechRecognizer recognizer;
-    private Locale locale = new Locale("iw");//Locale.US
 
 	@Override
 	public void onCreate() {
@@ -37,7 +36,7 @@ public class MainApplication extends Application {
 			@Override
 			public void onInit(int status) {
 				if(status != TextToSpeech.ERROR){
-					ttobj.setLanguage(locale);
+					ttobj.setLanguage(Locale.US);
 				}				
 			}
 		});
@@ -45,8 +44,8 @@ public class MainApplication extends Application {
 		
 	public void startTextToSpeech(String text) {
 		stopTextToSpeech();
-//		if(ttobj.isLanguageAvailable(Locale.ENGLISH) != TextToSpeech.LANG_NOT_SUPPORTED) {
-		if(ttobj.isLanguageAvailable(locale) != TextToSpeech.LANG_NOT_SUPPORTED) {		
+		if(ttobj.isLanguageAvailable(Locale.ENGLISH) != TextToSpeech.LANG_NOT_SUPPORTED) {
+//		if(ttobj.isLanguageAvailable(locale) != TextToSpeech.LANG_NOT_SUPPORTED) {		
 		    ttobj.speak(text, TextToSpeech.QUEUE_FLUSH, null);
 		}
 	}

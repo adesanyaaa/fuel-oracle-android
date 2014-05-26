@@ -30,8 +30,8 @@ public class BluetoothReceiver extends BroadcastReceiver {
                 Log.i(TAG, "Starting vehicle service on bluetooth connection " +
                         "to " + bluetoothDevice.getName());
                 
-//                UfoMainService_.intent(context.getApplicationContext()).start();
-                MainActivity_.intent(context).start();
+                UfoMainService_.intent(context.getApplicationContext()).start();
+//                MainActivity_.intent(context).start();
             }
         } else if(intent.getAction().compareTo(BluetoothDevice.ACTION_ACL_DISCONNECTED) == 0) {
         	// TODO: stop it!!!!!!
