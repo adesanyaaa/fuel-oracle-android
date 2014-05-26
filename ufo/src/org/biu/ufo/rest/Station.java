@@ -24,6 +24,8 @@ public class Station {
 	
 	private double distanceFromRoute;
 	
+	private int duration;
+	
 	public Station(Object original) {
 		this.original = original;
 	}
@@ -153,6 +155,14 @@ public class Station {
 	public Location getLocation() {
 		// TODO Auto-generated method stub
 		return new Location(lat, lng);
+	}
+
+	public int getDuration() {
+		return duration;
+	}
+
+	public void setDuration(int duration) {
+		this.duration = duration;
 	}
 
 }

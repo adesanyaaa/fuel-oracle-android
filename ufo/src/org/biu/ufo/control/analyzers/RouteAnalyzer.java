@@ -121,7 +121,7 @@ public class RouteAnalyzer implements IAnalyzer {
 			vehicle_avgSpeed = vehicle_sumSpeed/vehicle_countSpeedChanges;
 			driveRoute.addVehicleSpeedInfo(vehicleSpeed,1);
 			distanceCheck();
-		}else{bus.post(new TestMessage());}
+		}
 	}
 
 	@Subscribe
