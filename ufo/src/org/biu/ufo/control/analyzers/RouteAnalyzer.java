@@ -5,6 +5,7 @@ import org.androidannotations.annotations.EBean;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.control.Calculator;
 import org.biu.ufo.control.Controller;
+import org.biu.ufo.control.events.analyzer.alert.AccelerationAlertMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteStopMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteSummaryMessage;
 import org.biu.ufo.control.events.analyzer.routemonitor.RouteStartMessage;
@@ -43,6 +44,8 @@ public class RouteAnalyzer implements IAnalyzer {
 	public static final double MIN_FAST_VEHICLE_SPEED = 7; 
 	public static final double MIN_MEDIUM_VEHICLE_SPEED = 5;
 	public static final double MIN_SLOW_VEHICLE_SPEED = 3;
+	
+	public static final double ACCELERARION_ALERT_THRESHOLD = 1800; //in rpm
 	
 	
 	@Bean
@@ -121,6 +124,7 @@ public class RouteAnalyzer implements IAnalyzer {
 			vehicle_avgSpeed = vehicle_sumSpeed/vehicle_countSpeedChanges;
 			driveRoute.addVehicleSpeedInfo(vehicleSpeed,1);
 			distanceCheck();
+			
 		}else{bus.post(new TestMessage());}
 	}
 
@@ -132,6 +136,10 @@ public class RouteAnalyzer implements IAnalyzer {
 			
 			engine_sumSpeed += engineSpeed;
 			driveRoute.setAvgEngineSpeed(engine_sumSpeed/engine_countSpeedChanges);
+			
+			if (engineSpeed>ACCELERARION_ALERT_THRESHOLD){
+				bus.post(new AccelerationAlertMessage(engineSpeed));
+			}
 			distanceCheck();
 		}
 	}

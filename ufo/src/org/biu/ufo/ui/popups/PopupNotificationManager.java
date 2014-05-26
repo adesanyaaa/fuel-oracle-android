@@ -1,5 +1,8 @@
 package org.biu.ufo.ui.popups;
 
+import java.util.ArrayList;
+import java.util.Stack;
+
 import org.androidannotations.annotations.App;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
@@ -9,7 +12,9 @@ import org.androidannotations.annotations.UiThread;
 import org.biu.ufo.MainApplication;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.control.Calculator;
+import org.biu.ufo.control.events.analyzer.alert.AccelerationAlertMessage;
 import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
+import org.biu.ufo.control.events.notification.INotification;
 import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
 import org.biu.ufo.model.Location;
@@ -44,8 +49,8 @@ public class PopupNotificationManager implements RecognitionListener {
     
     private Location currentLocation;
 	private double currentSpeed;
-	private FuelRecommendationMessage recommendation;
-	private FuelRecommendationMessage popupRecommendation;
+	private ArrayList<INotification> notifications;
+	private INotification popupNotification;
 	private boolean popupShown;
     private Handler handler = new Handler();
 	
@@ -62,7 +67,7 @@ public class PopupNotificationManager implements RecognitionListener {
 
 	public void start() {
 		currentSpeed = START_SPEED;
-		recommendation = null;
+		notifications = new ArrayList<INotification>();
 		popupShown = false;
 		bus.register(this);
 		tracker = ((MainApplication)context.getApplicationContext()).getTracker();
@@ -81,7 +86,13 @@ public class PopupNotificationManager implements RecognitionListener {
 	
 	@Subscribe
 	public void onFuelRecommendationMessage(FuelRecommendationMessage message) {
-		recommendation = message;
+		notifications.add(message);
+		showPopupIfNeededAndPossible();	
+	}
+	
+	@Subscribe
+	public void onFuelRecommendationMessage(AccelerationAlertMessage message) {
+		notifications.add(message);
 		showPopupIfNeededAndPossible();	
 	}
 
@@ -98,20 +109,40 @@ public class PopupNotificationManager implements RecognitionListener {
 	}
 
 	private boolean hasGoodRecommendation() {
-		return recommendation != null && recommendation.shouldFuel() && recommendation.getTopStation() != null;
+		//returns if first notification is FuelRecommendationMessage and has good recommendation
+		return notifications.size() != 0 &&
+				notifications.get(0) instanceof FuelRecommendationMessage &&
+				((FuelRecommendationMessage)notifications.get(0)).shouldFuel() && 
+				((FuelRecommendationMessage)notifications.get(0)).getTopStation() != null;
 	}
 
+	private boolean hasAlert() {
+		return notifications.size() != 0 &&
+				notifications.get(0) instanceof AccelerationAlertMessage;
+	}
+	
 	private boolean hasLowSpeed() {
 		return currentSpeed < 50.0;
 	}
 
 	private void showPopupIfNeededAndPossible() {
+		//fuel next notification
 		if(!popupShown && hasGoodRecommendation() && hasLowSpeed() && isNear()) {
+			showPopup();
+		}
+		
+		//high acceleration notification
+		if(!popupShown && hasAlert()) {
 			showPopup();
 		}
 	}
 
 	private boolean isNear() {
+		//not FuelRecommendationMessage?
+		if (!(notifications.get(0) instanceof FuelRecommendationMessage)){
+			return false;
+		}
+		FuelRecommendationMessage recommendation = (FuelRecommendationMessage)notifications.get(0);
 		Station top = recommendation.getTopStation();
 		double distance = Calculator.distance(currentLocation, top.getLocation());
 		if(distance < 3)
@@ -120,9 +151,11 @@ public class PopupNotificationManager implements RecognitionListener {
 	}
 
 	private void showPopup() {
-		popupRecommendation = recommendation;
+		popupNotification = notifications.get(0);
 		popupShown = true;
 		application.getRecognizer().addListener(this);
+		
+		//TODO: handle non SERVICE_FUEL_NEXT_ID -> HIGH_ACCELERATION_ID
 		StandOutWindow.show(context, UfoMainService_.class, UfoMainService.SERVICE_FUEL_NEXT_ID);
 		
 		tracker.setScreenName(AnalyticsDictionary.Screen.FUEL_NEXT);
@@ -139,16 +172,22 @@ public class PopupNotificationManager implements RecognitionListener {
 			application.stopTextToSpeech();
 			application.stopListening(MainApplication.VOICE_POPUP);
 			
+			//TODO: handle non SERVICE_FUEL_NEXT_ID -> HIGH_ACCELERATION_ID
 			StandOutWindow.close(context, UfoMainService_.class, UfoMainService.SERVICE_FUEL_NEXT_ID);
-			popupRecommendation = null;
-			recommendation = null;
+			popupNotification = null;
+			notifications.remove(0);
 		}
 	}
 
 	public void onPopupClick() {
 		if(popupShown) {
-			Station top = getPopupRecommendation().getTopStation();
-			context.startActivity(NavigationIntent.getNavigationIntent(new Location(top.getLat(), top.getLng())));
+			INotification notification = getPopupRecommendation();
+			if (notification instanceof FuelRecommendationMessage){
+				Station top = ((FuelRecommendationMessage)notification).getTopStation();
+				context.startActivity(NavigationIntent.getNavigationIntent(new Location(top.getLat(), top.getLng())));
+			}else if (notification instanceof AccelerationAlertMessage){
+				//TODO
+			}
 			closePopup();
 			sendPopupInteractionAnalytic(true);
 		}
@@ -182,8 +221,8 @@ public class PopupNotificationManager implements RecognitionListener {
 		}
 	}
 
-	public FuelRecommendationMessage getPopupRecommendation() {
-		return popupRecommendation;
+	public INotification getPopupRecommendation() {
+		return popupNotification;
 	}
 	
 	public void automaticClosing() {
@@ -199,6 +238,10 @@ public class PopupNotificationManager implements RecognitionListener {
 
 
 	public void onShown() {
+		//TODO: displaying High Acceleration notification  
+		//application.startTextToSpeech("Slow down");
+		//{no need for application.startListening(MainApplication.VOICE_POPUP);}
+		
 		application.startTextToSpeech("Fuel next");
 		application.startListening(MainApplication.VOICE_POPUP);
 	}
@@ -226,10 +269,13 @@ public class PopupNotificationManager implements RecognitionListener {
 	@UiThread
 	public void speakAddress() {
 		handler.removeCallbacks(automaticClosingTask);
-
-		Station top = getPopupRecommendation().getTopStation();
-    	application.startTextToSpeech(top.getAddress());
-    	
+		INotification notification = getPopupRecommendation();
+		if (notification instanceof FuelRecommendationMessage){
+			Station top = ((FuelRecommendationMessage)notification).getTopStation();
+	    	application.startTextToSpeech(top.getAddress());
+	    		
+		}
+		
     	automaticClosing();
 	}
 

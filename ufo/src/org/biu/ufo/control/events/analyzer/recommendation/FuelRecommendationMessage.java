@@ -5,12 +5,13 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.biu.ufo.control.events.notification.INotification;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
 import org.biu.ufo.rest.Station.CapacityUnit;
 import org.biu.ufo.ui.utils.UnitConverter;
 
-public class FuelRecommendationMessage {
+public class FuelRecommendationMessage implements INotification {
 	public static final double STATION_SCORE_PRICE = 0.6;
 	public static final double STATION_SCORE_ROUTE_DIS = 0.2; 
 

@@ -8,6 +8,7 @@ import org.biu.ufo.R;
 import org.biu.ufo.car.openxc.VehicleManagerConnector;
 import org.biu.ufo.car.openxc.VehicleManagerConnector.VehicleManagerConnectorCallback;
 import org.biu.ufo.control.Controller;
+import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
 import org.biu.ufo.control.events.connection.ObdConnectionLostMessage;
 import org.biu.ufo.control.events.connection.ObdDeviceAddressChangedMessage;
 import org.biu.ufo.control.events.raw.DistanceTraveled;
@@ -389,9 +390,11 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
 	public void createAndAttachView(int id, FrameLayout frame) {
 		if(id == SERVICE_FUEL_NEXT_ID) {
 			final FuelNextContentView view = FuelNextContentView_.build(this);	
-			view.fillContent(popupNotificationManager, popupNotificationManager.getPopupRecommendation());
+			FuelRecommendationMessage fuelRecommendation = (FuelRecommendationMessage)popupNotificationManager.getPopupRecommendation();
+			view.fillContent(popupNotificationManager, fuelRecommendation);
 			frame.addView(view);
 		}
+		//TODO:
 //		else if(id == SOME_OTHER_ID) {
 //			
 //		}

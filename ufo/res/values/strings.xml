@@ -40,6 +40,8 @@
     
     <string name="measurement_km">km</string>
     <string name="measurement_mile">mile</string>
+    <string name="measurement_mph">mph</string>
+    <string name="measurement_rpm">RPM</string>
     
     <string name="more">MORE</string>
     <string name="more_fuel_suggestions">more fuel suggestions</string>
@@ -50,5 +52,9 @@
     <string name="fuel_level">fuel level left</string>
     <string name="fbtext">Leave feedback here...</string>
     <string name="fb_button">Submit</string>
+    
+    <string name="slow_down_msg">SLOW DOWN</string>
+    <string name="high_speeding">HIGH SPEEDING</string>
+    <string name="high_acceleration">HIGH ACCELERATION</string>
         
 </resources>
