@@ -173,8 +173,10 @@ public class RouteDataStore {
 		DriveHistory driveHistory = new DriveHistory();
 		String filename = "";
 		
-		Cursor c =database.query(dbHelper.mRouteDBHelper.TABLE_NAME, null, null, null,
-		        null, null, null);
+		String orderBy =  dbHelper.mRouteDBHelper.COLUMN_FILE + " DESC";
+		
+		Cursor c =database.query(dbHelper.mRouteDBHelper.TABLE_NAME, null, null, null,null, null,orderBy);
+
 
 		//if we want all the history ( insert -1)
 		if (qnty==-1){

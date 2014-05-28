@@ -91,6 +91,9 @@ public class FragmentMain extends Fragment {
 	
 	@ViewById
 	Button more_button;
+
+	@ViewById
+	Button trip_summary_button;
 	
 	@ViewById
 	CardView card_fuel_level;
@@ -148,6 +151,14 @@ public class FragmentMain extends Fragment {
 			}
 		});
 		
+		trip_summary_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(getActivity(), MainActivity_.class).putExtra("screen", MainActivity.TRIP_SUMMARY));
+				
+			}
+		});
 		
 		SquareCarDataCard fuelLevelCard = new SquareCarDataCard(getActivity(), "Fuel", 0);
 		card_fuel_level.setCard(fuelLevelCard);

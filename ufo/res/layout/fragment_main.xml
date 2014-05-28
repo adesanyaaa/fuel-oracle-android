@@ -16,7 +16,7 @@
   ~   See the License for the specific language governing permissions and
   ~   limitations under the License.
   ~  *****************************************************************************
--->
+  -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card="http://schemas.android.com/apk/res-auto"
@@ -51,17 +51,15 @@
                 android:layout_marginTop="6dp"
                 card:card_layout_resourceID="@layout/card_with_expand_inside_layout" />
 
-
-
             <Button
                 android:id="@+id/more_button"
                 style="@style/card_action_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/action_button_rounded_selector"
-                android:gravity="center"
                 android:layout_marginLeft="7dp"
                 android:layout_marginRight="7dp"
+                android:background="@drawable/action_button_rounded_selector"
+                android:gravity="center"
                 android:text="@string/more_fuel_suggestions"
                 android:textColor="@android:color/white"
                 android:textSize="20sp" />
@@ -102,6 +100,18 @@
                     card:card_layout_resourceID="@layout/card_thumbnail_layout" />
             </LinearLayout>
 
+            <Button
+                android:id="@+id/trip_summary_button"
+                style="@style/card_action_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="7dp"
+                android:layout_marginRight="7dp"
+                android:background="@drawable/action_button_rounded_selector"
+                android:gravity="center"
+                android:text="@string/trip_summary"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
             <!-- Empty view -->
 
             <View

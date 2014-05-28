@@ -15,6 +15,10 @@ public class DriveRoute{
 	private long endTime;
 	
 	
+	public void add(DrivePoint point){
+		this.route.add(point);
+	}
+	
 	public DriveRoute(){
 		this.route = new ArrayList<DrivePoint>();
 
@@ -24,9 +28,6 @@ public class DriveRoute{
 		return route;
 	}
 
-	
-	
-	
 	public Location getStartLocation() {
 		return route.get(0).getLocation();
 	}
@@ -46,7 +47,15 @@ public class DriveRoute{
 	public long getEndTime() {
 		return endTime;
 	}
-
+	
+	public void setStartTime(long starttime) {
+		this.startTime = starttime;
+	}
+	
+	
+	public void setEndTime(long endtime) {
+		this.endTime = endtime;
+	}
 	public void setEndTime() {
 		this.endTime = getRoute().get(getRoute().size() - 1).getLocation().getTimestamp();
 	}
@@ -69,5 +78,17 @@ public class DriveRoute{
 		Place destination = new Place(address);
 		
 		return destination;
+	}
+	
+	public Place getSource(){
+		
+		DrivePoint startPoint = route.get(0);
+		Address address = new Address(Locale.getDefault());
+		address.setAddressLine(0, startPoint.getLabel());
+		address.setLatitude(startPoint.getLocation().getLatitude());
+		address.setLongitude(startPoint.getLocation().getLongitude());
+		Place source = new Place(address);
+		
+		return source;
 	}
 }

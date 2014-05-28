@@ -105,7 +105,7 @@ public class MainApplication extends Application {
 	public synchronized Tracker getTracker() {
 		if (appTracker == null) {
 			GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-			appTracker = analytics.newTracker("UA-50658697-2");;
+			appTracker = analytics.newTracker("UA-50658697-2");
 		}
 		return appTracker;
 	}

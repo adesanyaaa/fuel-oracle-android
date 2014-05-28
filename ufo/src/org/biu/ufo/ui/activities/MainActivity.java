@@ -31,6 +31,7 @@ public class MainActivity extends FragmentActivity /* implements RecognitionList
 	public static final int DEST = 0;
 	public static final int MAIN = 1;
 	public static final int RECOMMENDATIONS = 101;
+	public static final int TRIP_SUMMARY = 2;
 
 //    private static final String KWS_SEARCH_NAME = "wakeup";
 //    private static final String KEYPHRASE = "navigate";
@@ -245,6 +246,9 @@ public class MainActivity extends FragmentActivity /* implements RecognitionList
 			break;	
 		case RECOMMENDATIONS:
 			fragment = new FragmentRecommendationsList_();
+			break;
+		case TRIP_SUMMARY:
+			fragment = new FragmentTripSummary_();
 			break;
 		default:
 			fragment = null;

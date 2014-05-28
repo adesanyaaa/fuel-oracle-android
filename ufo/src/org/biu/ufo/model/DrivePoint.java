@@ -19,7 +19,6 @@ public class DrivePoint {
 		this.location = location;
 	}
 
-	
 	public String getLabel(){
 		return this.label;
 	}
