@@ -6,6 +6,7 @@ import org.androidannotations.annotations.RootContext;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.events.user.ShowScreenDestinationSelect;
 import org.biu.ufo.events.user.ShowScreenFuelingAlternatives;
+import org.biu.ufo.events.user.ShowScreenLastTrip;
 import org.biu.ufo.events.user.ShowScreenMain;
 import org.biu.ufo.ui.activities.MainActivity;
 import org.biu.ufo.ui.activities.MainActivity_;
@@ -43,8 +44,13 @@ public class UINavigation {
 	}
 	
 	@Subscribe
-	public void onShowScreenMain(ShowScreenFuelingAlternatives msg) {
+	public void onShowScreenMore(ShowScreenFuelingAlternatives msg) {
 		showScreen(MainActivity.SCREEN_STATIONS_LIST);
+	}
+	
+	@Subscribe
+	public void onShowScreenLastTrip(ShowScreenLastTrip msg) {
+		showScreen(MainActivity.SCREEN_LAST_TRIP);
 	}
 
 	private void showScreen(int screen) {

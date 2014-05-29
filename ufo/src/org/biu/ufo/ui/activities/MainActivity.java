@@ -82,7 +82,7 @@ public class MainActivity extends FragmentActivity {
 		
 		int screen = intent.getIntExtra(SELECT_SCREEN, -1);
 		if(screen >= 0) {
-			boolean addToBackStack = (screen == SCREEN_DESTINATION);
+			boolean addToBackStack = (screen == SCREEN_DESTINATION || screen == SCREEN_LAST_TRIP);
 			selectItem(screen, addToBackStack, false);
 		}
 	}
@@ -108,6 +108,8 @@ public class MainActivity extends FragmentActivity {
 		case SCREEN_STATIONS_LIST:
 			fragment = new FragmentRecommendationsList_();
 			break;
+		case SCREEN_LAST_TRIP:
+			fragment = new FragmentTripSummary_();
 		default:
 			fragment = null;
 			break;
