@@ -96,5 +96,5 @@ public class MainApplication extends Application {
 	        recognizer.stop();			
 		}
 	}
-
+	
 }

@@ -33,6 +33,7 @@ import org.biu.ufo.R;
 import org.biu.ufo.events.car.raw.LocationMessage;
 import org.biu.ufo.events.control.FuelRecommendationMessage;
 import org.biu.ufo.rest.Station;
+import org.biu.ufo.tracker.ScreenDisplayEvent;
 import org.biu.ufo.ui.cards.RecommendationCard;
 
 import android.support.v4.app.Fragment;
@@ -63,6 +64,8 @@ public class FragmentRecommendationsList extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
+		bus.post(new ScreenDisplayEvent(getClass().getSimpleName()));
+
 	}
 	
 	@Override

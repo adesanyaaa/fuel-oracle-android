@@ -37,7 +37,7 @@
     <string name="measurement_liter">liter</string>
     <string name="measurement_uk_gal">gal</string>
     <string name="measurement_us_gal">gal</string>
-    
+    <string name="measurement_rpm">RPM</string>
     <string name="measurement_km">km</string>
     <string name="measurement_mile">mile</string>
     
@@ -50,5 +50,17 @@
     <string name="fuel_level">fuel level left</string>
     <string name="fbtext">Leave feedback here...</string>
     <string name="fb_button">Submit</string>
-        
+    
+    <string name="slow_down_msg">SLOW DOWN</string>
+    <string name="high_speeding">HIGH SPEEDING</string>
+    <string name="high_acceleration">HIGH ACCELERATION</string>
+    
+    <string name="trip_summary">Trip Summuary</string>
+    <string name="start_trip">Start:</string>
+    <string name="end_trip">End:</string>
+    <string name="drive_cost">Drive cost:</string>
+    <string name="fueled_at">Fueled at:</string>
+    <string name="trip_saved">Saved:</string>
+    <string name="cost_saving_disclaimer">(in comparison to dest. average fuel rate)</string>
+    
 </resources>

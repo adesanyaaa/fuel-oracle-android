@@ -73,4 +73,15 @@ public class DriveRoute{
 		
 		return destination;
 	}
+	
+	public Place getSource(){
+		DrivePoint startPoint = route.get(0);
+		Address address = new Address(Locale.getDefault());
+		address.setAddressLine(0, startPoint.getLabel());
+		address.setLatitude(startPoint.getLocation().getLatitude());
+		address.setLongitude(startPoint.getLocation().getLongitude());
+		Place source = new Place(address);
+		return source;
+	}
+
 }

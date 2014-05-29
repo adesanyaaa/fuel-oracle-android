@@ -16,6 +16,9 @@ import org.biu.ufo.control.utils.Calculator;
 import org.biu.ufo.events.car.raw.LocationMessage;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.model.Place;
+import org.biu.ufo.tracker.AnalyticsDictionary;
+import org.biu.ufo.tracker.DestinationSelectedEvent;
+import org.biu.ufo.tracker.TrackerEvent;
 import org.biu.ufo.ui.adapters.PlacesAdapter;
 
 import android.annotation.SuppressLint;
@@ -39,7 +42,7 @@ import com.squareup.otto.Subscribe;
 class FragmentDestinationChoose extends Fragment {
 	public static final double radiusDistance = 0.02; 	//in KM 
 	
-	
+		
 	@Bean
 	OttoBus bus;
 	
@@ -143,6 +146,8 @@ class FragmentDestinationChoose extends Fragment {
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 				Place place = (Place) adapterView.getItemAtPosition(position);
 				parent.onPlaceSelected(place);
+
+				bus.post(new DestinationSelectedEvent(position));
 			}
 		});
 	}

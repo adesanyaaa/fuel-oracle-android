@@ -2,9 +2,9 @@ package org.biu.ufo.notifications;
 
 import org.biu.ufo.MainApplication;
 import org.biu.ufo.OttoBus;
+import org.biu.ufo.control.components.RouteEstimator;
 import org.biu.ufo.control.components.RouteEstimator.EstimatedRoute;
 import org.biu.ufo.control.components.RouteEstimator.EstimatedRouteResult;
-import org.biu.ufo.control.components.RouteEstimator;
 import org.biu.ufo.control.components.RouteEstimator_;
 import org.biu.ufo.control.utils.Calculator;
 import org.biu.ufo.events.car.raw.LocationMessage;
@@ -14,6 +14,8 @@ import org.biu.ufo.events.user.ShowScreenFuelingAlternatives;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
 import org.biu.ufo.services.UfoMainService;
+import org.biu.ufo.tracker.FuelNextClickedEvent;
+import org.biu.ufo.tracker.FuelNextShownEvent;
 import org.biu.ufo.ui.utils.NavigationIntent;
 
 import android.content.Intent;
@@ -113,6 +115,8 @@ public class FuelNextNotification extends PopupNotification implements Recogniti
 		Intent intent = NavigationIntent.getNavigationIntent(top.getLocation());
 		context.startActivity(intent);
 		closePopup();
+		
+		bus.post(new FuelNextClickedEvent());
 	}
 
 	@Override
@@ -121,6 +125,8 @@ public class FuelNextNotification extends PopupNotification implements Recogniti
 		application.startTextToSpeech("Fuel next");
 		application.startListening(MainApplication.VOICE_POPUP);
 		application.getRecognizer().addListener(this);
+		
+		bus.post(new FuelNextShownEvent());
     	automaticClosing(10000);
 	}
 

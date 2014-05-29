@@ -21,11 +21,10 @@ import org.biu.ufo.events.car.raw.VehicleSpeedMessage;
 import org.biu.ufo.events.control.EstimatedDestinationMessage;
 import org.biu.ufo.events.control.FuelRecommendationMessage;
 import org.biu.ufo.events.control.TripCompleted;
-import org.biu.ufo.events.control.TripStart;
-import org.biu.ufo.events.control.TripStop;
 import org.biu.ufo.model.Feedback;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
+import org.biu.ufo.tracker.ScreenDisplayEvent;
 import org.biu.ufo.ui.cards.RecommendationCard;
 import org.biu.ufo.ui.cards.RecommendationCardExpandInside;
 import org.biu.ufo.ui.cards.RouteOverviewCard;
@@ -94,6 +93,8 @@ public class FragmentMain extends Fragment {
 	public void onResume() {
 		super.onResume();
 		bus.register(this);
+		
+		bus.post(new ScreenDisplayEvent(getClass().getSimpleName()));
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import org.biu.ufo.events.user.DestinationSelectedMessage;
 import org.biu.ufo.events.user.ShowScreenMain;
 import org.biu.ufo.model.Place;
 import org.biu.ufo.storage.PlacesDataStore;
+import org.biu.ufo.tracker.ScreenDisplayEvent;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -54,6 +55,8 @@ public class FragmentDestination extends Fragment /*implements RecognitionListen
 	public void onResume() {
 		super.onResume();
 		bus.register(this);
+		bus.post(new ScreenDisplayEvent(getClass().getSimpleName()));
+
 	}
 	
 	@Override

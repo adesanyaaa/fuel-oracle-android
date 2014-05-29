@@ -20,4 +20,6 @@ public class NavigationIntent {
         return new Intent(Intent.ACTION_VIEW).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setData(Uri.parse(destStr));            		
 
 	}
+	
+
 }
