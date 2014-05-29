@@ -3,11 +3,10 @@ package org.biu.ufo.control;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.biu.ufo.OttoBus;
-import org.biu.ufo.control.analyzers.FuelMonitor;
-import org.biu.ufo.control.analyzers.FuelRecommendator;
-import org.biu.ufo.control.analyzers.RouteAnalyzer;
-import org.biu.ufo.control.analyzers.RouteEstimator;
-import org.biu.ufo.storage.RouteDataStore;
+import org.biu.ufo.control.monitors.DrivingStatusMonitor;
+import org.biu.ufo.control.monitors.FuelMonitor;
+import org.biu.ufo.control.monitors.Recommendator;
+import org.biu.ufo.control.monitors.TripMonitor;
 
 @EBean
 public class Controller {
@@ -16,43 +15,29 @@ public class Controller {
 	OttoBus bus;
 	
 	@Bean
-	FuelMonitor fuelMonitor;
+	DrivingStatusMonitor drivingStatusMonitor;
 	
 	@Bean
-	RouteAnalyzer routeAnalyzer;
+	FuelMonitor fuelMonitor; 
 	
 	@Bean
-	FuelRecommendator fuelingRecommendator;
+	TripMonitor routeMonitor;
 	
 	@Bean
-	RouteEstimator routeEstimator;
+	Recommendator recommendator;
 	
-	@Bean
-	RouteDataStore routeDataStore;
 
 	public void init(){
-		
-		routeAnalyzer.setController(this);
-		routeAnalyzer.start();
-		
-		routeEstimator.setController(this);
-		routeEstimator.start();
-		
-//		fuelAnalyzer.setController(this);
+		drivingStatusMonitor.start();
 		fuelMonitor.start();
-		
-		fuelingRecommendator.setController(this);
-		fuelingRecommendator.start();
+		routeMonitor.start();
+		recommendator.start(routeMonitor);
 	}
 	
 	public void close(){		
-		fuelingRecommendator.stop();
+		drivingStatusMonitor.stop();
 		fuelMonitor.stop();
-		routeEstimator.stop();
-		routeAnalyzer.stop();
-	}
-	
-	public RouteEstimator getRouteEstimator() {
-		return routeEstimator;
+		routeMonitor.stop();
+		recommendator.stop();
 	}
 }

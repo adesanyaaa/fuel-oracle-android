@@ -1,6 +1,6 @@
 package org.biu.ufo.rest;
 
-import org.biu.ufo.control.Calculator;
+import org.biu.ufo.control.utils.Calculator;
 import org.biu.ufo.model.Location;
 
 public class Station {

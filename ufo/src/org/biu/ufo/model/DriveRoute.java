@@ -1,6 +1,7 @@
 package org.biu.ufo.model;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.androidannotations.annotations.EBean;
@@ -10,22 +11,24 @@ import android.location.Address;
 @EBean
 public class DriveRoute{
 	// Members
-	private ArrayList<DrivePoint> route;
+	private List<FuelingData> fueling;
+	private List<DrivePoint> route;
 	private long startTime;
 	private long endTime;
 	
 	
 	public DriveRoute(){
 		this.route = new ArrayList<DrivePoint>();
-
+		this.fueling = new ArrayList<FuelingData>();
 	}
 		
-	public ArrayList<DrivePoint> getRoute(){
+	public List<DrivePoint> getRoute(){
 		return route;
+	}	
+	
+	public List<FuelingData> getFuelingData() {
+		return fueling;
 	}
-
-	
-	
 	
 	public Location getStartLocation() {
 		return route.get(0).getLocation();

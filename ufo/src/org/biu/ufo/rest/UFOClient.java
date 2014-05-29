@@ -6,7 +6,6 @@ import java.util.List;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.rest.RestService;
 import org.biu.ufo.rest.Station.CapacityUnit;
-import org.biu.ufo.rest.Station.DistanceUnit;
 import org.biu.ufo.rest.Station.PriceCurrency;
 
 @EBean

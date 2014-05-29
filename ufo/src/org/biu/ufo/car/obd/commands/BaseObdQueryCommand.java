@@ -2,8 +2,6 @@ package org.biu.ufo.car.obd.commands;
 
 import java.util.ArrayList;
 
-import com.google.common.primitives.Bytes;
-
 public abstract class BaseObdQueryCommand implements IObdCommand {
 	protected static final String NODATA = "NODATA";  
 	protected Integer[] data;

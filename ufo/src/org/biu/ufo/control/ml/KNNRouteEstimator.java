@@ -13,8 +13,6 @@ import org.biu.ufo.model.Location;
 import org.biu.ufo.model.Place;
 import org.biu.ufo.storage.RouteDataStore;
 
-import com.google.common.annotations.Beta;
-
 import android.location.Address;
 
 /**
@@ -22,7 +20,7 @@ import android.location.Address;
  * based on routes history (Source location and hour)
  */
 @EBean
-public class KNNRouteEstimator extends KNN{
+public class KNNRouteEstimator extends KNN {
 	
 	@Bean
 	RouteDataStore routeDataStore;

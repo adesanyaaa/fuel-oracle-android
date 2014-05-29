@@ -9,10 +9,11 @@ import java.util.Locale;
 
 import org.androidannotations.annotations.EApplication;
 
-import edu.cmu.pocketsphinx.SpeechRecognizer;
 import android.app.Application;
 import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
+import android.util.Log;
+import edu.cmu.pocketsphinx.SpeechRecognizer;
 
 @EApplication
 public class MainApplication extends Application {
@@ -82,6 +83,8 @@ public class MainApplication extends Application {
     }
     
 	public void startListening(String searchType) {
+		Log.e("TEST", "startListening");
+
 		//stopListening(searchType);
 		recognizer.stop();
         recognizer.startListening(searchType);
@@ -89,6 +92,7 @@ public class MainApplication extends Application {
 	
 	public void stopListening(String searchType) {
 		if(TextUtils.equals(recognizer.getSearchName(), searchType)) {
+			Log.e("TEST", "stopListening");
 	        recognizer.stop();			
 		}
 	}

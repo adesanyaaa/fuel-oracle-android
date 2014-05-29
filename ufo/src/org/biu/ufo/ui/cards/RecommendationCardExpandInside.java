@@ -3,7 +3,7 @@ package org.biu.ufo.ui.cards;
 import it.gmariotti.cardslib.library.internal.CardExpand;
 
 import org.biu.ufo.R;
-import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
+import org.biu.ufo.events.control.FuelRecommendationMessage;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
 import org.biu.ufo.ui.utils.NavigationIntent;

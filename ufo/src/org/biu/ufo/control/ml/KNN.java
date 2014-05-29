@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.androidannotations.annotations.EBean;
-import org.biu.ufo.control.Calculator;
+import org.biu.ufo.control.utils.Calculator;
 
 import com.google.common.base.Functions;
 import com.google.common.collect.Ordering;

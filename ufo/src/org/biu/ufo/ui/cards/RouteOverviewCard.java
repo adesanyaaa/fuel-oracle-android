@@ -4,11 +4,11 @@ import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardHeader.OnClickCardHeaderOtherButtonListener;
 
+import org.biu.ufo.OttoBus_;
 import org.biu.ufo.R;
-import org.biu.ufo.control.events.user.PeekNewDestinationMessage;
+import org.biu.ufo.events.user.ShowScreenDestinationSelect;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.model.Place;
-import org.biu.ufo.ui.activities.MainActivity;
 import org.biu.ufo.ui.utils.NavigationIntent;
 
 import android.content.Context;
@@ -75,7 +75,7 @@ public class RouteOverviewCard extends Card {
                     		new Location(destination.getAddress().getLatitude(), destination.getAddress().getLongitude()));
                     getContext().startActivity(intent);            		
             	} else {
-    				((MainActivity)getContext()).getBus().post(new PeekNewDestinationMessage());
+            		OttoBus_.getInstance_(getContext()).post(new ShowScreenDestinationSelect());
             	}
 			}
 		});
@@ -85,7 +85,7 @@ public class RouteOverviewCard extends Card {
         setOnClickListener(new OnCardClickListener() {
             @Override
             public void onClick(Card card, View view) {
-				((MainActivity)getContext()).getBus().post(new PeekNewDestinationMessage());
+        		OttoBus_.getInstance_(getContext()).post(new ShowScreenDestinationSelect());
             }
         });
     }

@@ -8,22 +8,21 @@ import org.biu.ufo.R;
 import org.biu.ufo.car.openxc.VehicleManagerConnector;
 import org.biu.ufo.car.openxc.VehicleManagerConnector.VehicleManagerConnectorCallback;
 import org.biu.ufo.control.Controller;
-import org.biu.ufo.control.events.connection.ObdConnectionLostMessage;
-import org.biu.ufo.control.events.connection.ObdDeviceAddressChangedMessage;
-import org.biu.ufo.control.events.raw.DistanceTraveled;
-import org.biu.ufo.control.events.raw.EngineSpeedMessage;
-import org.biu.ufo.control.events.raw.FuelConsumedMessage;
-import org.biu.ufo.control.events.raw.FuelLevelMessage;
-import org.biu.ufo.control.events.raw.LocationMessage;
-import org.biu.ufo.control.events.raw.VehicleSpeedMessage;
+import org.biu.ufo.events.car.connection.ObdConnectionLostMessage;
+import org.biu.ufo.events.car.connection.ObdDeviceAddressChangedMessage;
+import org.biu.ufo.events.car.raw.DistanceTraveled;
+import org.biu.ufo.events.car.raw.EngineSpeedMessage;
+import org.biu.ufo.events.car.raw.FuelConsumedMessage;
+import org.biu.ufo.events.car.raw.FuelLevelMessage;
+import org.biu.ufo.events.car.raw.LocationMessage;
+import org.biu.ufo.events.car.raw.VehicleSpeedMessage;
 import org.biu.ufo.model.Location;
+import org.biu.ufo.notifications.PopupNotificationManager;
 import org.biu.ufo.services.CarGatewayService.CarGatewayServiceBinder;
 import org.biu.ufo.settings.PreferenceManagerService_;
+import org.biu.ufo.ui.UINavigation;
 import org.biu.ufo.ui.activities.MainActivity;
 import org.biu.ufo.ui.activities.MainActivity_;
-import org.biu.ufo.ui.popups.FuelNextContentView;
-import org.biu.ufo.ui.popups.FuelNextContentView_;
-import org.biu.ufo.ui.popups.PopupNotificationManager;
 
 import wei.mark.standout.StandOutWindow;
 import wei.mark.standout.constants.StandOutFlags;
@@ -74,7 +73,9 @@ import com.squareup.otto.Subscribe;
 public class UfoMainService extends StandOutWindow implements VehicleManagerConnectorCallback {
 	private final static String TAG = "UfoMainService";
 
-	public final static int SERVICE_FUEL_NEXT_ID = 1541;
+	private final static int BASE_ID = 1541;
+	public final static int SERVICE_FUEL_NEXT_ID = BASE_ID + 0;
+	public final static int SERVICE_HIGH_ACCELERATION_ALERT_ID = BASE_ID + 1;
 
 	@Bean
 	VehicleManagerConnector mVMmConnector;
@@ -88,6 +89,9 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
 	@Bean
 	PopupNotificationManager popupNotificationManager;
 
+	@Bean 
+	UINavigation uiNavigation;
+	
 	private CarGatewayServiceBinder mCarGateway;
 
 	private LocationMessage locationMessage = new LocationMessage();
@@ -111,6 +115,8 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
 
 		// Start popup notification manager
 		popupNotificationManager.start();
+		
+		uiNavigation.start();
 		
 		// Register on bus
 		bus.register(this);
@@ -149,6 +155,8 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
 
 		// Stop popup notification manager
 		popupNotificationManager.stop();
+		
+		uiNavigation.stop();
 		
 		// Unregister from bus
 		bus.unregister(this);
@@ -370,7 +378,7 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
 			Intent intent = new Intent(this,MainActivity_.class);
 			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
 					Intent.FLAG_ACTIVITY_SINGLE_TOP);
-			intent.putExtra("screen", MainActivity.MAIN);
+			intent.putExtra(MainActivity.SELECT_SCREEN, MainActivity.SCREEN_MAIN);
 			PendingIntent pendingIntent = PendingIntent.getActivity(
 					this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -387,15 +395,10 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
 			
 	@Override
 	public void createAndAttachView(int id, FrameLayout frame) {
-		if(id == SERVICE_FUEL_NEXT_ID) {
-			final FuelNextContentView view = FuelNextContentView_.build(this);	
-			view.fillContent(popupNotificationManager, popupNotificationManager.getPopupRecommendation());
-			frame.addView(view);
-		}
-//		else if(id == SOME_OTHER_ID) {
-//			
-//		}
-		else {
+		View view = popupNotificationManager.createView(id);
+		if(view != null) {
+			frame.addView(view);			
+		} else {
 			frame.addView(new FrameLayout(this));			
 		}
 	}
@@ -415,7 +418,7 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
 	public boolean onTouchBody(int id, Window window, View view, MotionEvent event) {
 		super.onTouchBody(id, window, view, event);
 		if(id != StandOutWindow.DEFAULT_ID && event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-			popupNotificationManager.closePopup();
+			popupNotificationManager.onPopupClose(id);
 		}
 		return false;
 	}
@@ -425,7 +428,7 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
     	if(event.getKeyCode() == KeyEvent.KEYCODE_HOME ||
     			event.getKeyCode() == KeyEvent.KEYCODE_MENU ||
     			event.getKeyCode() == KeyEvent.KEYCODE_SEARCH) {
-    		popupNotificationManager.closePopup();
+			popupNotificationManager.onPopupClose(id);
     	}
 		return super.onKeyEvent(id, window, event);
 	}
@@ -433,7 +436,7 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
 	@Override
 	public boolean onBringToFront(int id, Window window) {
 		if(id != StandOutWindow.DEFAULT_ID) {
-			popupNotificationManager.onPopupClick();
+			popupNotificationManager.onPopupClick(id);
 		}		
 		return true;
 	}
@@ -441,30 +444,26 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
 	@Override
 	public boolean onFocusChange(int id, Window window, boolean focus) {
 		if(id != StandOutWindow.DEFAULT_ID && focus == false) {
-			popupNotificationManager.closePopup();
+			popupNotificationManager.onPopupClose(id);
 		}		
 		return super.onFocusChange(id, window, focus);
 	}
 	
 	@Override
 	public int getFlags(int id) {
-		if(id == SERVICE_FUEL_NEXT_ID) {
+		if(id != StandOutWindow.DEFAULT_ID) {
 			return super.getFlags(id) |
 					StandOutFlags.FLAG_WINDOW_EDGE_LIMITS_ENABLE |
 					StandOutFlags.FLAG_WINDOW_BRING_TO_FRONT_ON_TAP |
 					StandOutFlags.FLAG_WINDOW_FOCUS_INDICATOR_DISABLE ;
 		}
-//		else if(id == SOME_OTHER_ID) {
-//		
-//		}
 		return super.getFlags(id) | StandOutFlags.FLAG_WINDOW_HIDE_ENABLE;
 	}
 
 	@Override
 	public boolean onShow(int id, Window window) {
 		if(id != StandOutWindow.DEFAULT_ID) {
-			popupNotificationManager.onShown();			
-			popupNotificationManager.automaticClosing();
+			popupNotificationManager.onShown(id);
 		}
 		return super.onShow(id, window);
 	}

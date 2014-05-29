@@ -11,9 +11,9 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
-import org.biu.ufo.control.Calculator;
-import org.biu.ufo.control.events.raw.LocationMessage;
 import org.biu.ufo.control.ml.KNNRouteEstimator;
+import org.biu.ufo.control.utils.Calculator;
+import org.biu.ufo.events.car.raw.LocationMessage;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.model.Place;
 import org.biu.ufo.ui.adapters.PlacesAdapter;
@@ -55,9 +55,6 @@ class FragmentDestinationChoose extends Fragment {
 	@Bean
 	KNNRouteEstimator estimator;
 	
-//	@Bean
-//	PlacesCursorAdapter historyAdapter;
-
 	FragmentDestination parent;
 	
 	@Bean
@@ -100,37 +97,12 @@ class FragmentDestinationChoose extends Fragment {
 			ArrayList<Place> places = new ArrayList<Place>();
 			places.addAll(estimatedDestination);
 			places.addAll(parent.placesDataStore.getAllPlaces());
-			
-//			//FOR TESTING
-//			Address address = new Address(Locale.getDefault());
-//			address.setAddressLine(0, "איפשהו בישראל");
-//			address.setLatitude(32.03118);
-//			address.setLongitude(34.79946);
-//			places.add(new Place(address));
-//			//////
-		
+					
 			placesAdapter.setPlaces(getUniqueList(places));
 			listView.setAdapter(placesAdapter);
 
 		}
 	}
-	
-//	private class MyFormatCountDownCallback implements CountDownFormatter {
-//
-//		@Override
-//		public String getCountDownString(final long millisUntilFinished) {
-//			if(isVisible()) {
-//				int seconds = (int) Math.ceil(millisUntilFinished / 1000.0);
-//
-//				if (seconds > 0) {
-//					return getResources().getQuantityString(R.plurals.countdown_seconds, seconds, seconds);
-//				}
-//				return getString(R.string.countdown_dismissing);				
-//			}
-//			return "";
-//		}
-//	}
-
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -154,7 +126,6 @@ class FragmentDestinationChoose extends Fragment {
 		searchView.setFocusable(false);
 		searchView.setInputType(InputType.TYPE_NULL);
 		searchView.setClickable(false);
-//		searchView.setEnabled(false);
 		searchView.setOnTouchListener(new OnTouchListener() {
 		    @Override
 		    public boolean onTouch(View v, MotionEvent event) {
