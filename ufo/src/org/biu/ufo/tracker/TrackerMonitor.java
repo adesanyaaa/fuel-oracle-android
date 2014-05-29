@@ -3,9 +3,15 @@ package org.biu.ufo.tracker;
 import org.androidannotations.annotations.App;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.RootContext;
 import org.biu.ufo.MainApplication;
 import org.biu.ufo.OttoBus;
 
+import android.content.Context;
+
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.otto.Subscribe;
 
 @EBean
@@ -16,12 +22,15 @@ public class TrackerMonitor {
 	@App
 	MainApplication application;
 	
+	@RootContext
+	Context context;
+	
 	Tracker tracker;
 	
 	public void start() {
 		bus.register(this);
-		GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-		tracker = analytics.newTracker("UA-50658697-2");;
+		GoogleAnalytics analytics = GoogleAnalytics.getInstance(context);
+		tracker = analytics.newTracker("UA-50658697-2");
 	}
 	
 	public void stop() {

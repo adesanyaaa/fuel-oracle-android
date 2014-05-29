@@ -21,6 +21,7 @@ import org.biu.ufo.events.car.raw.VehicleSpeedMessage;
 import org.biu.ufo.events.control.EstimatedDestinationMessage;
 import org.biu.ufo.events.control.FuelRecommendationMessage;
 import org.biu.ufo.events.control.TripCompleted;
+import org.biu.ufo.events.user.ShowScreenLastTrip;
 import org.biu.ufo.model.Feedback;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
@@ -71,7 +72,10 @@ public class FragmentMain extends Fragment {
 
 	@ViewById
 	Button more_button;
-
+	
+	@ViewById
+	Button trip_summary_button;
+	
 	@ViewById
 	CardView card_fuel_level;
 
@@ -125,6 +129,14 @@ public class FragmentMain extends Fragment {
 			public void onClick(View v) {
 				startActivity(new Intent(getActivity(), MainActivity_.class).putExtra(MainActivity.SELECT_SCREEN, MainActivity.SCREEN_STATIONS_LIST));
 
+			}
+		});
+		
+		trip_summary_button.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				bus.post(new ShowScreenLastTrip());
 			}
 		});
 

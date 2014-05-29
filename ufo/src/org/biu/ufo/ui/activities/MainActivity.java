@@ -110,6 +110,7 @@ public class MainActivity extends FragmentActivity {
 			break;
 		case SCREEN_LAST_TRIP:
 			fragment = new FragmentTripSummary_();
+			break;
 		default:
 			fragment = null;
 			break;

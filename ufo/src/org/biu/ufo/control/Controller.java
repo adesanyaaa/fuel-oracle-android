@@ -8,6 +8,7 @@ import org.biu.ufo.control.monitors.FuelMonitor;
 import org.biu.ufo.control.monitors.Recommendator;
 import org.biu.ufo.control.monitors.TripMonitor;
 import org.biu.ufo.tracker.TrackerMonitor;
+import org.biu.ufo.ui.UINavigation;
 
 @EBean
 public class Controller {
@@ -29,6 +30,9 @@ public class Controller {
 	
 	@Bean
 	TrackerMonitor trackerMonitor;
+	
+	@Bean
+	UINavigation uinavigation;
 
 	public void init(){
 		trackerMonitor.start();
@@ -36,6 +40,7 @@ public class Controller {
 		fuelMonitor.start();
 		routeMonitor.start();
 		recommendator.start(routeMonitor);
+		uinavigation.start();
 		
 	}
 	
@@ -45,5 +50,6 @@ public class Controller {
 		fuelMonitor.stop();
 		routeMonitor.stop();
 		recommendator.stop();
+		uinavigation.stop();
 	}
 }
