@@ -16,6 +16,7 @@ import org.biu.ufo.control.components.StationsFetcher.StationsFetcherResultHandl
 import org.biu.ufo.control.utils.AverageValue;
 import org.biu.ufo.control.utils.Calculator;
 import org.biu.ufo.events.car.raw.EngineSpeedMessage;
+import org.biu.ufo.events.car.raw.FuelLevelMessage;
 import org.biu.ufo.events.car.raw.LocationMessage;
 import org.biu.ufo.events.car.raw.VehicleSpeedMessage;
 import org.biu.ufo.events.control.EstimatedDestinationMessage;
@@ -71,6 +72,7 @@ public class TripMonitor {
 	Record record;
 	AverageValue avgSpeed;
 	AverageValue avgRPM;
+	double fuelLevel;
 	
 	private int latestToken;
 	
@@ -93,6 +95,17 @@ public class TripMonitor {
 		avgSpeed = null;
 		avgRPM = null;
 	}
+	
+	@Subscribe
+	public void onFuelLevel(FuelLevelMessage msg) {
+		double newFuelLevel =  msg.getFuelLevelValue();
+		if(fuelLevel != newFuelLevel) {
+			fuelLevel = newFuelLevel;
+			if(record != null) {
+				record.addFuelLevel(fuelLevel);				
+			}
+		}
+	}
 
 	/**
 	 * User started driving
@@ -110,6 +123,9 @@ public class TripMonitor {
 			public void onResult(Location location, Place place) {
 				if(token == latestToken) {
 					record = routeDataStore.initRecord(location, place.toString());
+					if(fuelLevel > 0) {
+						record.addFuelLevel(fuelLevel);						
+					}
 				}
 			}
 			
@@ -117,6 +133,10 @@ public class TripMonitor {
 			public void onFailure(Location location) {
 				if(token == latestToken) {
 					record = routeDataStore.initRecord(location, "");
+					if(fuelLevel > 0) {
+						record.addFuelLevel(fuelLevel);						
+					}
+
 				}
 			}
 		});

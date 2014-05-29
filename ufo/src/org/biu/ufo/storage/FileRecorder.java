@@ -8,13 +8,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
 import org.biu.ufo.model.DrivePoint;
+import org.biu.ufo.model.FuelLevelData;
 import org.biu.ufo.model.FuelingData;
 import org.biu.ufo.model.Location;
 
@@ -119,7 +119,7 @@ public class FileRecorder {
 
 
 
-	public void readTraceLocations(String filename, List<DrivePoint> route, List<FuelingData> fuelingData) throws DataSourceException {
+	public void readTraceLocations(String filename, List<DrivePoint> route, List<FuelingData> fuelingData, List<FuelLevelData> fuelLevel) throws DataSourceException {
 		try {
 			JsonReader reader = openForReading(filename);
 			reader.beginArray();
@@ -130,6 +130,8 @@ public class FileRecorder {
 						route.add((DrivePoint) object);
 					} else if(object instanceof FuelingData) {
 						fuelingData.add((FuelingData) object);
+					} else if(object instanceof FuelLevelData) {
+						fuelLevel.add((FuelLevelData) object);
 					}
 				}
 			}
@@ -188,6 +190,11 @@ public class FileRecorder {
 			fuelingData.company = String.valueOf(splitted[3]);
 			fuelingData.price = Float.valueOf(splitted[4]);
 			return fuelingData;
+		} else if(type.equals("fuellevel")) {
+			FuelLevelData fuelLevelData = new FuelLevelData();
+			fuelLevelData.fuelLevel = Double.valueOf(value);
+			fuelLevelData.time = timestamp;
+			return fuelLevelData;
 		}
 
 		return null;

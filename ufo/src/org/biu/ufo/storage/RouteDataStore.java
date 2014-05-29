@@ -11,6 +11,7 @@ import org.biu.ufo.events.control.FuelProcessMessage;
 import org.biu.ufo.model.DriveHistory;
 import org.biu.ufo.model.DrivePoint;
 import org.biu.ufo.model.DriveRoute;
+import org.biu.ufo.model.FuelLevelData;
 import org.biu.ufo.model.FuelingData;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
@@ -49,7 +50,11 @@ public class RouteDataStore {
 		}
 		
 		public boolean addFuelingRecord(FuelProcessMessage fuelProcessMessage, Station station) {
-			return recorder.writeRecord("location", formatFuelingData(fuelProcessMessage, station), "", false);
+			return recorder.writeRecord("fueling", formatFuelingData(fuelProcessMessage, station), "", false);
+		}
+
+		public boolean addFuelLevel(double fuelLevel) {
+			return recorder.writeRecord("fuellevel", String.valueOf(fuelLevel), "", false);
 		}
 		
 		public boolean isInTrip() {
@@ -63,6 +68,7 @@ public class RouteDataStore {
 			storeRoute(this);
 			this.recorder.stop();	
 		}
+
 	}
 	
 
@@ -176,9 +182,14 @@ public class RouteDataStore {
 		try {
 			List<DrivePoint> drivePoints = new ArrayList<DrivePoint>();
 			List<FuelingData> fuelingData = new ArrayList<FuelingData>();
-			recorder.readTraceLocations(filename, drivePoints, fuelingData);
+			List<FuelLevelData> fuelLevelData = new ArrayList<FuelLevelData>();
+			recorder.readTraceLocations(filename, drivePoints, fuelingData, fuelLevelData);
 			driveRoute.getRoute().addAll(drivePoints);
 			driveRoute.getFuelingData().addAll(fuelingData);
+			if(fuelLevelData.size() > 0) {
+				driveRoute.setStartFuelLevel(fuelLevelData.get(0).fuelLevel);
+				driveRoute.setEndFuelLevel(fuelLevelData.get(fuelLevelData.size()-1).fuelLevel);
+			}
 			driveRoute.setEndTime();
 			driveRoute.setStartTime();
 		} catch (DataSourceException e) {

@@ -15,7 +15,8 @@ public class DriveRoute{
 	private List<DrivePoint> route;
 	private long startTime;
 	private long endTime;
-	
+	private double startFuelLevel;
+	private double endFuelLevel;
 	
 	public DriveRoute(){
 		this.route = new ArrayList<DrivePoint>();
@@ -82,6 +83,22 @@ public class DriveRoute{
 		address.setLongitude(startPoint.getLocation().getLongitude());
 		Place source = new Place(address);
 		return source;
+	}
+
+	public void setStartFuelLevel(double fuelLevel) {
+		this.startFuelLevel = fuelLevel;
+	}
+
+	public void setEndFuelLevel(double fuelLevel) {
+		this.endFuelLevel = fuelLevel;
+	}
+	
+	public double getStartFuelLevel() {
+		return startFuelLevel;
+	}
+	
+	public double getEndFuelLevel() {
+		return endFuelLevel;
 	}
 
 }
