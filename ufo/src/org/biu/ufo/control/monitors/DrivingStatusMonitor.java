@@ -55,6 +55,7 @@ public class DrivingStatusMonitor {
 	public void stop() {
 		handler.removeCallbacks(offlineCheck);		
 		bus.unregister(this);
+		bus.post(new TripStop());
 	}
 	
 	@Subscribe

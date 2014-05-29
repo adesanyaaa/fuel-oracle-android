@@ -59,7 +59,9 @@ public class FuelNextNotification extends PopupNotification implements Recogniti
 
 	public void showPopupIfNeededAndPossible() {
 		if(hasGoodRecommendation() && hasLowSpeed() && isNear()) {
-			Station top = recommendation.getTopStation();
+			visibleRecommendation = recommendation;
+			recommendation = null;
+			Station top = visibleRecommendation.getTopStation();
 			RouteEstimator routeEstimator = RouteEstimator_.getInstance_(context);
 			routeEstimator.getNewRouteEstimation(currentLocation, top.getLocation(), new EstimatedRouteResult() {
 
@@ -111,7 +113,7 @@ public class FuelNextNotification extends PopupNotification implements Recogniti
 
 	@Override
 	public void onPopupClick() {
-		Station top = recommendation.getTopStation();
+		Station top = visibleRecommendation.getTopStation();
 		Intent intent = NavigationIntent.getNavigationIntent(top.getLocation());
 		context.startActivity(intent);
 		closePopup();
@@ -121,7 +123,6 @@ public class FuelNextNotification extends PopupNotification implements Recogniti
 
 	@Override
 	public void onShown() {
-		visibleRecommendation = recommendation;
 		application.startTextToSpeech("Fuel next");
 		application.startListening(MainApplication.VOICE_POPUP);
 		application.getRecognizer().addListener(this);
@@ -179,7 +180,7 @@ public class FuelNextNotification extends PopupNotification implements Recogniti
 	@Override
 	public View createView() {
 		final FuelNextContentView view = FuelNextContentView_.build(context);	
-		view.fillContent(this, recommendation, estimatedRouteToStation);
+		view.fillContent(this, visibleRecommendation, estimatedRouteToStation);
 		return view;
 	}
 

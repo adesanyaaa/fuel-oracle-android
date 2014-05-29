@@ -116,7 +116,7 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
 		// Start popup notification manager
 		popupNotificationManager.start();
 		
-		uiNavigation.start();
+		//uiNavigation.start();
 		
 		// Register on bus
 		bus.register(this);
@@ -156,7 +156,7 @@ public class UfoMainService extends StandOutWindow implements VehicleManagerConn
 		// Stop popup notification manager
 		popupNotificationManager.stop();
 		
-		uiNavigation.stop();
+		//uiNavigation.stop();
 		
 		// Unregister from bus
 		bus.unregister(this);
