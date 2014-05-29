@@ -55,7 +55,7 @@ public class FuelNextContentView extends RelativeLayout {
 		popup_fuel_price_currency.setText(UnitConverter.getResourceForPriceCurrency(station.getPriceCurrency()));
 		
 		if(estimatedRouteToStation != null) {
-			popup_distance.setText(estimatedRouteToStation.fullRoute.getDuration() / 1000);
+			popup_distance.setText(String.valueOf(estimatedRouteToStation.fullRoute.getDuration() / 1000));
 			popup_distance_unit.setText("min");			
 		} else {
 			popup_distance.setText(String.format("%.2f", station.getDistance(message.getLocationAtRecommendTime())));
