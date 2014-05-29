@@ -7,6 +7,7 @@ import org.biu.ufo.control.monitors.DrivingStatusMonitor;
 import org.biu.ufo.control.monitors.FuelMonitor;
 import org.biu.ufo.control.monitors.Recommendator;
 import org.biu.ufo.control.monitors.TripMonitor;
+import org.biu.ufo.tracker.TrackerMonitor;
 
 @EBean
 public class Controller {
@@ -26,15 +27,20 @@ public class Controller {
 	@Bean
 	Recommendator recommendator;
 	
+	@Bean
+	TrackerMonitor trackerMonitor;
 
 	public void init(){
+		trackerMonitor.start();
 		drivingStatusMonitor.start();
 		fuelMonitor.start();
 		routeMonitor.start();
 		recommendator.start(routeMonitor);
+		
 	}
 	
-	public void close(){		
+	public void close(){
+		trackerMonitor.stop();
 		drivingStatusMonitor.stop();
 		fuelMonitor.stop();
 		routeMonitor.stop();
