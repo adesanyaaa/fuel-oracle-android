@@ -158,7 +158,8 @@ public class FileRecorder {
 				}else if (name.equals("event")) {
 					event = reader.nextString();
 				}else if (name.equals("timestamp")) {
-					timestamp = new Double(reader.nextDouble()).longValue();
+					//timestamp = new Double(reader.nextDouble()).longValue();
+					timestamp = (long)(new Double(reader.nextDouble()).doubleValue() * 1000);
 				}else {
 					reader.skipValue();
 				}
