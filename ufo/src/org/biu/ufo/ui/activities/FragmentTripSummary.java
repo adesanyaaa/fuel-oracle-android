@@ -1,6 +1,7 @@
 package org.biu.ufo.ui.activities;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -151,9 +152,9 @@ class FragmentTripSummary extends Fragment implements StationsFetcherResultHandl
 				fuelingDetails = fuelingData.get(0);
 				trip_fueling_destination.setText(fuelingDetails.address);
 				trip_fueling_company.setText(fuelingDetails.company);
-				trip_currency.setText(getString(R.string.currency_dollar));
-
-				trip_cost.setText(String.valueOf(fuelingDetails.price*gasWaste));
+				trip_currency.setText(getString(R.string.currency_nis));
+				String total_cost = new DecimalFormat("#0.00").format(fuelingDetails.price*gasWaste);
+				trip_cost.setText(total_cost);
 			}	
 		}else{
 			trip_destination.setText(NO_DATA);

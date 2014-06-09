@@ -9,6 +9,7 @@ import org.androidannotations.annotations.EBean;
 import org.biu.ufo.rest.Client;
 import org.biu.ufo.rest.MGFClient;
 import org.biu.ufo.rest.Station;
+import org.biu.ufo.rest.UFOClient;
 
 import android.os.Handler;
 import android.util.Log;
@@ -22,7 +23,7 @@ public class StationsFetcher {
 		void onStationsResult(List<Station> stations);
 	}
 	
-	@Bean(MGFClient.class)
+	@Bean(UFOClient.class)
 	Client stationsClient;
 	
 	List<Station> stationsResult;

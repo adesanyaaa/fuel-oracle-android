@@ -35,7 +35,10 @@ public class UFOClient implements Client {
 //			station.setDistance((float)ufoStation.distance); - USE Calculator.distance
 //			station.setDistanceUnit(DistanceUnit.KM);
 			
-			result.add(station);
+			
+			if (station.getPrice() > 0) {
+				result.add(station);
+			}
 		}
 		
 		return result;

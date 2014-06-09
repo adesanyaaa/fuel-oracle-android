@@ -149,6 +149,8 @@ public class TripMonitor {
 	@Subscribe
 	public void onRouteEnded(TripStop message) {
 		final Record recordToClose = this.record;
+		if(recordToClose == null) return; 
+		
 		placeResolver.resolvePlace(currentLocation, new OnPlaceResolved() {
 			
 			@Override

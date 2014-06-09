@@ -27,8 +27,8 @@ import edu.cmu.pocketsphinx.RecognitionListener;
 public class FuelNextNotification extends PopupNotification implements RecognitionListener {
 	private static final double START_SPEED = 100;
 	private static final double LOW_SPEED = 50.0;
-	private static final double NEAR_DISTANCE_SLOW = 1.0;
-	private static final double NEAR_DISTANCE_FAST = 2.0;
+	private static final double NEAR_DISTANCE_SLOW = 0.8;
+	private static final double NEAR_DISTANCE_FAST = 1.5;
 
 	private EstimatedRoute estimatedRouteToStation;
 	private FuelRecommendationMessage recommendation;

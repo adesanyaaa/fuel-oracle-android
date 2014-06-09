@@ -28,7 +28,7 @@ import com.squareup.otto.Subscribe;
 public class Recommendator implements EstimatedRouteResult, StationsFetcherResultHandler {
 	public static final long MAX_STATIONS_REQUESTS = 50;//10;
 	public static final float MIN_DISTANCE_BETWEEN_STATIONS_REQUEST_POINTS = 1.5f;	// 1.5 KM
-	public static final long MIN_DURATION_BETWEEN_RECOMMENDATIONS = 2*60*1000;	// 5 Minutes
+	public static final long MIN_DURATION_BETWEEN_RECOMMENDATIONS = 1*60*1000;	// 1 Minute
 	public static final float MIN_DISTANCE_BETWEEN_RECOMMENDATIONS = 0.2f;	// 1 KM
 	
 	@Bean
@@ -90,8 +90,8 @@ public class Recommendator implements EstimatedRouteResult, StationsFetcherResul
 	}
 
 	private void recommendIfNeeded() {
-		if(routeMonitor.getDestinationLocation() == null)
-			return;
+		//if(routeMonitor.getDestinationLocation() == null)
+		//	return;
 		
 		if(isLowFuelLevel()) {
 			if(isEnoughTimePassed() && isEnoughDistanceTraveled()) {
@@ -112,7 +112,11 @@ public class Recommendator implements EstimatedRouteResult, StationsFetcherResul
 		lastRecommendation.setFuelLevel(currentFuelLevel.doubleValue());
 		lastRecommendation.setLocation(new Location(currentLocation));
 		
-		if(estimatedRoute == null || !routeEstimator.isOnRoute(estimatedRoute, currentLocation)) {
+		/*if(routeMonitor.getDestinationLocation() == null) {
+			List<LatLng> positions = new LinkedList<LatLng>();
+			positions.add(currentLocation.getLatLng());
+			stationsFetcher.requestStations(positions, this);
+		} else */if(estimatedRoute == null || !routeEstimator.isOnRoute(estimatedRoute, currentLocation)) {
 			Log.e("TEST", "getNewRouteEstimation");
 			routeEstimator.getNewRouteEstimation(currentLocation, routeMonitor.getDestinationLocation(), this);			
 		} else {
