@@ -3,7 +3,7 @@ package org.biu.ufo.ui.cards;
 import it.gmariotti.cardslib.library.internal.CardExpand;
 
 import org.biu.ufo.R;
-import org.biu.ufo.control.events.analyzer.recommendation.FuelRecommendationMessage;
+import org.biu.ufo.events.control.FuelRecommendationMessage;
 import org.biu.ufo.model.Location;
 import org.biu.ufo.rest.Station;
 import org.biu.ufo.ui.utils.NavigationIntent;
@@ -109,7 +109,7 @@ public class RecommendationCardExpandInside extends CardExpand {
 		station_distance_measurement.setText(UnitConverter.getResourceForDistanceUnit(station.getDistanceUnit()));
 
 		company_logo = (ImageView)view.findViewById(R.id.rec_company_logo);
-		company_logo.setImageResource(UnitConverter.getResourceForStationLogo(station.getCompany()));
+		company_logo.setImageResource(UnitConverter.getResourceForStationLogo(station.getCompanyEnglish()));
 		
 		navigateButton = (Button)view.findViewById(R.id.rec_navigate_button);
 		navigateButton.setOnClickListener(new OnClickListener() {

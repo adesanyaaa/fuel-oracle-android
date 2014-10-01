@@ -1,21 +1,29 @@
 package org.biu.ufo.ui.activities;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
-import org.biu.ufo.MainApplication;
+import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
+import org.biu.ufo.control.ml.KNNRouteEstimator;
+import org.biu.ufo.control.utils.Calculator;
+import org.biu.ufo.events.car.raw.LocationMessage;
+import org.biu.ufo.model.Location;
 import org.biu.ufo.model.Place;
-import org.biu.ufo.ui.adapters.PlacesCursorAdapter;
-import org.biu.ufo.ui.utils.AnalyticsDictionary;
-import org.biu.ufo.ui.utils.SimpleCursorLoader;
+import org.biu.ufo.tracker.AnalyticsDictionary;
+import org.biu.ufo.tracker.DestinationSelectedEvent;
+import org.biu.ufo.tracker.TrackerEvent;
+import org.biu.ufo.ui.adapters.PlacesAdapter;
 
-import android.database.Cursor;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
@@ -27,13 +35,17 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter;
-import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter.DeleteItemCallback;
+import com.squareup.otto.Subscribe;
 
+@SuppressLint("ValidFragment")
 @EFragment(R.layout.destination_chooser) 
-public class FragmentDestinationChoose extends Fragment implements DeleteItemCallback, LoaderManager.LoaderCallbacks<Cursor> {
+class FragmentDestinationChoose extends Fragment {
+	public static final double radiusDistance = 0.02; 	//in KM 
+	
+		
+	@Bean
+	OttoBus bus;
+	
 	@ViewById
 	EditText searchView;
 	
@@ -44,33 +56,66 @@ public class FragmentDestinationChoose extends Fragment implements DeleteItemCal
 	ListView listView;
 	
 	@Bean
-	PlacesCursorAdapter historyAdapter;
-
+	KNNRouteEstimator estimator;
+	
 	FragmentDestination parent;
 	
-	Tracker tracker;
+	@Bean
+	PlacesAdapter placesAdapter;
 	
-//	private class MyFormatCountDownCallback implements CountDownFormatter {
-//
-//		@Override
-//		public String getCountDownString(final long millisUntilFinished) {
-//			if(isVisible()) {
-//				int seconds = (int) Math.ceil(millisUntilFinished / 1000.0);
-//
-//				if (seconds > 0) {
-//					return getResources().getQuantityString(R.plurals.countdown_seconds, seconds, seconds);
-//				}
-//				return getString(R.string.countdown_dismissing);				
-//			}
-//			return "";
-//		}
-//	}
+	Location currentLocation = null;
+	int hour = 0;
+	boolean updateNeeded = true;
+	
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		bus.register(this);
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		bus.unregister(this);
+		updateNeeded = true;
+	}
+	
+	@UiThread
+	@Subscribe
+	public void onLocationMessage(LocationMessage locationMessage){
+		if (updateNeeded){
+			updateNeeded = false;
+			currentLocation = locationMessage.location;
+			hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+				
+			ArrayList<Double> testData = new ArrayList<Double>();
 
+			testData.add(Double.valueOf(hour));
+			testData.add(currentLocation.getLatitude());
+			testData.add(currentLocation.getLongitude());
+			estimator.evaluate(testData);
+			
+			List<Place> estimatedDestination = estimator.getTrainingListSorted();
+			ArrayList<Place> places = new ArrayList<Place>();
+			places.addAll(estimatedDestination);
+			places.addAll(parent.placesDataStore.getAllPlaces());
+					
+			placesAdapter.setPlaces(getUniqueList(places));
+			listView.setAdapter(placesAdapter);
+
+		}
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		estimator.setTrainingSet();
+	}
 
 	@AfterViews
 	protected void setupContent() {
 		parent = (FragmentDestination) getParentFragment();
-		tracker = ((MainApplication)getActivity().getApplication()).getTracker();
 		searchVoiceButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -84,7 +129,6 @@ public class FragmentDestinationChoose extends Fragment implements DeleteItemCal
 		searchView.setFocusable(false);
 		searchView.setInputType(InputType.TYPE_NULL);
 		searchView.setClickable(false);
-//		searchView.setEnabled(false);
 		searchView.setOnTouchListener(new OnTouchListener() {
 		    @Override
 		    public boolean onTouch(View v, MotionEvent event) {
@@ -93,7 +137,8 @@ public class FragmentDestinationChoose extends Fragment implements DeleteItemCal
 		        return false;
 		    }
 		});
-
+		
+		
 		// Initialize list view
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -101,55 +146,35 @@ public class FragmentDestinationChoose extends Fragment implements DeleteItemCal
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 				Place place = (Place) adapterView.getItemAtPosition(position);
 				parent.onPlaceSelected(place);
-				
-				tracker.send(new HitBuilders.EventBuilder()
-				.setCategory(AnalyticsDictionary.Navigation.CATEGORY)
-				.setAction(AnalyticsDictionary.Navigation.Action.RECOMMENDATION_OPTION)
-				.setLabel(AnalyticsDictionary.Navigation.POSITION)
-				.setValue(position)
-				.build());
-				
+
+				bus.post(new DestinationSelectedEvent(position));
 			}
 		});
-		
-//		ContextualUndoAdapter undoAdapter = new ContextualUndoAdapter(historyAdapter,
-//				R.layout.undo_row, R.id.undo_row_undobutton, 3000, R.id.undo_row_texttv, this, new MyFormatCountDownCallback());
-        ContextualUndoAdapter undoAdapter = new ContextualUndoAdapter(historyAdapter, R.layout.undo_row, R.id.undo_row_undobutton, 3000, this);
-
-		undoAdapter.setAbsListView(listView);
-		listView.setAdapter(undoAdapter);			
-		
-		// Load data
-		getLoaderManager().initLoader(0, null, this);
 	}
 	
-	@Override
-	public void deleteItem(int position) {
-		long itemId = historyAdapter.getItemId(position);
-		parent.placesDataStore.deletePlace(itemId);
-        getLoaderManager().restartLoader(0, null, this);
-	}
-
-	@Override
-	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		SimpleCursorLoader cursorLoader = new SimpleCursorLoader(getActivity()) {
-			@Override
-			public Cursor loadInBackground() {
-				// TODO Auto-generated method stub
-				return parent.placesDataStore.getAllPlacesCursor();
+	
+	private static boolean isUniquePlace(Place place, List<Place> places){
+		
+		Location first = new Location(place.getAddress().getLatitude(), place.getAddress().getLongitude());
+		for (Place existingPlace: places){
+			Location second = new Location(existingPlace.getAddress().getLatitude(), existingPlace.getAddress().getLongitude());
+			if (Calculator.distance(first, second) <= radiusDistance){
+				return false;
 			}
-		};
-		return cursorLoader;	
+		}
+		return true;
 	}
-
-	@Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		historyAdapter.swapCursor(data);
+	
+	private static ArrayList<Place> getUniqueList(List<Place> places){
+  		ArrayList<Place> uniquePlaces = new ArrayList<Place>();
+		
+		for (Place place : places){
+			if (isUniquePlace(place, uniquePlaces)){
+				uniquePlaces.add(place);
+			}
+		}
+		
+		return uniquePlaces;
 	}
-
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-		historyAdapter.swapCursor(null);
-	}
-
+	
 }

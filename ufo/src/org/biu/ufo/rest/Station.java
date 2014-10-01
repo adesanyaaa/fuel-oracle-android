@@ -1,6 +1,6 @@
 package org.biu.ufo.rest;
 
-import org.biu.ufo.control.Calculator;
+import org.biu.ufo.control.utils.Calculator;
 import org.biu.ufo.model.Location;
 
 public class Station {
@@ -67,6 +67,13 @@ public class Station {
 
 	public String getCompany() {
 		return company;
+	}
+
+	public String getCompanyEnglish() {
+		String comp = org.biu.ufo.rest.internal.ufoserver.Station.getEnglishCompanyName(company);
+		if(!comp.equals("default"))
+			return comp;
+		return getCompany();
 	}
 
 	public void setCompany(String company) {

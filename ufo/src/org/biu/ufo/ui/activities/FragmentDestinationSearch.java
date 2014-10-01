@@ -76,7 +76,6 @@ class FragmentDestinationSearch extends Fragment {
 		swingBottomInAnimationAdapter.setInitialDelayMillis(300);
 		swingBottomInAnimationAdapter.setAbsListView(listView);
 		listView.setAdapter(swingBottomInAnimationAdapter);
-//		listView.setAdapter(searchAdapter);
 		
 		searchView.setFocusableInTouchMode(true);
 		searchView.setOnFocusChangeListener(new OnFocusChangeListener() {

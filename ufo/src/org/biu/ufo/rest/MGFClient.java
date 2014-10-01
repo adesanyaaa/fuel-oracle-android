@@ -6,13 +6,10 @@ import java.util.List;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.rest.RestService;
 import org.biu.ufo.rest.Station.CapacityUnit;
-import org.biu.ufo.rest.Station.DistanceUnit;
 import org.biu.ufo.rest.Station.PriceCurrency;
 import org.biu.ufo.rest.internal.mygasfeed.RequestFuelType;
 import org.biu.ufo.rest.internal.mygasfeed.RequestSortBy;
 import org.biu.ufo.rest.internal.mygasfeed.StationsResponse;
-
-import android.util.Log;
 
 @EBean
 public class MGFClient implements Client {

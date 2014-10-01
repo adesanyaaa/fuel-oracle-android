@@ -5,6 +5,7 @@ import com.google.android.gms.maps.model.LatLng;
 public class Location {
 	private double latitude;
 	private double longitude;
+	private long timestamp;
 	
 	public Location(Location other){
 		this.latitude = other.latitude;
@@ -45,5 +46,13 @@ public class Location {
 	
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
+	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
 	}
 }

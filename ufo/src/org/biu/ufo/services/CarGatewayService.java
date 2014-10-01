@@ -27,7 +27,6 @@ import org.biu.ufo.car.obd.enums.ObdProtocols;
 import org.biu.ufo.car.openxc.VehicleManagerConnector;
 import org.biu.ufo.car.openxc.VehicleManagerConnector.VehicleManagerConnectorCallback;
 import org.biu.ufo.car.openxc.sources.ObdDataSource;
-import org.biu.ufo.control.events.connection.ObdConnectionLostMessage;
 
 import android.content.Intent;
 import android.os.Binder;
@@ -153,6 +152,7 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 	@Override
 	public void sourceConnected(Connection source) {
 		if(source == connection && shouldBeActive.get()) {
+			Log.e(TAG, "Connected to  " + source.toString());
 			initializeDevice();
 			runOnBackground(mQueueCommands);
 		}
@@ -163,10 +163,10 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 	public void sourceDisconnected(Connection source) {
 		if(source == connection) {
 			Log.e(TAG, "Connection lost to " + source.toString());
-			if(shouldBeActive.get()) {
-				stop();
-				bus.post(new ObdConnectionLostMessage());
-			}
+//			if(shouldBeActive.get()) {
+//				stop();
+//				bus.post(new ObdConnectionLostMessage());
+//			}
 		}
 	}
 
@@ -182,7 +182,7 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 		isActive.set(true);
 		
 		// Just for getting some data
-		addQuery(new FuelLevelObdCommand());
+		addQuery(new EngineRPMObdCommand());
 	}
 
 	public void addQuery(BaseObdQueryCommand cmd) {
@@ -235,11 +235,13 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 
 	private static boolean write(Connection connection, IObdCommand job) throws IOException, InterruptedException {
 		boolean success = connection.write((job.getCommand() + "\r").getBytes());
-		Thread.sleep(200);
+		Thread.sleep(500);
 		return success;
 	}
 
-	private static boolean receive(Connection connection, IObdCommand job) throws IOException {
+	private static boolean receive(Connection connection, IObdCommand job) throws IOException, InterruptedException {
+		if(connection == null)
+			return false;
 		// Read from connection
 		byte[] bytes = new byte[256];
 		int byteCount = connection.read(bytes);
@@ -248,6 +250,9 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 		String[] rawResults = new String(bytes, 0, byteCount).split(">");
 		for(String rawResult : rawResults) {
 			if(job.handleResult(rawResult)) {
+				if(rawResult.contains("SEARCHING")) {
+					Thread.sleep(5000);
+				}
 				return true;
 			}
 		}
@@ -263,7 +268,7 @@ public class CarGatewayService extends BoundedWorkerService implements Connectio
 					addQuery(new FuelLevelObdCommand());
 					addQuery(new EngineRPMObdCommand());
 					addQuery(new SpeedObdCommand(false));
-					addQuery(new DistanceTraveledSinceCodesClearedObdCommand());
+//					addQuery(new DistanceTraveledSinceCodesClearedObdCommand());
 
 					// run again in 5s
 					runOnBackgroundDelayed(mQueueCommands, 5000);				

@@ -2,7 +2,7 @@
 <resources>
 
     <color name="danger">#FF0000</color>
-    <color name="alert">#FFFF00</color>
+    <color name="alert">#E1C006</color>
     <color name="fuel_next">#8DAE46</color>
     
     <color name="configure_background">#FFFFFF</color>

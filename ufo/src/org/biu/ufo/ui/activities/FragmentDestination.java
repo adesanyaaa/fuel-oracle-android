@@ -1,13 +1,16 @@
 package org.biu.ufo.ui.activities;
 
+import org.androidannotations.annotations.App;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
+import org.biu.ufo.MainApplication;
 import org.biu.ufo.OttoBus;
 import org.biu.ufo.R;
-import org.biu.ufo.control.events.SpeechStartCommand;
-import org.biu.ufo.control.events.user.DestinationSelectedMessage;
+import org.biu.ufo.events.user.DestinationSelectedMessage;
+import org.biu.ufo.events.user.ShowScreenMain;
 import org.biu.ufo.model.Place;
 import org.biu.ufo.storage.PlacesDataStore;
+import org.biu.ufo.tracker.ScreenDisplayEvent;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -19,11 +22,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
-import com.squareup.otto.Subscribe;
-
 @EFragment(R.layout.fragment_destination)
-public class FragmentDestination extends Fragment {
-	static final int RECOGNIZER_REQ_CODE = 1234;
+public class FragmentDestination extends Fragment /*implements RecognitionListener*/ {
+	private static final String TAG = "FragmentDestination";
+	public static final int RECOGNIZER_REQ_CODE = 1234;
+
+	
+	@App
+	MainApplication application;
 	
 	@Bean
 	OttoBus bus;
@@ -31,7 +37,8 @@ public class FragmentDestination extends Fragment {
 	@Bean
 	PlacesDataStore placesDataStore;
 	
-
+	boolean shouldListen;
+	
 	OnClickListener voiceActionListener = new OnClickListener() {		
 		@Override
 		public void onClick(View v) {
@@ -43,25 +50,25 @@ public class FragmentDestination extends Fragment {
 			}				
 		}
 	};
-	
-	@Subscribe
-	public void onStartListening(SpeechStartCommand cmd) {
-		if(!isInSearchMode()) {
-			openSearchFragment();
-		}
-		voiceActionListener.onClick(null);
-	}
-	
+		
 	@Override
 	public void onResume() {
 		super.onResume();
 		bus.register(this);
+		bus.post(new ScreenDisplayEvent(getClass().getSimpleName()));
+
 	}
 	
 	@Override
 	public void onPause() {
 		super.onPause();
 		bus.unregister(this);
+	}
+		
+	@Override
+	public void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
 	}
 	
 	@Override
@@ -74,7 +81,7 @@ public class FragmentDestination extends Fragment {
 		transaction.setCustomAnimations(R.anim.slide_out_up, R.anim.slide_in_up);
 		transaction.replace(R.id.content_frame, recommendFrag).commit();
 	}
-
+		
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -109,9 +116,8 @@ public class FragmentDestination extends Fragment {
 	}
 	
 	protected void onPlaceSelected(Place place) {
-//		Toast.makeText(getActivity(), place.toString(), Toast.LENGTH_LONG).show();
 		bus.post(new DestinationSelectedMessage(place));
+		bus.post(new ShowScreenMain());
 	}
-
 
 }

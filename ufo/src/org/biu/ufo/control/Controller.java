@@ -3,10 +3,12 @@ package org.biu.ufo.control;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.biu.ufo.OttoBus;
-import org.biu.ufo.control.analyzers.FuelAnalyzer;
-import org.biu.ufo.control.analyzers.FuelRecommendator;
-import org.biu.ufo.control.analyzers.RouteAnalyzer;
-import org.biu.ufo.control.analyzers.RouteEstimator;
+import org.biu.ufo.control.monitors.DrivingStatusMonitor;
+import org.biu.ufo.control.monitors.FuelMonitor;
+import org.biu.ufo.control.monitors.Recommendator;
+import org.biu.ufo.control.monitors.TripMonitor;
+import org.biu.ufo.tracker.TrackerMonitor;
+import org.biu.ufo.ui.UINavigation;
 
 @EBean
 public class Controller {
@@ -15,39 +17,39 @@ public class Controller {
 	OttoBus bus;
 	
 	@Bean
-	FuelAnalyzer fuelAnalyzer;
+	DrivingStatusMonitor drivingStatusMonitor;
 	
 	@Bean
-	RouteAnalyzer routeAnalyzer;
+	FuelMonitor fuelMonitor; 
 	
 	@Bean
-	FuelRecommendator fuelingRecommendator;
+	TripMonitor routeMonitor;
 	
 	@Bean
-	RouteEstimator routeEstimator;
-		
+	Recommendator recommendator;
+	
+	@Bean
+	TrackerMonitor trackerMonitor;
+	
+	@Bean
+	UINavigation uinavigation;
+
 	public void init(){
-		routeAnalyzer.setController(this);
-		routeAnalyzer.start();
+		trackerMonitor.start();
+		drivingStatusMonitor.start();
+		fuelMonitor.start();
+		routeMonitor.start();
+		recommendator.start(routeMonitor);
+		uinavigation.start();
 		
-		routeEstimator.setController(this);
-		routeEstimator.start();
-		
-		fuelAnalyzer.setController(this);
-		fuelAnalyzer.start();
-		
-		fuelingRecommendator.setController(this);
-		fuelingRecommendator.start();
 	}
 	
-	public void close(){		
-		fuelingRecommendator.stop();
-		fuelAnalyzer.stop();
-		routeEstimator.stop();
-		routeAnalyzer.stop();
-	}
-	
-	public RouteEstimator getRouteEstimator() {
-		return routeEstimator;
+	public void close(){
+		trackerMonitor.stop();
+		drivingStatusMonitor.stop();
+		fuelMonitor.stop();
+		routeMonitor.stop();
+		recommendator.stop();
+		uinavigation.stop();
 	}
 }
