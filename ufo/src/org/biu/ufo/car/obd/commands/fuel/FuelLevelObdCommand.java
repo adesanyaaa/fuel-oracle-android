@@ -32,7 +32,7 @@ public class FuelLevelObdCommand extends BaseObdQueryCommand {
 			fuelLevel = 100.0f * data[2] / 255.0f;
 		}
 //		fuelLevel = 27f;
-		fuelLevel = 14f;
+//		fuelLevel = 14f;
 	}
 
 	@Override
