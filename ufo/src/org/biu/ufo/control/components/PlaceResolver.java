@@ -44,11 +44,16 @@ public class PlaceResolver {
 	}
 	
 	public void resolvePlace(Location location, OnPlaceResolved onPlaceResolved) {
+		if(location == null) {
+			onPlaceResolved.onFailure(location);
+			return;
+		}
 		resolvePlace(location, onPlaceResolved, new Retry());
 	}
 	
 	@Background
 	public void resolvePlace(Location location, OnPlaceResolved onPlaceResolved, Retry retry) {
+		
 		Geocoder geocoder = new Geocoder(context);
 		try {
 			List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);

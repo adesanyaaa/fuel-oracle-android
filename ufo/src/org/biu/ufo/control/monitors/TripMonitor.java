@@ -165,7 +165,9 @@ public class TripMonitor {
 			
 			@Override
 			public void onFailure(Location location) {
-				recordToClose.close();
+				if(recordToClose != null) {
+					recordToClose.close();
+				}
 				if(record == recordToClose) {
 					record = null;
 				}
