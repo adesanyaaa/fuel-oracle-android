@@ -40,6 +40,13 @@ public class MainActivity extends FragmentActivity {
 		startActivity(new Intent(this, SettingsActivity.class));
 	}
 	
+	@OptionsItem(R.id.action_about)
+	void openAbout() {
+		AboutDialog about = new AboutDialog(this);
+		about.setTitle("About this app");
+		about.show();
+	}
+	
 	@OptionsItem(R.id.action_stop_service)
 	void stopService() {
 		UfoMainService_.intent(this).stop();

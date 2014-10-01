@@ -1,0 +1,2 @@
+Copyright (C) 2014 Danny Karmon, Roee Shlomo, Baruch Noah, all rights reserved.<br>
+This program is released under the terms of the <a href="http://www.gnu.org/licenses/gpl.txt">GNU General Public License</a>, version 3 or later.
